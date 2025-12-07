@@ -1,0 +1,49 @@
+services:
+  rmb-nginx:
+    build:
+      context: ./../
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        ENVIRONMENT: docker-sql
+    container_name: rmb-nginx
+    environment:
+      COUNTRY_CODE: ro
+      ENVIRONMENT: dev
+    volumes:
+      - type: bind
+        source: ./../public
+        target: /var/www/youremember/public
+    networks:
+      - proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.rmb2.entrypoints=web'
+      - 'traefik.http.routers.rmb2.rule=Host(`rmb2.localhost`)'
+      - 'traefik.docker-sql.network=proxy'
+      - 'traefik.http.services.rmb2.loadbalancer.server.port=80'
+    depends_on:
+      - rmb-php
+
+  rmb-php:
+    build:
+      context: ./../
+      dockerfile: docker/php-fpm/Dockerfile
+      args:
+        ENVIRONMENT: docker-sql
+    container_name: rmb_phpfpm
+    volumes:
+      - "~/.gitconfig:/etc/gitconfig"
+      - "~/.aws/credentials:/root/.aws/credentials"
+      - type: bind
+        source: ./../
+        target: /var/www/youremember
+    environment:
+      ENVIRONMENT: docker-sql
+      COUNTRY_CODE: ro
+      APP_ENV: dev
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
