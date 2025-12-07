@@ -20,6 +20,6 @@ class TestController extends AbstractController
     #[Route('/twig', name: 'app_twig')]
     public function twig(): Response
     {
-        return $this->render('login.html.twig');
+        return $this->render('base.html.twig');
     }
 }
