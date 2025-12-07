@@ -3,6 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTimeImmutable;
+use Deprecated;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -31,6 +35,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
+    private ?DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(options: [
+        'default' => 'CURRENT_TIMESTAMP',
+        'on update' => 'CURRENT_TIMESTAMP'
+    ])]
+    private ?DateTimeImmutable $modified_at = null;
+
+    /**
+     * @var Collection<int, Profile>
+     */
+    #[ORM\OneToMany(targetEntity: Profile::class, mappedBy: 'user')]
+    private Collection $profiles;
+
+    public function __construct()
+    {
+        $this->profiles = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -55,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -95,9 +119,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    #[\Deprecated]
+    #[Deprecated]
     public function eraseCredentials(): void
     {
         // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getModifiedAt(): DateTimeImmutable
+    {
+        return $this->modified_at;
+    }
+
+    public function setModifiedAt(DateTimeImmutable $modified_at): static
+    {
+        $this->modified_at = $modified_at;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Profile>
+     */
+    public function getProfiles(): Collection
+    {
+        return $this->profiles;
+    }
+
+    public function addProfile(Profile $profile): static
+    {
+        if (!$this->profiles->contains($profile)) {
+            $this->profiles->add($profile);
+            $profile->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProfile(Profile $profile): static
+    {
+        if ($this->profiles->removeElement($profile)) {
+            // set the owning side to null (unless already changed)
+            if ($profile->getUser() === $this) {
+                $profile->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
