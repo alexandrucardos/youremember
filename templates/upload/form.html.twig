@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Upload a File to S3</h1>
+
+    <form action="{{ path('upload_send') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
+
+    {% for message in app.flashes('error') %}
+        <div style="color: red;">{{ message }}</div>
+    {% endfor %}
+{% endblock %}
