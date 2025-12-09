@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+    <h1>Profile</h1>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ profile.id }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ profile.name }}</td>
+        </tr>
+        <tr>
+            <th>Description</th>
+            <td>{{ profile.description }}</td>
+        </tr>
+        <tr>
+            <th>Born_at</th>
+            <td>{{ profile.bornAt ? profile.bornAt|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        <tr>
+            <th>Deceased_at</th>
+            <td>{{ profile.deceasedAt ? profile.deceasedAt|date('Y-m-d H:i:s') : '' }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_profile_index') }}">back to list</a>
+
+    <a href="{{ path('app_profile_edit', {'id': profile.id}) }}">edit</a>
+{% endblock %}
