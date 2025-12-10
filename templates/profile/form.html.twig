@@ -1,0 +1,25 @@
+<div class="card shadow-sm border-0 p-4">
+    {{ form_start(form) }}
+
+    <div class="mb-3">
+        {{ form_row(form.name) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_row(form.description) }}
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ form_row(form.born_at) }}
+        </div>
+        <div class="col-md-6 mb-3">
+            {{ form_row(form.deceased_at) }}
+        </div>
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+
+    {{ form_end(form) }}
+</div>
+

@@ -3,41 +3,56 @@
 {% block title %}Profile index{% endblock %}
 
 {% block body %}
-    <h1>Profile index</h1>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0">
+            <h5 class="mb-0">Profiles</h5>
+        </div>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Born_at</th>
-            <th>Deceased_at</th>
-            <th>Created_at</th>
-            <th>Updated_at</th>
-            <th>actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for profile in profiles %}
-            <tr>
-                <td>{{ profile.id }}</td>
-                <td>{{ profile.name }}</td>
-                <td>{{ profile.description }}</td>
-                <td>{{ profile.bornAt ? profile.bornAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ profile.deceasedAt ? profile.deceasedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ profile.createdAt ? profile.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ profile.updatedAt ? profile.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_profile_show', {'id': profile.id}) }}">show</a>
-                    <a href="{{ path('app_profile_edit', {'id': profile.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Born</th>
+                        <th>Deceased</th>
+                        <th style="width:120px">Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for profile in profiles %}
+                        <tr>
+                            <td>{{ profile.name }}</td>
+
+                            <td class="text-muted" style="max-width: 320px;">
+                                {{ profile.description|u.truncate(80, '…') }}
+                            </td>
+
+                            <td>
+                                {{ profile.bornAt ? profile.bornAt|date('Y-m-d') : '—' }}
+                            </td>
+
+                            <td>
+                                {{ profile.deceasedAt ? profile.deceasedAt|date('Y-m-d') : 'Alive' }}
+                            </td>
+
+                            <td>
+                                <a href="{{ path('app_profile_edit', {id: profile.id}) }}"
+                                   class="btn btn-sm btn-outline-primary">Edit</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                No profiles found
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
