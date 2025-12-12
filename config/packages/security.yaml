@@ -37,6 +37,7 @@ security:
     - { path: ^/twig, roles: ROLE_USER }
     - { path: ^/profile/\d+$, roles: PUBLIC_ACCESS }
     - { path: ^/profile, roles: ROLE_USER }
+    - { path: ^/content, roles: ROLE_USER }
 
 when@test:
   security:

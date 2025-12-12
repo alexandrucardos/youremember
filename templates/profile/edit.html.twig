@@ -1,13 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Profile{% endblock %}
+{% block title %}Editeaza profil{% endblock %}
 
 {% block body %}
-    <h1>Edit Profile</h1>
+    <div class="container py-5 gallery-container position-relative">
+        <div class="row">
+            {{ include('profile/form.html.twig', {'button_label': 'Update'}) }}
+        </div>
+        <br>
+        <div class="row">
+            {{ include('content/form.html.twig', {'button_label': 'Update'}) }}
+        </div>
+        <br>
+        <div class="row">
+            {{ include('content/show.html.twig', {images: images}) }}
+        </div>
+        <br>
+        <div class="row">
+            <a href="javascript:history.back()" class="btn btn-info btn-lg">Inapoi</a>
+        </div>
 
-    {{ include('profile/form.html.twig', {'button_label': 'Update'}) }}
-
-    {{ include('content/form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_profile_index') }}">back to list</a>
+        {#        <a href="{{ path('app_profile_index') }}">Inapoi</a> #}
+    </div>
 {% endblock %}

@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Service\S3UploaderService;
+use App\Entity\Profile;
+use App\Service\MediatorS3Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +21,8 @@ class ContentController extends AbstractController
         return $this->render('content/form.html.twig');
     }
 
-    #[Route('/send', name: 'app_content_send', methods: ['POST'])]
-    public function upload(Request $request, S3UploaderService $s3UploaderService): Response
+    #[Route('/send/{id}', name: 'app_content_send', methods: ['POST'])]
+    public function upload(Profile $profile, Request $request, MediatorS3Service $mediatorS3Service): Response
     {
         /** @var UploadedFile|null $file */
         $file = $request->files->get('file');
@@ -35,8 +36,8 @@ class ContentController extends AbstractController
             throwException('Nu exista user logat!');
         }
 
-        $url = $s3UploaderService->upload(
-            $this->getUser(),
+        $url = $mediatorS3Service->upload(
+            $profile->getId(),
             $file
         );
 
@@ -46,8 +47,14 @@ class ContentController extends AbstractController
     }
 
     #[Route('/fetch', name: 'app_content_fetch')]
-    public function fetch(): Response
+    public function fetch(MediatorS3Service $mediatorS3Service): Response
     {
+
+        if ($this->getUser() === null) {
+            throwException('Nu exista user logat!');
+        }
+
+        $mediatorS3Service->fetchContentUrls($this->getUser()->getId() . '/');
         return $this->render('content/form.html.twig');
     }
 }

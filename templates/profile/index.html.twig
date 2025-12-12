@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Profile index{% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block body %}
     <div class="card shadow-sm border-0">
         <div class="card-header bg-white border-0">
-            <h5 class="mb-0">Profiles</h5>
+            <h5 class="mb-0">Profile</h5>
         </div>
 
         <div class="card-body p-0">
@@ -14,10 +14,10 @@
                     <thead class="table-light">
                     <tr>
                         <th>Name</th>
-                        <th>Description</th>
-                        <th>Born</th>
-                        <th>Deceased</th>
-                        <th style="width:120px">Actions</th>
+                        {#                        <th>Descriere</th> #}
+                        <th>Nascut la</th>
+                        {#                        <th>Decedat la</th> #}
+                        <th style="width:120px">Actiuni</th>
                     </tr>
                     </thead>
 
@@ -26,13 +26,13 @@
                         <tr>
                             <td>{{ profile.name }}</td>
 
-                            <td class="text-muted" style="max-width: 320px;">
-                                {{ profile.description|u.truncate(80, '…') }}
-                            </td>
+                            {#                            <td class="text-muted" style="max-width: 320px;"> #}
+                            {#                                {{ profile.description|u.truncate(80, '…') }} #}
+                            {#                            </td> #}
 
-                            <td>
-                                {{ profile.bornAt ? profile.bornAt|date('Y-m-d') : '—' }}
-                            </td>
+                            {#                            <td> #}
+                            {#                                {{ profile.bornAt ? profile.bornAt|date('Y-m-d') : '—' }} #}
+                            {#                            </td> #}
 
                             <td>
                                 {{ profile.deceasedAt ? profile.deceasedAt|date('Y-m-d') : 'Alive' }}
@@ -40,7 +40,7 @@
 
                             <td>
                                 <a href="{{ path('app_profile_edit', {id: profile.id}) }}"
-                                   class="btn btn-sm btn-outline-primary">Edit</a>
+                                   class="btn btn-sm btn-outline-primary">Editeaza</a>
                             </td>
                         </tr>
                     {% else %}

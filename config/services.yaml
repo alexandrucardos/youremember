@@ -23,9 +23,10 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
-  App\Service\S3UploaderService:
+  App\Service\MediatorS3Service:
     arguments:
       $bucketName: '%env(AWS_S3_BUCKET)%'
+      $region: '%env(AWS_REGION)%'
 
   AsyncAws\S3\S3Client:
     arguments:

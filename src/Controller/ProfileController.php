@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Profile;
 use App\Form\ProfileType;
 use App\Repository\ProfileRepository;
-use AsyncAws\S3\S3Client;
+use App\Service\MediatorS3Service;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +26,12 @@ final class ProfileController extends AbstractController
 
     #[Route('/{id}/edit', name: 'app_profile_edit', methods: ['GET', 'POST'])]
     #[IsGranted('edit', 'profile')]
-    public function edit(Request $request, Profile $profile, EntityManagerInterface $entityManager): Response
+    public function edit(
+        Request                $request,
+        Profile                $profile,
+        EntityManagerInterface $entityManager,
+        MediatorS3Service      $mediatorS3Service
+    ): Response
     {
         $form = $this->createForm(ProfileType::class, $profile);
         $form->handleRequest($request);
@@ -37,45 +42,28 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $contentUrls = $mediatorS3Service->fetchContentUrls(
+            $profile->getId() . '/'
+        );
+
         return $this->render('profile/edit.html.twig', [
             'profile' => $profile,
             'form' => $form,
+            'images' => $contentUrls,
         ]);
     }
 
     #[Route('/{id}', name: 'app_profile_show', methods: ['GET'])]
-    public function show(Profile $profile, S3Client $s3): Response
+    public function show(Profile $profile, MediatorS3Service $mediatorS3Service): Response
     {
-        $bucket = 'amzn-s3-rmb-dev';
-        $prefix = $profile->getId() . '/';
-        $region = 'eu-central-1';
+        $contentUrls = $mediatorS3Service->fetchContentUrls(
+            $profile->getId() . '/'
+        );
 
-        // List all objects inside the prefix
-        $result = $s3->listObjectsV2([
-            'Bucket' => $bucket,
-            'Prefix' => $prefix,
-        ]);
-
-        $images = [];
-
-        foreach ($result->getContents() as $object) {
-            $key = $object->getKey();
-
-            if ($key === $prefix) {
-                continue;
-            }
-
-            $images[] = sprintf(
-                'https://%s.s3.%s.amazonaws.com/%s',
-                $bucket,
-                $region,
-                $key
-            );
-        }
 
         return $this->render('profile/show.html.twig', [
             'profile' => $profile,
-            'images' => $images,
+            'images' => $contentUrls,
         ]);
     }
 }

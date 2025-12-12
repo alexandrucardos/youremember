@@ -1,25 +1,42 @@
-<div class="card shadow-sm border-0 p-4">
-    {{ form_start(form) }}
-
-    <div class="mb-3">
-        {{ form_row(form.name) }}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-0 pb-0">
+        <h4 class="mb-0">Pas1. Editeaza profil</h4>
     </div>
 
-    <div class="mb-3">
-        {{ form_row(form.description) }}
-    </div>
+    <div class="card-body">
+        {{ form_start(form, { attr: { class: 'needs-validation' } }) }}
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.born_at) }}
+        <div class="mb-3">
+            {{ form_label(form.name, null, { label_attr: { class: 'form-label fw-semibold' } }) }}
+            {{ form_widget(form.name, { attr: { class: 'form-control' } }) }}
+            {{ form_errors(form.name) }}
         </div>
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.deceased_at) }}
+
+        <div class="mb-3">
+            {{ form_label(form.description, null, { label_attr: { class: 'form-label fw-semibold' } }) }}
+            {{ form_widget(form.description, { attr: { class: 'form-control', rows: 4 } }) }}
+            {{ form_errors(form.description) }}
         </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.born_at, null, { label_attr: { class: 'form-label fw-semibold' } }) }}
+                {{ form_widget(form.born_at, { attr: { class: 'form-control' } }) }}
+                {{ form_errors(form.born_at) }}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form_label(form.deceased_at, null, { label_attr: { class: 'form-label fw-semibold' } }) }}
+                {{ form_widget(form.deceased_at, { attr: { class: 'form-control' } }) }}
+                {{ form_errors(form.deceased_at) }}
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary px-4">Save</button>
+        </div>
+
+        {{ form_end(form) }}
+
     </div>
-
-    <button class="btn btn-primary">Save</button>
-
-    {{ form_end(form) }}
 </div>
-

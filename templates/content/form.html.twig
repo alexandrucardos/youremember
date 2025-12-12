@@ -1,14 +1,24 @@
-{% extends 'base.html.twig' %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-0">
+        <h4 class="mb-0">Pas2. Încarcă fișier</h4>
+    </div>
 
-{% block body %}
-    <h1>Upload a File to S3</h1>
+    <div class="card-body">
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
 
-    <form action="{{ path('app_content_send') }}" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Upload</button>
-    </form>
+        <form action="{{ path('app_content_send', { id: profile.id }) }}"
+              method="post"
+              enctype="multipart/form-data"
+              class="needs-validation">
 
-    {% for message in app.flashes('error') %}
-        <div style="color: red;">{{ message }}</div>
-    {% endfor %}
-{% endblock %}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Alege fișier</label>
+                <input type="file" name="file" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary px-4">Upload</button>
+        </form>
+
+    </div>
+</div>

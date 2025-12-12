@@ -6,6 +6,7 @@ use App\Entity\Profile;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Profile>
@@ -20,7 +21,7 @@ class ProfileRepository extends ServiceEntityRepository
     /**
      * @return Profile[]
      */
-    public function findByUserId(User $user): array
+    public function findByUserId(UserInterface $user): array
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.user = :val')
