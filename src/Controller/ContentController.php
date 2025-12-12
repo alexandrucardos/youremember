@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use function PHPUnit\Framework\throwException;
 
 
 #[Route('/content')]
@@ -46,12 +45,14 @@ class ContentController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws \Exception
+     */
     #[Route('/fetch', name: 'app_content_fetch')]
     public function fetch(MediatorS3Service $mediatorS3Service): Response
     {
-
         if ($this->getUser() === null) {
-            throwException('Nu exista user logat!');
+            throw new \Exception('Nu exista user logat!');
         }
 
         $mediatorS3Service->fetchContentUrls($this->getUser()->getId() . '/');

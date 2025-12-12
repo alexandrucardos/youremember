@@ -24,10 +24,10 @@
                         {{ profile.deceasedAt ? profile.deceasedAt|date('Y-m-d') : 'Alive' }}
                     </div>
                 </div>
-
                 <hr>
-
-                {{ include('content/show.html.twig', {images: images}) }}
+                <div class="row mb-3">
+                    {{ include('content/show.html.twig', {images: images}) }}
+                </div>
             </div>
         </div>
     </div>
