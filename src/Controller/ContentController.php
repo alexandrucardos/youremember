@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 
 #[Route('/content')]
@@ -32,7 +32,7 @@ class ContentController extends AbstractController
         }
 
         if ($this->getUser() === null) {
-            throwException('Nu exista user logat!');
+            throw new \Exception('Nu exista user logat!');
         }
 
         $url = $mediatorS3Service->upload(
