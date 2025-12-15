@@ -58,4 +58,38 @@ class MediatorS3Service
 
         return $urls;
     }
+
+    public function deleteContent(string $url): bool
+    {
+        $key = $this->getS3KeyFromUrl($url);
+
+        try {
+            $result = $this->s3->deleteObject([
+                'Bucket' => $this->bucketName,
+                'Key' => $key,
+            ]);
+
+            if ($result['DeleteMarker'] ?? false) {
+                return true;
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            error_log('S3 delete failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    function getS3KeyFromUrl(string $url): string
+    {
+        $parsed = parse_url($url);
+
+        if (!isset($parsed['host'], $parsed['path'])) {
+            throw new \Exception('Invalid URL');
+        }
+
+        $path = ltrim($parsed['path'], '/'); // remove leading /
+
+        return $path;
+    }
 }

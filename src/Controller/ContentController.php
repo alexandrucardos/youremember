@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 
 #[Route('/content')]
@@ -45,17 +46,23 @@ class ContentController extends AbstractController
         ]);
     }
 
-    /**
-     * @throws \Exception
-     */
-    #[Route('/fetch', name: 'app_content_fetch')]
-    public function fetch(MediatorS3Service $mediatorS3Service): Response
+    #[Route('/delete/{id}', name: 'app_content_delete', methods: ['POST'])]
+    #[IsGranted('edit', 'profile')]
+    public function delete(Request $request, Profile $profile, MediatorS3Service $mediatorS3Service): Response
     {
         if ($this->getUser() === null) {
             throw new \Exception('Nu exista user logat!');
         }
 
-        $mediatorS3Service->fetchContentUrls($this->getUser()->getId() . '/');
-        return $this->render('content/form.html.twig');
+        $url = $request->request->get('image');
+
+        if (!$this->isCsrfTokenValid('delete_image_' . $url,
+            $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $mediatorS3Service->deleteContent($url);
+
+        return $this->redirectToRoute('app_profile_edit', ['id' => $profile->getId()]);
     }
 }
