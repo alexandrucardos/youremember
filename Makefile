@@ -1,39 +1,10 @@
-PROJECT_NAME := rmb
-ZIP_NAME := $(PROJECT_NAME).zip
-
-# Default target
-all: install zip
-
-# Run composer install
-install:
-	composer install --no-dev --optimize-autoloader
-
-# Create zip archive
-zip:
-	@echo "Creating $(ZIP_NAME)..."
-	zip -r $(ZIP_NAME) . \
-		-x ".git/*" \
-		-x ".idea/*" \
-		-x "bin" \
-		-x "docker" \
-		-x "tests" \
-		-x ".gitignore" \
-		-x "var" \
-		-x "$(ZIP_NAME)"
-
-# Clean generated files
-clean:
-	rm -f $(ZIP_NAME)
-
-.PHONY: all install zip clean
-
 PROJECT_NAME := my_project
 ZIP_NAME := $(PROJECT_NAME).zip
 
 all: install zip
 
 install:
-	composer install --no-dev --optimize-autoloader
+	composer install # --no-dev --optimize-autoloader
 
 zip:
 	@echo "Creating $(ZIP_NAME) with root folder $(PROJECT_NAME)/"
