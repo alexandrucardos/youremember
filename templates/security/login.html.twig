@@ -1,8 +1,8 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="login-form">
-        <h2>Login to Admin Panel</h2>
+    <div class="login-form fs-3 fs-md-2">
+        <h2>Intra in cont client</h2>
         <form method="post">
             {% if error %}
                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
@@ -30,9 +30,5 @@
             <input type="hidden" name="_csrf_token" data-controller="csrf-protection"
                    value="{{ csrf_token('authenticate') }}">
         </form>
-
-        <p style="margin-top: 20px; font-size: 12px; color: #666;">
-            Demo credentials: admin@example.com / admin123
-        </p>
     </div>
 {% endblock %}

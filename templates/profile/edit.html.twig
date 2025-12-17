@@ -13,13 +13,52 @@
         </div>
         <br>
         <div class="row">
-            {{ include('content/show.html.twig', {images: images, canDelete: canDelete}) }}
+            <br>
+            <button
+                    type="button"
+                    class="btn btn-primary btn-sm col-sm-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#previewModal"
+            >
+                Previzualizeaza profil
+                <i class="bi bi-eye"></i>
+            </button>
+
+            <div
+                    class="modal fade"
+                    id="previewModal"
+                    tabindex="-1"
+                    aria-hidden="true"
+            >
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Previzualizare</h5>
+                            <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                            ></button>
+                        </div>
+
+                        <div class="modal-body">
+                            {{ include('profile/preview.html.twig') }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
         <br>
         <div class="row">
-            <a href="javascript:history.back()" class="btn btn-info btn-lg">Inapoi</a>
+            {{ include('content/show.html.twig', {images: images, canDelete: canDelete}) }}
         </div>
-
-        {#        <a href="{{ path('app_profile_index') }}">Inapoi</a> #}
+        <br>
+        <a href="{{ path('app_profile_index') }}"
+           class="btn btn-primary btn-sm col-sm-3"
+        >
+            Meniu principal
+            <i class="bi bi-arrow-left"></i>
+        </a>
     </div>
 {% endblock %}
