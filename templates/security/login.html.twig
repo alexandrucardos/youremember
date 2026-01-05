@@ -1,34 +1,36 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="login-form fs-3 fs-md-2">
-        <h2>Intra in cont client</h2>
-        <form method="post">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
+    <div class="container vh-100 d-flex justify-content-center align-items-center">
+        <div class="row">
+            <h1 class="text-center">Intra in cont client</h1>
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
 
-            {% if app.user %}
-                <div class="mb-3">
-                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+                {% if app.user %}
+                    <div class="mb-3">
+                        You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+                    </div>
+                {% endif %}
+
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="username" name="_username" required autofocus>
                 </div>
-            {% endif %}
 
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="_password" required>
+                </div>
 
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="username" name="_username" required autofocus>
-            </div>
+                <button type="submit">Login</button>
 
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="_password" required>
-            </div>
-
-            <button type="submit">Login</button>
-
-            <input type="hidden" name="_csrf_token" data-controller="csrf-protection"
-                   value="{{ csrf_token('authenticate') }}">
-        </form>
+                <input type="hidden" name="_csrf_token" data-controller="csrf-protection"
+                       value="{{ csrf_token('authenticate') }}">
+            </form>
+        </div>
     </div>
 {% endblock %}

@@ -18,27 +18,58 @@ class ContentController extends AbstractController
     #[Route('/form', name: 'app_content_form')]
     public function form(): Response
     {
-        return $this->render('content/form.html.twig');
+        return $this->render('pictures.profile.background.form.html.twig');
     }
 
-    #[Route('/send/{id}', name: 'app_content_send', methods: ['POST'])]
-    public function upload(Profile $profile, Request $request, MediatorS3Service $mediatorS3Service): Response
+    #[Route('/send/{id}/type/{type}', name: 'app_content_profileImage_send', methods: ['POST'])]
+    public function uploadProfileImage(
+        Profile           $profile,
+        string            $type,
+        Request           $request,
+        MediatorS3Service $mediatorS3Service
+    ): Response
     {
         /** @var UploadedFile|null $file */
         $file = $request->files->get('file');
 
         if (!$file) {
             $this->addFlash('error', 'Nici un fisier adaugat!');
-            return $this->redirectToRoute('app_upload_form');
+            return $this->redirectToRoute('app_profile_edit', ['id' => $profile->getId()]);
         }
 
         if ($this->getUser() === null) {
             throw new \Exception('Nu exista user logat!');
         }
 
-        $url = $mediatorS3Service->upload(
+        $url = $mediatorS3Service->uploadSingle(
             $profile->getId(),
-            $file
+            $file,
+            $type
+        );
+
+        return $this->render('content/success.html.twig', [
+            'url' => $url,
+        ]);
+    }
+
+    #[Route('/send/{id}', name: 'app_content_send', methods: ['POST'])]
+    public function upload(Profile $profile, Request $request, MediatorS3Service $mediatorS3Service): Response
+    {
+        /** @var array<UploadedFile>|null $files */
+        $files = $request->files->get('files');
+
+        if (!$files) {
+            $this->addFlash('error', 'Nici un fisier adaugat!');
+            return $this->redirectToRoute('app_profile_edit', ['id' => $profile->getId()]);
+        }
+
+        if ($this->getUser() === null) {
+            throw new \Exception('Nu exista user logat!');
+        }
+
+        $url = $mediatorS3Service->uploadMultiple(
+            $profile->getId(),
+            $files
         );
 
         return $this->render('content/success.html.twig', [

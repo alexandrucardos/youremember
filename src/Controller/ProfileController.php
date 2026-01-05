@@ -42,14 +42,40 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $contentUrls = $mediatorS3Service->fetchContentUrls(
-            $profile->getId() . '/'
+        $profileId = $profile->getId();
+
+        $backgroundPictureUrl = $mediatorS3Service->buildUrl(
+            sprintf(
+                '%d/%s/%s',
+                $profileId,
+                MediatorS3Service::FOLDER_PROFILE,
+                MediatorS3Service::PROFILE_BACKGROUND
+            )
+        );
+
+        $profilePictureUrl = $mediatorS3Service->buildUrl(
+            sprintf(
+                '%d/%s/%s',
+                $profileId,
+                MediatorS3Service::FOLDER_PROFILE,
+                MediatorS3Service::PROFILE_PICTURE
+            )
+        );
+
+        $picturesUrls = $mediatorS3Service->fetchContentUrls(
+            sprintf(
+                '%d/%s',
+                $profileId,
+                MediatorS3Service::FOLDER_IMAGES,
+            )
         );
 
         return $this->render('profile/edit.html.twig', [
             'profile' => $profile,
             'form' => $form,
-            'images' => $contentUrls,
+            'backgroundPictureUrl' => $backgroundPictureUrl,
+            'profilePictureUrl' => $profilePictureUrl,
+            'images' => $picturesUrls,
             'canDelete' => true,
         ]);
     }
@@ -57,14 +83,41 @@ final class ProfileController extends AbstractController
     #[Route('/{id}', name: 'app_profile_show', methods: ['GET'])]
     public function show(Profile $profile, MediatorS3Service $mediatorS3Service): Response
     {
-        $contentUrls = $mediatorS3Service->fetchContentUrls(
-            $profile->getId() . '/'
+        $profileId = $profile->getId();
+
+        //todo all this fetches can be unified somehow
+        $backgroundPictureUrl = $mediatorS3Service->buildUrl(
+            sprintf(
+                '%d/%s/%s',
+                $profileId,
+                MediatorS3Service::FOLDER_PROFILE,
+                MediatorS3Service::PROFILE_BACKGROUND
+            )
         );
 
+        $profilePictureUrl = $mediatorS3Service->buildUrl(
+            sprintf(
+                '%d/%s/%s',
+                $profileId,
+                MediatorS3Service::FOLDER_PROFILE,
+                MediatorS3Service::PROFILE_PICTURE
+            )
+        );
 
+        $picturesUrls = $mediatorS3Service->fetchContentUrls(
+            sprintf(
+                '%d/%s',
+                $profileId,
+                MediatorS3Service::FOLDER_IMAGES,
+            )
+        );
+
+        // todo images -> pictures to many concepts
         return $this->render('profile/show.html.twig', [
             'profile' => $profile,
-            'images' => $contentUrls,
+            'images' => $picturesUrls,
+            'backgroundPictureUrl' => $backgroundPictureUrl,
+            'profilePictureUrl' => $profilePictureUrl,
         ]);
     }
 }

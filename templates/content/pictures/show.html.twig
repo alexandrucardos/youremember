@@ -1,12 +1,10 @@
 {% if images is empty %}
-    <p class="text-muted">No images available.</p>
+    <p class="text-muted">Nu exista imagini.</p>
 {% else %}
     {% for image in images %}
-
-        <div class="col-xl-3 col-md-12 shadow-sm">
-
+        <div class="col-4 shadow-sm">
             {% if canDelete|default(false) %}
-                {{ include('content/delete.html.twig', { image: image}) }}
+                {{ include('content/pictures/delete.html.twig', { image: image}) }}
             {% endif %}
 
             <a data-toggle="lightbox"

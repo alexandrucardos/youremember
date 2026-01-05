@@ -7,6 +7,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MediatorS3Service
 {
+    public const FOLDER_IMAGES = 'pictures';
+    public const FOLDER_PROFILE = 'profile';
+
+    public const PROFILE_PICTURE = 'profile';
+    public const PROFILE_BACKGROUND = 'background';
+
     public function __construct(
         private S3Client $s3,
         private string   $bucketName,
@@ -15,9 +21,43 @@ class MediatorS3Service
     {
     }
 
-    public function upload(int $profileId, UploadedFile $file): string
+    /**
+     * @param array<UploadedFile> $files
+     */
+    public function uploadMultiple(int $profileId, array $files): string
     {
-        $key = $profileId . '/' . $file->getClientOriginalName();
+        foreach ($files as $file) {
+            $key = sprintf(
+                '%d/%s/%s',
+                $profileId,
+                self::FOLDER_IMAGES,
+                $file->getClientOriginalName()
+            );
+
+            $this->s3->putObject([
+                'Bucket' => $this->bucketName,
+                'Key' => $key,
+                'Body' => file_get_contents($file->getPathname()),
+                'ContentType' => $file->getMimeType(),
+            ]);
+        }
+
+        return sprintf(
+            'https://%s.s3.amazonaws.com/%s',
+            $this->bucketName,
+            $key
+        );
+    }
+
+    public function uploadSingle(int $profileId, UploadedFile $file, string $type): string
+    {
+        $key = sprintf(
+            '%d/%s/%s',
+            $profileId,
+            self::FOLDER_PROFILE,
+            $type
+        );
+
         $this->s3->putObject([
             'Bucket' => $this->bucketName,
             'Key' => $key,
@@ -29,6 +69,16 @@ class MediatorS3Service
             'https://%s.s3.amazonaws.com/%s',
             $this->bucketName,
             $key
+        );
+    }
+
+    public function buildUrl(string $prefix): string
+    {
+        return sprintf(
+            'https://%s.s3.%s.amazonaws.com/%s',
+            $this->bucketName,
+            $this->region,
+            $prefix
         );
     }
 
@@ -80,7 +130,7 @@ class MediatorS3Service
         }
     }
 
-    function getS3KeyFromUrl(string $url): string
+    private function getS3KeyFromUrl(string $url): string
     {
         $parsed = parse_url($url);
 

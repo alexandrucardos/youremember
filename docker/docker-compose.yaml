@@ -18,7 +18,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.rmb.entrypoints=web'
-      - 'traefik.http.routers.rmb.rule=Host(`rmb.localhost`)'
+      - "traefik.http.routers.rmb.rule=Host(`rmb.localhost`) || Host(`a2fab3c1996d.ngrok-free.app`)"
       - 'traefik.docker-sql.network=proxy'
       - 'traefik.http.services.rmb.loadbalancer.server.port=80'
     depends_on:
