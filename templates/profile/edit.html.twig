@@ -4,19 +4,11 @@
 
 {% block body %}
     <div class="container py-5 gallery-container position-relative">
-        <a href="{{ path('app_profile_index') }}"
-           class="btn btn-primary btn-sm col-sm-3"
-        >
-            Meniu principal
-            <i class="bi bi-arrow-left"></i>
-        </a>
-        <br>
-
         <div class="row">
-            {{ include('content/profile/show.html.twig') }}
+            {{ include('content/profile/show2.html.twig') }}
         </div>
 
-        <div class="row">
+        <div class="row" style="margin-top:80px;">
             {{ include('profile/form.html.twig', {'button_label': 'Update'}) }}
         </div>
 
