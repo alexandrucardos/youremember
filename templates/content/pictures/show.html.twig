@@ -2,7 +2,7 @@
     <p class="text-muted">Nu exista imagini.</p>
 {% else %}
     {% for image in images %}
-        <div class="col-4 shadow-sm">
+        <div class="col-4 shadow-sm py-2">
             {% if canDelete|default(false) %}
                 {{ include('content/pictures/delete.html.twig', { image: image}) }}
             {% endif %}

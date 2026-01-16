@@ -1,16 +1,16 @@
-<div class="overflow-hidden" style="height: 30vw;">
-    <img
-            src="{{ backgroundPictureUrl }}"
-            class="img-fluid"
-            alt="placeholder"
-    >
-</div>
+<div class="position-relative">
+    <div style="height:200px; overflow:hidden;">
+        <img src="{{ backgroundPictureUrl ?: asset('images/profile-img-placeholder.jpg') }}"
+             class="w-100 object-fit-cover"
+             style="height:200px;"
+             alt="Background">
+    </div>
 
-<div>
-    <img
-            src="{{ profilePictureUrl }}"
-            class="rounded-circle mx-auto d-block"
-            alt="placeholder"
-            style="width:120px; height:120px;"
-    >
+    <div class="position-absolute top-100 start-50 translate-middle"
+         style="width:120px; height:120px;">
+        <img src="{{ profilePictureUrl ?: asset('images/profile-img-placeholder.jpg') }}"
+             class="rounded-circle border border-white object-fit-cover w-100 h-100"
+             alt="Profile picture">
+    </div>
+
 </div>
