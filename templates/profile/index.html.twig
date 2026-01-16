@@ -2,56 +2,228 @@
 
 {% block title %}Lista profile{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .profiles-list-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .profiles-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .profiles-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border: none;
+        }
+        .profiles-header h2 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .profiles-header h2 i {
+            font-size: 2rem;
+        }
+        .profiles-table {
+            margin: 0;
+        }
+        .profiles-table thead {
+            background: #f8f9fa;
+        }
+        .profiles-table thead th {
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .profiles-table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .profiles-table tbody tr:hover {
+            background: #f8f9ff;
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+        .profiles-table tbody td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+        }
+        .profile-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .profile-name i {
+            color: #667eea;
+            font-size: 1.25rem;
+        }
+        .profile-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-alive {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+        }
+        .status-deceased {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+        }
+        .status-badge i {
+            font-size: 0.875rem;
+        }
+        .btn-edit-profile {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .btn-edit-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        .empty-state h4 {
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .empty-state p {
+            color: #999;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-0">
-            <h5 class="mb-0">Lista profile</h5>
-        </div>
+    <div class="profiles-list-container">
+        <div class="container py-4">
+            <div class="profiles-card">
+                <div class="profiles-header">
+                    <h2>
+                        <i class="bi bi-people-fill"></i>
+                        Lista profile
+                    </h2>
+                </div>
 
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        {#                        <th>Descriere</th> #}
-                        <th>Nascut la</th>
-                        {#                        <th>Decedat la</th> #}
-                        <th style="width:120px">Actiuni</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for profile in profiles %}
+                <div class="table-responsive">
+                    <table class="table profiles-table mb-0 align-middle">
+                        <thead>
                         <tr>
-                            <td>{{ profile.name }}</td>
-
-                            {#                            <td class="text-muted" style="max-width: 320px;"> #}
-                            {#                                {{ profile.description|u.truncate(80, '…') }} #}
-                            {#                            </td> #}
-
-                            {#                            <td> #}
-                            {#                                {{ profile.bornAt ? profile.bornAt|date('Y-m-d') : '—' }} #}
-                            {#                            </td> #}
-
-                            <td>
-                                {{ profile.deceasedAt ? profile.deceasedAt|date('Y-m-d') : 'Alive' }}
-                            </td>
-
-                            <td>
-                                <a href="{{ path('app_profile_edit', {id: profile.id}) }}"
-                                   class="btn btn-sm btn-outline-primary">Editeaza</a>
-                            </td>
+                            <th>
+                                <i class="bi bi-person me-2"></i>
+                                Nume
+                            </th>
+                            <th>
+                                <i class="bi bi-calendar-check me-2"></i>
+                                Status
+                            </th>
+                            <th style="width:150px" class="text-center">
+                                <i class="bi bi-gear me-2"></i>
+                                Acțiuni
+                            </th>
                         </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
-                                No profiles found
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                        {% for profile in profiles %}
+                            <tr>
+                                <td>
+                                    <div class="profile-name">
+                                        <i class="bi bi-person-circle"></i>
+                                        {{ profile.name ?? 'Fără nume' }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="profile-status">
+                                        {% if profile.deceasedAt %}
+                                            <span class="status-badge status-deceased">
+                                                <i class="bi bi-x-circle"></i>
+                                                Decedat: {{ profile.deceasedAt|date('d.m.Y') }}
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge status-alive">
+                                                <i class="bi bi-check-circle"></i>
+                                                În viață
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="{{ path('app_profile_edit', {id: profile.id}) }}"
+                                       class="btn-edit-profile">
+                                        <i class="bi bi-pencil-square"></i>
+                                        Editează
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="empty-state">
+                                    <i class="bi bi-inbox"></i>
+                                    <h4>Nu există profile</h4>
+                                    <p>Începe prin a crea primul tău profil</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
