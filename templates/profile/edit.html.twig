@@ -10,20 +10,23 @@
             min-height: 100vh;
             padding: 2rem 0;
         }
+
         .edit-card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             animation: fadeInUp 0.6s ease-out;
             margin-bottom: 2rem;
         }
+
         .edit-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 2rem;
             border: none;
         }
+
         .edit-header h2 {
             margin: 0;
             font-weight: 700;
@@ -32,12 +35,19 @@
             align-items: center;
             gap: 0.75rem;
         }
+
         .edit-header h2 i {
             font-size: 2rem;
         }
+
         .edit-body {
             padding: 2rem;
         }
+
+        .edit-back {
+            margin-bottom: 5rem;
+        }
+
         .btn-primary-custom {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -52,11 +62,13 @@
             gap: 0.5rem;
             text-decoration: none;
         }
+
         .btn-primary-custom:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
             color: white;
         }
+
         .btn-preview {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             border: none;
@@ -70,11 +82,13 @@
             align-items: center;
             gap: 0.5rem;
         }
+
         .btn-preview:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
             color: white;
         }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -92,10 +106,8 @@
     <div class="edit-container">
         <div class="container py-4">
             <!-- Profile Header -->
-            <div class="edit-card">
-                <div class="edit-body">
-                    {{ include('content/profile/show.html.twig') }}
-                </div>
+            <div class="edit-back">
+                {{ include('content/profile/show.html.twig') }}
             </div>
 
             <!-- Main Edit Form -->
@@ -187,7 +199,8 @@
             >
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content" style="border-radius: 20px; overflow: hidden;">
-                        <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <div class="modal-header"
+                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
                             <h5 class="modal-title fw-bold">
                                 <i class="bi bi-eye me-2"></i>
                                 Previzualizare Profil
