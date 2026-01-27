@@ -5,7 +5,8 @@ namespace App\Controller;
 use App\Entity\Profile;
 use App\Form\ProfileType;
 use App\Repository\ProfileRepository;
-use App\Service\MediatorS3Service;
+use App\Service\Profile\ProfileFetchService;
+use App\Service\Profile\ProfileViewService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +31,7 @@ final class ProfileController extends AbstractController
         Request                $request,
         Profile                $profile,
         EntityManagerInterface $entityManager,
-        MediatorS3Service      $mediatorS3Service
+        ProfileViewService     $profileViewService,
     ): Response
     {
         $form = $this->createForm(ProfileType::class, $profile);
@@ -42,82 +43,34 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $profileId = $profile->getId();
-
-        $backgroundPictureUrl = $mediatorS3Service->buildUrl(
-            sprintf(
-                '%d/%s/%s',
-                $profileId,
-                MediatorS3Service::FOLDER_PROFILE,
-                MediatorS3Service::PROFILE_BACKGROUND
-            )
-        );
-
-        $profilePictureUrl = $mediatorS3Service->buildUrl(
-            sprintf(
-                '%d/%s/%s',
-                $profileId,
-                MediatorS3Service::FOLDER_PROFILE,
-                MediatorS3Service::PROFILE_PICTURE
-            )
-        );
-
-        $picturesUrls = $mediatorS3Service->fetchContentUrls(
-            sprintf(
-                '%d/%s',
-                $profileId,
-                MediatorS3Service::FOLDER_IMAGES,
-            )
-        );
+        $mediaData = $profileViewService->buildMediaData($profile);
 
         return $this->render('profile/edit.html.twig', [
             'profile' => $profile,
             'form' => $form,
-            'backgroundPictureUrl' => $backgroundPictureUrl,
-            'profilePictureUrl' => $profilePictureUrl,
-            'images' => $picturesUrls,
+            'backgroundPictureUrl' => $mediaData['backgroundPictureUrl'],
+            'profilePictureUrl' => $mediaData['profilePictureUrl'],
+            'images' => $mediaData['images'],
             'canDelete' => true,
         ]);
     }
 
     #[Route('/{id}', name: 'app_profile_show', methods: ['GET'])]
-    public function show(Profile $profile, MediatorS3Service $mediatorS3Service): Response
+    public function show(
+        Request $request,
+        ProfileFetchService $profileFetchService,
+        ProfileViewService $profileViewService
+    ): Response
     {
-        $profileId = $profile->getId();
+        $profile = $profileFetchService->fetchById($request->attributes->get('id'));
 
-        //todo all this fetches can be unified somehow
-        $backgroundPictureUrl = $mediatorS3Service->buildUrl(
-            sprintf(
-                '%d/%s/%s',
-                $profileId,
-                MediatorS3Service::FOLDER_PROFILE,
-                MediatorS3Service::PROFILE_BACKGROUND
-            )
-        );
+        $mediaData = $profileViewService->buildMediaData($profile);
 
-        $profilePictureUrl = $mediatorS3Service->buildUrl(
-            sprintf(
-                '%d/%s/%s',
-                $profileId,
-                MediatorS3Service::FOLDER_PROFILE,
-                MediatorS3Service::PROFILE_PICTURE
-            )
-        );
-
-        $picturesUrls = $mediatorS3Service->fetchContentUrls(
-            sprintf(
-                '%d/%s',
-                $profileId,
-                MediatorS3Service::FOLDER_IMAGES,
-            )
-        );
-
-        // todo images -> pictures to many concepts
         return $this->render('profile/show.html.twig', [
             'profile' => $profile,
-            'images' => $picturesUrls,
-            'backgroundPictureUrl' => $backgroundPictureUrl,
-            'profilePictureUrl' => $profilePictureUrl,
+            'images' => $mediaData['images'],
+            'backgroundPictureUrl' => $mediaData['backgroundPictureUrl'],
+            'profilePictureUrl' => $mediaData['profilePictureUrl'],
         ]);
     }
 }
