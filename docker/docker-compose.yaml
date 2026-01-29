@@ -1,11 +1,11 @@
 services:
-  rmb-nginx:
+  photoshare-nginx:
     build:
       context: ./../
       dockerfile: docker/nginx/Dockerfile
       args:
         ENVIRONMENT: docker-sql
-    container_name: rmb-nginx
+    container_name: photoshare-nginx
     environment:
       COUNTRY_CODE: ro
       ENVIRONMENT: dev
@@ -17,20 +17,20 @@ services:
       - proxy
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.rmb.entrypoints=web'
-      - "traefik.http.routers.rmb.rule=Host(`rmb.localhost`) || Host(`a2fab3c1996d.ngrok-free.app`)"
+      - 'traefik.http.routers.photoshare.entrypoints=web'
+      - "traefik.http.routers.photoshare.rule=Host(`photoshare.localhost`)"
       - 'traefik.docker-sql.network=proxy'
-      - 'traefik.http.services.rmb.loadbalancer.server.port=80'
+      - 'traefik.http.services.photoshare.loadbalancer.server.port=80'
     depends_on:
-      - rmb-php
+      - photoshare-php
 
-  rmb-php:
+  photoshare-php:
     build:
       context: ./../
       dockerfile: docker/php-fpm/Dockerfile
       args:
         ENVIRONMENT: docker-sql
-    container_name: rmb_phpfpm
+    container_name: photoshare-phpfpm
     volumes:
       - "~/.gitconfig:/etc/gitconfig"
       - "~/.aws/credentials:/root/.aws/credentials"
