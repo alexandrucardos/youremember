@@ -1,0 +1,4 @@
+CREATE USER 'wordpress'@'%' IDENTIFIED BY 'wordpress';
+GRANT ALL PRIVILEGES ON wp_photoshare.* TO 'wordpress'@'%';
+
+FLUSH PRIVILEGES;
