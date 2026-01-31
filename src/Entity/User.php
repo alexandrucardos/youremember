@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\ValueObject\UserRole;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,11 +22,8 @@ class User
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $hash = null;
 
-    /**
-     * @var list<string> The user roles
-     */
-    #[ORM\Column]
-    private array $roles = [];
+    #[ORM\Column(enumType: UserRole::class)]
+    private UserRole $role;
 
     #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?DateTimeImmutable $created_at = null;
@@ -56,14 +54,14 @@ class User
         return $this;
     }
 
-    public function getRoles(): array
+    public function getRole(): UserRole
     {
-        return $this->roles;
+        return $this->role;
     }
 
-    public function setRoles(array $roles): static
+    public function setRole(UserRole $role): static
     {
-        $this->roles = $roles;
+        $this->role = $role;
 
         return $this;
     }

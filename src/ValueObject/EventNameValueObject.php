@@ -9,11 +9,11 @@ final class EventNameValueObject
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: 255, min: 2)]
-    public readonly string $value;
+    public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = (string)$value;
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()

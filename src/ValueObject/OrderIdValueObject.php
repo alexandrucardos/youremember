@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Validation;
 final class OrderIdValueObject
 {
     #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Positive]
     public readonly int $value;
 

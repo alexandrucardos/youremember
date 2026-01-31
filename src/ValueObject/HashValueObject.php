@@ -8,16 +8,13 @@ use Symfony\Component\Validator\Validation;
 final class HashValueObject
 {
     #[Assert\Length(max: 50)]
-    public readonly ?string $value;
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        if ($value === null || $value === '') {
-            $this->value = null;
-            return;
-        }
-
-        $this->value = (string) $value;
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()

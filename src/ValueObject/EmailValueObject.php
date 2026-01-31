@@ -8,18 +8,14 @@ use Symfony\Component\Validator\Validation;
 final class EmailValueObject
 {
     #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Email]
     #[Assert\Length(max: 180)]
-    public readonly string $value;
+    public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        if ($value === null) {
-            $this->value = null;
-            return;
-        }
-
-        $this->value = (string)$value;
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
