@@ -5,8 +5,6 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Deprecated;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -43,10 +41,6 @@ class User implements UserInterface
     #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
     private ?Event $event = null;
 
-    public function __construct()
-    {
-        $this->profiles = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -123,36 +117,6 @@ class User implements UserInterface
     public function setModifiedAt(DateTimeImmutable $modified_at): static
     {
         $this->modified_at = $modified_at;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Profile>
-     */
-    public function getProfiles(): Collection
-    {
-        return $this->profiles;
-    }
-
-    public function addProfile(Profile $profile): static
-    {
-        if (!$this->profiles->contains($profile)) {
-            $this->profiles->add($profile);
-            $profile->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProfile(Profile $profile): static
-    {
-        if ($this->profiles->removeElement($profile)) {
-            // set the owning side to null (unless already changed)
-            if ($profile->getUser() === $this) {
-                $profile->setUser(null);
-            }
-        }
 
         return $this;
     }
