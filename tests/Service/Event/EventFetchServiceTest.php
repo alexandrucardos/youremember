@@ -2,11 +2,11 @@
 
 namespace App\Tests\Service\Event;
 
-use App\DTO\Event\EventFetchDto;
 use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
 use App\Service\Event\EventFetchService;
+use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
@@ -43,7 +43,7 @@ final class EventFetchServiceTest extends TestCase
 
         $result = $service->fetchByOrderId(new OrderIdValueObject(123));
 
-        self::assertInstanceOf(EventFetchDto::class, $result);
+        self::assertInstanceOf(EventFetchValueObject::class, $result);
         self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result->uuid);
         self::assertSame('Test Event', $result->name);
         self::assertSame(123, $result->orderId);

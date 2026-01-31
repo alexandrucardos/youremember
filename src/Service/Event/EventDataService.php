@@ -2,9 +2,9 @@
 
 namespace App\Service\Event;
 
-use App\DTO\Event\EventDataDto;
-use App\DTO\Event\EventFetchDto;
 use App\Service\MediatorS3Service;
+use App\ValueObject\Event\EventDataValueObject;
+use App\ValueObject\Event\EventFetchValueObject;
 
 class EventDataService
 {
@@ -14,7 +14,7 @@ class EventDataService
     {
     }
 
-    public function fetch(EventFetchDto $eventFetchDto): EventDataDto
+    public function fetch(EventFetchValueObject $eventFetchDto): EventDataValueObject
     {
         $eventUuid = $eventFetchDto->uuid;
 
@@ -39,7 +39,7 @@ class EventDataService
             )
         );
 
-        return new EventDataDto(
+        return new EventDataValueObject(
             backgroundPictureUrl: $backgroundPictureUrl,
             pictures: $picturesUrls
         );

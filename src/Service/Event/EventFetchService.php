@@ -2,10 +2,10 @@
 
 namespace App\Service\Event;
 
-use App\DTO\Event\EventFetchDto;
 use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
+use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 
 final class EventFetchService
@@ -16,7 +16,7 @@ final class EventFetchService
     {
     }
 
-    public function fetchByOrderId(OrderIdValueObject $orderId): EventFetchDto
+    public function fetchByOrderId(OrderIdValueObject $orderId): EventFetchValueObject
     {
         $event = $this->eventRepository->find($orderId->value);
 
@@ -24,7 +24,7 @@ final class EventFetchService
             throw new NotFoundException('Event not found.');
         }
 
-        return new EventFetchDto(
+        return new EventFetchValueObject(
             uuid: $event->getUuid(),
             name: $event->getName(),
             orderId: $event->getOrderId(),

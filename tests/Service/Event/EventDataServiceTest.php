@@ -2,9 +2,9 @@
 
 namespace App\Tests\Service\Event;
 
-use App\DTO\Event\EventFetchDto;
 use App\Service\Event\EventDataService;
 use App\Service\MediatorS3Service;
+use App\ValueObject\Event\EventFetchValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventDataServiceTest extends TestCase
@@ -21,7 +21,7 @@ class EventDataServiceTest extends TestCase
             'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/pictures/photo2.jpg'
         ];
 
-        $eventFetchDto = new EventFetchDto(
+        $eventFetchDto = new EventFetchValueObject(
             uuid: $eventUuid,
             name: 'Test Event',
             orderId: 123,
@@ -53,7 +53,7 @@ class EventDataServiceTest extends TestCase
             'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/pictures/photo2.jpg'
         ];
 
-        $eventFetchDto = new EventFetchDto(
+        $eventFetchDto = new EventFetchValueObject(
             uuid: $eventUuid,
             name: 'Test Event',
             orderId: 123,
@@ -84,7 +84,7 @@ class EventDataServiceTest extends TestCase
         $backgroundImage = 'https://example.com/background.jpg';
         $picturesUrls = [];
 
-        $eventFetchDto = new EventFetchDto(
+        $eventFetchDto = new EventFetchValueObject(
             uuid: $eventUuid,
             name: 'Test Event',
             orderId: 123,

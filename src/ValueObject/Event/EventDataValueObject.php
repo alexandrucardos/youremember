@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTO\Event;
+namespace App\ValueObject\Event;
 
-class EventDataDto
+class EventDataValueObject
 {
     public function __construct(
         public string $backgroundPictureUrl,

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DTO\Event;
+namespace App\ValueObject\Event;
 
-class EventFetchDto
+class EventFetchValueObject
 {
     public function __construct(
         public string  $uuid,
