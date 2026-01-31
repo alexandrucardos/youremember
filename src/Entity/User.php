@@ -4,13 +4,11 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use DateTimeImmutable;
-use Deprecated;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-class User implements UserInterface
+class User
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,7 +20,7 @@ class User implements UserInterface
 
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $hash = null;
-    
+
     /**
      * @var list<string> The user roles
      */
@@ -41,7 +39,6 @@ class User implements UserInterface
     #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
     private ?Event $event = null;
 
-
     public function getId(): ?int
     {
         return $this->id;
@@ -59,31 +56,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUserIdentifier(): string
-    {
-        return (string)$this->email;
-    }
-
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
+        return $this->roles;
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -91,13 +68,7 @@ class User implements UserInterface
         return $this;
     }
 
-    #[Deprecated]
-    public function eraseCredentials(): void
-    {
-        // @deprecated, to be removed when upgrading to Symfony 8
-    }
-
-    public function getCreatedAt(): DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->created_at;
     }
@@ -109,7 +80,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getModifiedAt(): DateTimeImmutable
+    public function getModifiedAt(): ?DateTimeImmutable
     {
         return $this->modified_at;
     }
@@ -128,7 +99,6 @@ class User implements UserInterface
 
     public function setEvent(Event $event): static
     {
-        // set the owning side of the relation if necessary
         if ($event->getUser() !== $this) {
             $event->setUser($this);
         }

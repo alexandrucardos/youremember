@@ -23,12 +23,12 @@ final class UserController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $userAddDto = new UserAddValueObject(
+        $userAddVO = new UserAddValueObject(
             email: new EmailValueObject($data['email'] ?? null),
             hash: new HashValueObject($data['hash'] ?? null),
         );
 
-        $user = $userAddService->add($userAddDto);
+        $user = $userAddService->add($userAddVO);
 
         return $this->json([
             'email' => $user->getEmail(),

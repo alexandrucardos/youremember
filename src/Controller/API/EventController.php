@@ -27,13 +27,13 @@ final class EventController extends AbstractController
     {
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
 
-        $eventFetchDto = $eventFetchService->fetchByOrderId($orderId);
+        $eventFetchVO = $eventFetchService->fetchByOrderId($orderId);
 
-        $eventDataDto = $eventDataService->fetch($eventFetchDto);
+        $eventDataDto = $eventDataService->fetch($eventFetchVO);
 
         return $this->json([
-            'token' => $eventFetchDto->uuid,
-            'name' => $eventFetchDto->name,
+            'token' => $eventFetchVO->uuid,
+            'name' => $eventFetchVO->name,
             'media' => [
                 'backgroundPictureUrl' => $eventDataDto->backgroundPictureUrl,
                 'pictures' => $eventDataDto->pictures,
@@ -49,13 +49,13 @@ final class EventController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $eventAddDto = new EventAddValueObject(
+        $eventAddValueObject = new EventAddValueObject(
             orderId: new OrderIdValueObject($data['orderId']),
             name: new EventNameValueObject($data['name']),
             backgroundImage: new BackgroundImageValueObject($data['backgroundImage'] ?? null),
         );
 
-        $event = $eventAddService->add($eventAddDto);
+        $event = $eventAddService->add($eventAddValueObject);
 
         return $this->json([
             'uuid' => $event->getUuid(),
