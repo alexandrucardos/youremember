@@ -3,13 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Profile;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Profile>
+ * @deprecated
  */
 class ProfileRepository extends ServiceEntityRepository
 {
@@ -18,27 +18,8 @@ class ProfileRepository extends ServiceEntityRepository
         parent::__construct($registry, Profile::class);
     }
 
-    /**
-     * @return Profile[]
-     */
     public function findByUserId(UserInterface $user): array
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.user = :val')
-            ->setParameter('val', $user)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult();
+        return [];
     }
-
-    //    public function findOneBySomeField($value): ?Profile
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

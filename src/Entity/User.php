@@ -44,11 +44,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     ])]
     private ?DateTimeImmutable $modified_at = null;
 
-    /**
-     * @var Collection<int, Profile>
-     */
-    #[ORM\OneToMany(targetEntity: Profile::class, mappedBy: 'user')]
-    private Collection $profiles;
+    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    private ?Event $event = null;
 
     public function __construct()
     {
@@ -175,6 +172,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $profile->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEvent(): ?Event
+    {
+        return $this->event;
+    }
+
+    public function setEvent(Event $event): static
+    {
+        // set the owning side of the relation if necessary
+        if ($event->getUser() !== $this) {
+            $event->setUser($this);
+        }
+
+        $this->event = $event;
 
         return $this;
     }

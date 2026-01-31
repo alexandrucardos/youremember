@@ -3,8 +3,8 @@
 namespace App\Tests\Service\Profile;
 
 use App\Entity\Profile;
+use App\Service\Event\EventDataService;
 use App\Service\MediatorS3Service;
-use App\Service\Profile\ProfileViewService;
 use PHPUnit\Framework\TestCase;
 
 final class ProfileViewServiceTest extends TestCase
@@ -17,7 +17,7 @@ final class ProfileViewServiceTest extends TestCase
         $mediator->expects(self::never())->method('buildUrl');
         $mediator->expects(self::never())->method('fetchContentUrls');
 
-        $service = new ProfileViewService($mediator);
+        $service = new EventDataService($mediator);
 
         self::assertSame(
             [
@@ -25,7 +25,7 @@ final class ProfileViewServiceTest extends TestCase
                 'profilePictureUrl' => null,
                 'images' => [],
             ],
-            $service->buildMediaData($profile)
+            $service->fetch($profile)
         );
     }
 
@@ -49,7 +49,7 @@ final class ProfileViewServiceTest extends TestCase
         $expectedPicturesPrefix = sprintf(
             '%d/%s',
             $profileId,
-            MediatorS3Service::FOLDER_IMAGES
+            MediatorS3Service::FOLDER_PICTURES
         );
 
         $mediator = $this->createMock(MediatorS3Service::class);
@@ -66,7 +66,7 @@ final class ProfileViewServiceTest extends TestCase
             ->with($expectedPicturesPrefix)
             ->willReturn(['p1', 'p2']);
 
-        $service = new ProfileViewService($mediator);
+        $service = new EventDataService($mediator);
 
         self::assertSame(
             [
@@ -74,7 +74,7 @@ final class ProfileViewServiceTest extends TestCase
                 'profilePictureUrl' => 'profile-url',
                 'images' => ['p1', 'p2'],
             ],
-            $service->buildMediaData($profile)
+            $service->fetch($profile)
         );
     }
 }

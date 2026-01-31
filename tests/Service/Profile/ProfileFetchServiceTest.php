@@ -4,7 +4,7 @@ namespace App\Tests\Service\Profile;
 
 use App\Entity\Profile;
 use App\Repository\ProfileRepository;
-use App\Service\Profile\ProfileFetchService;
+use App\Service\Event\EventFetchService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -15,10 +15,10 @@ final class ProfileFetchServiceTest extends TestCase
         $repo = $this->createMock(ProfileRepository::class);
         $repo->expects(self::never())->method('find');
 
-        $service = new ProfileFetchService($repo);
+        $service = new EventFetchService($repo);
 
         $this->expectException(NotFoundHttpException::class);
-        $service->fetchById('nope');
+        $service->fetchByOrderId('nope');
     }
 
     public function testFetchByIdThrows404WhenProfileNotFound(): void
@@ -29,10 +29,10 @@ final class ProfileFetchServiceTest extends TestCase
             ->with(123)
             ->willReturn(null);
 
-        $service = new ProfileFetchService($repo);
+        $service = new EventFetchService($repo);
 
         $this->expectException(NotFoundHttpException::class);
-        $service->fetchById('123');
+        $service->fetchByOrderId('123');
     }
 
     public function testFetchByIdReturnsProfileWhenFound(): void
@@ -45,9 +45,9 @@ final class ProfileFetchServiceTest extends TestCase
             ->with(123)
             ->willReturn($profile);
 
-        $service = new ProfileFetchService($repo);
+        $service = new EventFetchService($repo);
 
-        self::assertSame($profile, $service->fetchById(123));
+        self::assertSame($profile, $service->fetchByOrderId(123));
     }
 }
 

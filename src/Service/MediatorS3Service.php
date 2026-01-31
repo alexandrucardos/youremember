@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MediatorS3Service
 {
-    public const FOLDER_IMAGES = 'pictures';
+    public const FOLDER_PICTURES = 'pictures';
     public const FOLDER_PROFILE = 'profile';
 
     public const PROFILE_PICTURE = 'profile';
@@ -30,7 +30,7 @@ class MediatorS3Service
             $key = sprintf(
                 '%d/%s/%s',
                 $profileId,
-                self::FOLDER_IMAGES,
+                self::FOLDER_PICTURES,
                 $file->getClientOriginalName()
             );
 

@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Entity\Profile;
 use App\Form\ProfileType;
 use App\Repository\ProfileRepository;
-use App\Service\Profile\ProfileFetchService;
-use App\Service\Profile\ProfileViewService;
+use App\Service\Event\EventDataService;
+use App\Service\Event\EventFetchService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * @deprecated
+ */
 #[Route('/profile')]
 final class ProfileController extends AbstractController
 {
@@ -31,7 +34,7 @@ final class ProfileController extends AbstractController
         Request                $request,
         Profile                $profile,
         EntityManagerInterface $entityManager,
-        ProfileViewService     $profileViewService,
+        EventDataService       $profileViewService,
     ): Response
     {
         $form = $this->createForm(ProfileType::class, $profile);
@@ -43,7 +46,7 @@ final class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $mediaData = $profileViewService->buildMediaData($profile);
+        $mediaData = $profileViewService->fetch($profile);
 
         return $this->render('profile/edit.html.twig', [
             'profile' => $profile,
@@ -57,14 +60,14 @@ final class ProfileController extends AbstractController
 
     #[Route('/{id}', name: 'app_profile_show', methods: ['GET'])]
     public function show(
-        Request $request,
-        ProfileFetchService $profileFetchService,
-        ProfileViewService $profileViewService
+        Request           $request,
+        EventFetchService $profileFetchService,
+        EventDataService  $profileViewService
     ): Response
     {
-        $profile = $profileFetchService->fetchById($request->attributes->get('id'));
+        $profile = $profileFetchService->fetchByOrderId($request->attributes->get('id'));
 
-        $mediaData = $profileViewService->buildMediaData($profile);
+        $mediaData = $profileViewService->fetch($profile);
 
         return $this->render('profile/show.html.twig', [
             'profile' => $profile,
