@@ -4,6 +4,7 @@ namespace App\Controller\API;
 
 use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
+use App\ValueObject\OrderIdValueObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +20,10 @@ final class EventController extends AbstractController
         EventDataService  $eventDataService,
     ): JsonResponse
     {
-        $eventFetchDto = $eventFetchService->fetchByOrderId($request->attributes->get('orderId'));
+        $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
+
+        $eventFetchDto = $eventFetchService->fetchByOrderId($orderId);
+
         $eventDataDto = $eventDataService->fetch($eventFetchDto);
 
         return $this->json([

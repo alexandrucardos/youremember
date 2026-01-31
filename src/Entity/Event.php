@@ -44,6 +44,9 @@ class Event
     ])]
     private ?\DateTimeImmutable $modified_at = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $background_image = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -129,6 +132,18 @@ class Event
     public function setModifiedAt(\DateTimeImmutable $modified_at): static
     {
         $this->modified_at = $modified_at;
+
+        return $this;
+    }
+
+    public function getBackgroundImage(): ?string
+    {
+        return $this->background_image;
+    }
+
+    public function setBackgroundImage(?string $background_image): static
+    {
+        $this->background_image = $background_image;
 
         return $this;
     }
