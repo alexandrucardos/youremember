@@ -16,6 +16,11 @@ final class UserAddService
 
     public function add(UserAddValueObject $userAddDto): User
     {
+        $user = $this->userRepository->findBy(['email' => $userAddDto->email]);
+        if ($user) {
+            return $user;
+        }
+        
         $user = new User();
         $user->setEmail($userAddDto->email->value);
         $user->setHash($userAddDto->hash->value);

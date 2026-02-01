@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use App\ValueObject\UserRole;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -15,6 +17,11 @@ class User
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    public function __construct()
+    {
+        $this->events = new ArrayCollection();
+    }
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
@@ -34,8 +41,9 @@ class User
     ])]
     private ?DateTimeImmutable $modified_at = null;
 
-    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
-    private ?Event $event = null;
+    /** @var Collection<int, Event> */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Event::class)]
+    private Collection $events;
 
     public function getId(): ?int
     {
@@ -90,18 +98,25 @@ class User
         return $this;
     }
 
-    public function getEvent(): ?Event
+    /** @return Collection<int, Event> */
+    public function getEvents(): Collection
     {
-        return $this->event;
+        return $this->events;
     }
 
-    public function setEvent(Event $event): static
+    public function addEvent(Event $event): static
     {
-        if ($event->getUser() !== $this) {
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
             $event->setUser($this);
         }
 
-        $this->event = $event;
+        return $this;
+    }
+
+    public function removeEvent(Event $event): static
+    {
+        $this->events->removeElement($event);
 
         return $this;
     }

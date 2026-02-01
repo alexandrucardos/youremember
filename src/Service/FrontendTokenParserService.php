@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
-use App\ValueObject\EmailValueObject;
 
 class FrontendTokenParserService
 {
@@ -17,7 +16,7 @@ class FrontendTokenParserService
     {
     }
 
-    public function decodeEmail(string $token): EmailValueObject
+    public function validateToken(string $token): void
     {
         $parts = explode('|', $token);
 
@@ -43,7 +42,5 @@ class FrontendTokenParserService
         if (!hash_equals($expectedHmac, $hmac)) {
             throw new InvalidHmacException('Invalid token');
         }
-
-        return new EmailValueObject($email);
     }
 }

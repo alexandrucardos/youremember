@@ -31,9 +31,15 @@ class Event
     )]
     private ?Status $status = null;
 
-    #[ORM\OneToOne(inversedBy: 'event', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private User $user;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $background_image = null;
+
+    #[ORM\Column]
+    private int $max_media_count = 100;
 
     #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
     private \DateTimeImmutable $created_at;
@@ -43,9 +49,6 @@ class Event
         'on update' => 'CURRENT_TIMESTAMP'
     ])]
     private ?\DateTimeImmutable $modified_at = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $background_image = null;
 
     public function getId(): ?int
     {
@@ -100,7 +103,7 @@ class Event
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -144,6 +147,18 @@ class Event
     public function setBackgroundImage(?string $background_image): static
     {
         $this->background_image = $background_image;
+
+        return $this;
+    }
+
+    public function getMaxMediaCount(): int
+    {
+        return $this->max_media_count;
+    }
+
+    public function setMaxMediaCount(int $max_media_count): static
+    {
+        $this->max_media_count = $max_media_count;
 
         return $this;
     }

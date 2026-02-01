@@ -5,9 +5,8 @@ namespace App\Controller\API;
 use App\Service\Event\EventAddService;
 use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
-use App\ValueObject\BackgroundImageValueObject;
+use App\ValueObject\EmailValueObject;
 use App\ValueObject\Event\EventAddValueObject;
-use App\ValueObject\EventNameValueObject;
 use App\ValueObject\OrderIdValueObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +19,7 @@ final class EventController extends AbstractController
 {
     public const NAME_EVENT_GET = 'api_event_get';
     public const NAME_EVENT_CREATE = 'api_event_create';
+    private const DEFAULT_EVENT_NAME = 'nesetat';
 
     #[Route('/{id}', name: self::NAME_EVENT_GET, methods: ['GET'])]
     public function get(
@@ -53,9 +53,8 @@ final class EventController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         $eventAddValueObject = new EventAddValueObject(
+            email: new EmailValueObject($data['client_email']),
             orderId: new OrderIdValueObject($data['orderId']),
-            name: new EventNameValueObject($data['name']),
-            backgroundImage: new BackgroundImageValueObject($data['backgroundImage'] ?? null),
         );
 
         $event = $eventAddService->add($eventAddValueObject);
