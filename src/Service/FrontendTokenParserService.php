@@ -5,8 +5,9 @@ namespace App\Service;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
+use App\ValueObject\EmailValueObject;
 
-class FrontendAuthCookieParserService
+class FrontendTokenParserService
 {
     public const HASH_ALGO = 'sha256';
 
@@ -16,21 +17,21 @@ class FrontendAuthCookieParserService
     {
     }
 
-    public function decode(string $cookieValue): ?array
+    public function decodeEmail(string $token): EmailValueObject
     {
-        $parts = explode('|', $cookieValue);
+        $parts = explode('|', $token);
 
         if (count($parts) !== 3) {
-            throw new InvalidStructureException('Invalid cookie value');
+            throw new InvalidStructureException('Invalid token value');
         }
 
-        [$username, $expiration, $hmac] = $parts;
+        [$email, $expiration, $hmac] = $parts;
 
         if ((int)$expiration < time()) {
             throw new ExpiredException('Expired token');
         }
 
-        $data = $username . '|' . $expiration;
+        $data = $email . '|' . $expiration;
 
 
         $expectedHmac = hash_hmac(
@@ -43,9 +44,6 @@ class FrontendAuthCookieParserService
             throw new InvalidHmacException('Invalid token');
         }
 
-        return [
-            'username' => $username,
-            'expiration' => (int)$expiration,
-        ];
+        return new EmailValueObject($email);
     }
 }

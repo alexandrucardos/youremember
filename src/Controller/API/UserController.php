@@ -16,8 +16,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/user')]
 final class UserController extends AbstractController
 {
-    #[Route('', name: 'api_user_add', methods: ['POST'])]
-    public function add(
+    public const NAME_USER_CREATE = 'api_user_create';
+
+    #[Route('', name: self::NAME_USER_CREATE, methods: ['POST'])]
+    public function create(
         Request        $request,
         UserAddService $userAddService,
     ): JsonResponse

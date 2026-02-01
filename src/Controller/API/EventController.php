@@ -18,8 +18,11 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/event')]
 final class EventController extends AbstractController
 {
-    #[Route('/{id}', name: 'api_event_show', methods: ['GET'])]
-    public function show(
+    public const NAME_EVENT_GET = 'api_event_get';
+    public const NAME_EVENT_CREATE = 'api_event_create';
+
+    #[Route('/{id}', name: self::NAME_EVENT_GET, methods: ['GET'])]
+    public function get(
         Request           $request,
         EventFetchService $eventFetchService,
         EventDataService  $eventDataService,
@@ -41,8 +44,8 @@ final class EventController extends AbstractController
         ]);
     }
 
-    #[Route('', name: 'api_event_add', methods: ['POST'])]
-    public function add(
+    #[Route('', name: self::NAME_EVENT_CREATE, methods: ['POST'])]
+    public function create(
         Request         $request,
         EventAddService $eventAddService,
     ): JsonResponse

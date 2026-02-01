@@ -5,7 +5,7 @@ namespace App\Tests\Service;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
-use App\Service\FrontendAuthCookieParserService;
+use App\Service\FrontendTokenParserService;
 use PHPUnit\Framework\TestCase;
 use function Symfony\Component\Clock\now;
 
@@ -15,7 +15,7 @@ class FrontendAuthCookieParserServiceTest extends TestCase
     {
         $frontendApiKey = $_ENV['FE_AUTH_TOKEN'];
 
-        $frontendAuthCookieParserService = new FrontendAuthCookieParserService(
+        $frontendAuthCookieParserService = new FrontendTokenParserService(
             frontendApiKey: $frontendApiKey,
         );
 
@@ -25,12 +25,12 @@ class FrontendAuthCookieParserServiceTest extends TestCase
         $data = $username . '|' . $expiration;
 
         $expectedHmac = hash_hmac(
-            algo: FrontendAuthCookieParserService::HASH_ALGO,
+            algo: FrontendTokenParserService::HASH_ALGO,
             data: $data,
             key: $frontendApiKey,
         );
 
-        $response = $frontendAuthCookieParserService->decode($data . '|' . $expectedHmac);
+        $response = $frontendAuthCookieParserService->decodeEmail($data . '|' . $expectedHmac);
 
         $this->assertNotNull($response);
     }
@@ -38,19 +38,19 @@ class FrontendAuthCookieParserServiceTest extends TestCase
     public function testInvalidStructureException(): void
     {
         $frontendApiKey = $_ENV['FE_AUTH_TOKEN'];
-        $frontendAuthCookieParserService = new FrontendAuthCookieParserService(
+        $frontendAuthCookieParserService = new FrontendTokenParserService(
             frontendApiKey: $frontendApiKey,
         );
 
         $this->expectException(InvalidStructureException::class);
 
-        $frontendAuthCookieParserService->decode('invalid|str');
+        $frontendAuthCookieParserService->decodeEmail('invalid|str');
     }
 
     public function testInvalidHmacException(): void
     {
         $frontendApiKey = $_ENV['FE_AUTH_TOKEN'];
-        $frontendAuthCookieParserService = new FrontendAuthCookieParserService(
+        $frontendAuthCookieParserService = new FrontendTokenParserService(
             frontendApiKey: $frontendApiKey,
         );
 
@@ -61,13 +61,13 @@ class FrontendAuthCookieParserServiceTest extends TestCase
 
         $this->expectException(InvalidHmacException::class);
 
-        $frontendAuthCookieParserService->decode($cookie);
+        $frontendAuthCookieParserService->decodeEmail($cookie);
     }
 
     public function testExpiredHmacException(): void
     {
         $frontendApiKey = $_ENV['FE_AUTH_TOKEN'];
-        $frontendAuthCookieParserService = new FrontendAuthCookieParserService(
+        $frontendAuthCookieParserService = new FrontendTokenParserService(
             frontendApiKey: $frontendApiKey,
         );
 
@@ -75,7 +75,7 @@ class FrontendAuthCookieParserServiceTest extends TestCase
         $expiration = now('- 1 day')->getTimestamp();
         $cookie = $username . '|' . $expiration . '|' . 'asdf';
         $this->expectException(ExpiredException::class);
-        $frontendAuthCookieParserService->decode($cookie);
+        $frontendAuthCookieParserService->decodeEmail($cookie);
     }
 
 }

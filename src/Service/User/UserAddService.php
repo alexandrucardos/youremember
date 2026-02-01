@@ -19,6 +19,7 @@ final class UserAddService
         $user = new User();
         $user->setEmail($userAddDto->email->value);
         $user->setHash($userAddDto->hash->value);
+        $user->setRole($userAddDto->role);
 
         $this->userRepository->save($user);
 
