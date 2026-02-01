@@ -5,8 +5,10 @@ namespace App\Controller\API;
 use App\Service\Event\EventAddService;
 use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
+use App\Service\Event\EventUpdateService;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\Event\EventAddValueObject;
+use App\ValueObject\EventNameValueObject;
 use App\ValueObject\OrderIdValueObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,11 +19,53 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/event')]
 final class EventController extends AbstractController
 {
-    public const NAME_EVENT_GET = 'api_event_get';
-    public const NAME_EVENT_CREATE = 'api_event_create';
-    private const DEFAULT_EVENT_NAME = 'nesetat';
+    public const NAME_EVENT_CLIENT_GET = 'api_event_client_get';
+    public const NAME_EVENT_CLIENT_CREATE = 'api_event_client_create';
+    public const NAME_EVENT_CLIENT_UPDATE = 'api_event_client_update';
 
-    #[Route('/{id}', name: self::NAME_EVENT_GET, methods: ['GET'])]
+    #[Route('/client', name: self::NAME_EVENT_CLIENT_CREATE, methods: ['POST'])]
+    public function create(
+        Request         $request,
+        EventAddService $eventAddService,
+    ): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $eventAddValueObject = new EventAddValueObject(
+            email: new EmailValueObject($data['client_email']),
+            orderId: new OrderIdValueObject($data['orderId']),
+        );
+
+        $event = $eventAddService->add($eventAddValueObject);
+
+        return $this->json([
+            'uuid' => $event->getUuid(),
+            'orderId' => $event->getOrderId(),
+            'name' => $event->getName(),
+        ], Response::HTTP_CREATED);
+    }
+
+    #[Route('/client/{orderId}', name: self::NAME_EVENT_CLIENT_UPDATE, methods: ['PATCH'])]
+    public function update(
+        Request            $request,
+        EventUpdateService $eventUpdateService,
+    ): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $event = $eventUpdateService->updateName(
+            new OrderIdValueObject($request->attributes->get('orderId')),
+            new EventNameValueObject($data['name'])
+        );
+
+        return $this->json([
+            'uuid' => $event->getUuid(),
+            'orderId' => $event->getOrderId(),
+            'name' => $event->getName(),
+        ]);
+    }
+
+    #[Route('/client/{orderId}', name: self::NAME_EVENT_CLIENT_GET, methods: ['GET'])]
     public function get(
         Request           $request,
         EventFetchService $eventFetchService,
@@ -42,28 +86,6 @@ final class EventController extends AbstractController
                 'pictures' => $eventDataDto->pictures,
             ],
         ]);
-    }
-
-    #[Route('', name: self::NAME_EVENT_CREATE, methods: ['POST'])]
-    public function create(
-        Request         $request,
-        EventAddService $eventAddService,
-    ): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        $eventAddValueObject = new EventAddValueObject(
-            email: new EmailValueObject($data['client_email']),
-            orderId: new OrderIdValueObject($data['orderId']),
-        );
-
-        $event = $eventAddService->add($eventAddValueObject);
-
-        return $this->json([
-            'uuid' => $event->getUuid(),
-            'orderId' => $event->getOrderId(),
-            'name' => $event->getName(),
-        ], Response::HTTP_CREATED);
     }
 }
 

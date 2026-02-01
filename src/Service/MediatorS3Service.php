@@ -10,7 +10,6 @@ class MediatorS3Service
     public const FOLDER_PICTURES = 'pictures';
     public const FOLDER_PROFILE = 'profile';
 
-    public const PROFILE_PICTURE = 'profile';
     public const PROFILE_BACKGROUND = 'background';
 
     public function __construct(
@@ -138,8 +137,6 @@ class MediatorS3Service
             throw new \Exception('Invalid URL');
         }
 
-        $path = ltrim($parsed['path'], '/'); // remove leading /
-
-        return $path;
+        return ltrim($parsed['path'], '/'); // remove leading /
     }
 }

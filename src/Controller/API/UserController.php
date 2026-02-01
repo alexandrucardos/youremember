@@ -16,9 +16,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/user')]
 final class UserController extends AbstractController
 {
-    public const NAME_USER_CREATE = 'api_user_create';
+    public const NAME_USER_CLIENT_CREATE = 'api_user_client_create';
 
-    #[Route('', name: self::NAME_USER_CREATE, methods: ['POST'])]
+    #[Route('/client', name: self::NAME_USER_CLIENT_CREATE, methods: ['POST'])]
     public function create(
         Request        $request,
         UserAddService $userAddService,
