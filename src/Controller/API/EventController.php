@@ -10,6 +10,7 @@ use App\ValueObject\EmailValueObject;
 use App\ValueObject\Event\EventAddValueObject;
 use App\ValueObject\EventNameValueObject;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\UuidValueObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,7 @@ final class EventController extends AbstractController
     public const NAME_EVENT_CLIENT_GET = 'api_event_client_get';
     public const NAME_EVENT_CLIENT_CREATE = 'api_event_client_create';
     public const NAME_EVENT_CLIENT_UPDATE = 'api_event_client_update';
+    public const NAME_EVENT_GUEST_GET_BY_UUID = 'api_event_guest_get_by_uuid';
 
     #[Route('/client', name: self::NAME_EVENT_CLIENT_CREATE, methods: ['POST'])]
     public function create(
@@ -75,6 +77,29 @@ final class EventController extends AbstractController
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
 
         $eventFetchVO = $eventFetchService->fetchByOrderId($orderId);
+
+        $eventDataDto = $eventDataService->fetch($eventFetchVO);
+
+        return $this->json([
+            'token' => $eventFetchVO->uuid,
+            'name' => $eventFetchVO->name,
+            'media' => [
+                'backgroundPictureUrl' => $eventDataDto->backgroundPictureUrl,
+                'pictures' => $eventDataDto->pictures,
+            ],
+        ]);
+    }
+
+    #[Route('/{uuid}', name: self::NAME_EVENT_GUEST_GET_BY_UUID, methods: ['GET'])]
+    public function getByUuid(
+        Request           $request,
+        EventFetchService $eventFetchService,
+        EventDataService  $eventDataService,
+    ): JsonResponse
+    {
+        $uuid = new UuidValueObject($request->attributes->get('uuid'));
+
+        $eventFetchVO = $eventFetchService->fetchByUuid($uuid);
 
         $eventDataDto = $eventDataService->fetch($eventFetchVO);
 

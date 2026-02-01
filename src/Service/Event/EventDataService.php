@@ -35,7 +35,7 @@ class EventDataService
             sprintf(
                 '%d/%s',
                 $eventUuid,
-                MediatorS3Service::FOLDER_PICTURES,
+                MediatorS3Service::FOLDER_CLIENT,
             )
         );
 

@@ -17,8 +17,8 @@ class EventDataServiceTest extends TestCase
         $eventUuid = '12345';
         $backgroundImage = 'https://example.com/background.jpg';
         $picturesUrls = [
-            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/pictures/photo1.jpg',
-            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/pictures/photo2.jpg'
+            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/client/photo1.jpg',
+            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/client/photo2.jpg'
         ];
 
         $eventFetchDto = new EventFetchValueObject(
@@ -31,7 +31,7 @@ class EventDataServiceTest extends TestCase
         $this->mediatorS3Service
             ->expects($this->once())
             ->method('fetchContentUrls')
-            ->with('12345/pictures')
+            ->with('12345/client')
             ->willReturn($picturesUrls);
 
         $this->mediatorS3Service
@@ -49,8 +49,8 @@ class EventDataServiceTest extends TestCase
         $eventUuid = '12345';
         $backgroundImageUrl = 'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/profile/background';
         $picturesUrls = [
-            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/pictures/photo1.jpg',
-            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/pictures/photo2.jpg'
+            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/client/photo1.jpg',
+            'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/client/photo2.jpg'
         ];
 
         $eventFetchDto = new EventFetchValueObject(
@@ -69,7 +69,7 @@ class EventDataServiceTest extends TestCase
         $this->mediatorS3Service
             ->expects($this->once())
             ->method('fetchContentUrls')
-            ->with('12345/pictures')
+            ->with('12345/client')
             ->willReturn($picturesUrls);
 
         $result = $this->eventDataService->fetch($eventFetchDto);
@@ -94,7 +94,7 @@ class EventDataServiceTest extends TestCase
         $this->mediatorS3Service
             ->expects($this->once())
             ->method('fetchContentUrls')
-            ->with('12345/pictures')
+            ->with('12345/client')
             ->willReturn($picturesUrls);
 
         $result = $this->eventDataService->fetch($eventFetchDto);

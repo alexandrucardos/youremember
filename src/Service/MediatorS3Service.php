@@ -2,12 +2,15 @@
 
 namespace App\Service;
 
+use App\Exception\Media\NotFoundException;
+use App\Exception\Media\UnauthorizedException;
+use App\ValueObject\HashValueObject;
 use AsyncAws\S3\S3Client;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MediatorS3Service
 {
-    public const FOLDER_PICTURES = 'pictures';
+    public const FOLDER_CLIENT = 'client';
     public const FOLDER_PROFILE = 'profile';
 
     public const PROFILE_BACKGROUND = 'background';
@@ -23,13 +26,17 @@ class MediatorS3Service
     /**
      * @param array<UploadedFile> $files
      */
-    public function uploadMultiple(int $profileId, array $files): string
+    public function uploadMultiple(
+        int    $orderId,
+        array  $files,
+        string $folder = self::FOLDER_CLIENT
+    ): string
     {
         foreach ($files as $file) {
             $key = sprintf(
                 '%d/%s/%s',
-                $profileId,
-                self::FOLDER_PICTURES,
+                $orderId,
+                $folder,
                 $file->getClientOriginalName()
             );
 
@@ -108,25 +115,16 @@ class MediatorS3Service
         return $urls;
     }
 
-    public function deleteContent(string $url): bool
+    public function deleteContent(string $url, HashValueObject $hash): void
     {
         $key = $this->getS3KeyFromUrl($url);
+        $folder = $this->extractFolderFromKey($key);
 
-        try {
-            $result = $this->s3->deleteObject([
-                'Bucket' => $this->bucketName,
-                'Key' => $key,
-            ]);
-
-            if ($result['DeleteMarker'] ?? false) {
-                return true;
-            }
-
-            return true;
-        } catch (\Throwable $e) {
-            error_log('S3 delete failed: ' . $e->getMessage());
-            return false;
+        if ($folder !== $hash->value) {
+            throw new UnauthorizedException('Not authorized to delete this media');
         }
+
+        $this->deleteByKey($key);
     }
 
     private function getS3KeyFromUrl(string $url): string
@@ -134,9 +132,53 @@ class MediatorS3Service
         $parsed = parse_url($url);
 
         if (!isset($parsed['host'], $parsed['path'])) {
-            throw new \Exception('Invalid URL');
+            throw new \InvalidArgumentException('Invalid URL');
         }
 
-        return ltrim($parsed['path'], '/'); // remove leading /
+        return ltrim($parsed['path'], '/');
+    }
+
+    private function extractFolderFromKey(string $key): string
+    {
+        $parts = explode('/', $key);
+
+        if (count($parts) < 2) {
+            throw new \InvalidArgumentException('Invalid key format');
+        }
+
+        return $parts[1];
+    }
+
+    private function deleteByKey(string $key): void
+    {
+        if (!$this->objectExists($key)) {
+            throw new NotFoundException('Media not found');
+        }
+
+        $this->s3->deleteObject([
+            'Bucket' => $this->bucketName,
+            'Key' => $key,
+        ]);
+    }
+
+    private function objectExists(string $key): bool
+    {
+        try {
+            $this->s3->headObject([
+                'Bucket' => $this->bucketName,
+                'Key' => $key,
+            ])->resolve();
+
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    public function deleteByUrl(string $url): void
+    {
+        $key = $this->getS3KeyFromUrl($url);
+
+        $this->deleteByKey($key);
     }
 }
