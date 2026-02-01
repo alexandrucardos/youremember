@@ -34,6 +34,6 @@ services:
         accessKeyId: '%env(AWS_ACCESS_KEY_ID)%'
         accessKeySecret: '%env(AWS_SECRET_ACCESS_KEY)%'
 
-  App\Service\FrontendAuthCookieParserService:
+  App\Service\FrontendTokenParserService:
     arguments:
       $frontendApiKey: '%env(FE_AUTH_TOKEN)%'

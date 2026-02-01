@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service\Event;
+namespace App\Tests\unit\Service\Event;
 
 use App\Service\Event\EventDataService;
 use App\Service\MediatorS3Service;

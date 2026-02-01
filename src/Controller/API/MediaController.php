@@ -73,14 +73,8 @@ final class MediaController extends AbstractController
             return $this->json(['error' => 'Missing hash header'], Response::HTTP_BAD_REQUEST);
         }
 
-        $uuid = new OrderIdValueObject($request->attributes->get('uuid'));
-
-        if (!$uuid) {
-            return $this->json(['error' => 'Missing uuid query parameter'], Response::HTTP_BAD_REQUEST);
-        }
-
         $hash = new HashValueObject($hashHeader);
-        $uuid = new UuidValueObject($uuid);
+        $uuid = new UuidValueObject($request->attributes->get('uuid'));
 
         $eventFetchVO = $eventFetchService->fetchByUuid($uuid);
 

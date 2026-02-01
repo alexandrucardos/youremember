@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service\Event;
+namespace App\Tests\unit\Service\Event;
 
 use App\Entity\Event;
 use App\Exception\Event\NotFoundException;

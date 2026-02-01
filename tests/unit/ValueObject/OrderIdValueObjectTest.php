@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\ValueObject;
+namespace App\Tests\unit\ValueObject;
 
 use App\Exception\Event\InvalidOrderIdException;
 use App\ValueObject\OrderIdValueObject;
@@ -15,16 +15,6 @@ final class OrderIdValueObjectTest extends TestCase
         yield 'large integer' => [999999, 999999];
     }
 
-    /**
-     * @dataProvider validIdProvider
-     */
-    public function testCreatesWithValidId(mixed $input, int $expected): void
-    {
-        $orderId = new OrderIdValueObject($input);
-
-        self::assertSame($expected, $orderId->value);
-    }
-
     public static function invalidIdProvider(): iterable
     {
         yield 'non-numeric string' => ['invalid'];
@@ -33,6 +23,16 @@ final class OrderIdValueObjectTest extends TestCase
         yield 'float' => [12.5];
         yield 'null' => [null];
         yield 'empty string' => [''];
+    }
+
+    /**
+     * @dataProvider validIdProvider
+     */
+    public function testCreatesWithValidId(mixed $input, int $expected): void
+    {
+        $orderId = new OrderIdValueObject($input);
+
+        self::assertSame($expected, $orderId->value);
     }
 
     /**
