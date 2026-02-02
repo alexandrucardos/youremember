@@ -14,3 +14,4 @@
 ###< symfony/framework-bundle ###
 
 .idea
+postman_collection.json
