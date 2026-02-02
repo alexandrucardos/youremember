@@ -4,8 +4,8 @@ namespace App\Service;
 
 use App\Exception\Media\NotFoundException;
 use App\Exception\Media\UnauthorizedException;
+use App\Service\Bucket\BucketProviderInterface;
 use App\ValueObject\HashValueObject;
-use AsyncAws\S3\S3Client;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MediatorS3Service
@@ -16,9 +16,9 @@ class MediatorS3Service
     public const PROFILE_BACKGROUND = 'background';
 
     public function __construct(
-        private S3Client $s3,
-        private string   $bucketName,
-        private string   $region
+        private readonly BucketProviderInterface $bucketProvider,
+        private readonly string                  $bucketName,
+        private readonly string                  $region,
     )
     {
     }
@@ -32,6 +32,8 @@ class MediatorS3Service
         string $folder = self::FOLDER_CLIENT
     ): string
     {
+        $key = '';
+
         foreach ($files as $file) {
             $key = sprintf(
                 '%d/%s/%s',
@@ -40,17 +42,22 @@ class MediatorS3Service
                 $file->getClientOriginalName()
             );
 
-            $this->s3->putObject([
-                'Bucket' => $this->bucketName,
-                'Key' => $key,
-                'Body' => file_get_contents($file->getPathname()),
-                'ContentType' => $file->getMimeType(),
-            ]);
+            $this->bucketProvider->putObject(
+                $key,
+                file_get_contents($file->getPathname()),
+                $file->getMimeType()
+            );
         }
 
+        return $this->buildUrlFromKey($key);
+    }
+
+    private function buildUrlFromKey(string $key): string
+    {
         return sprintf(
-            'https://%s.s3.amazonaws.com/%s',
+            'https://%s.s3.%s.amazonaws.com/%s',
             $this->bucketName,
+            $this->region,
             $key
         );
     }
@@ -64,18 +71,13 @@ class MediatorS3Service
             $type
         );
 
-        $this->s3->putObject([
-            'Bucket' => $this->bucketName,
-            'Key' => $key,
-            'Body' => file_get_contents($file->getPathname()),
-            'ContentType' => $file->getMimeType(),
-        ]);
-
-        return sprintf(
-            'https://%s.s3.amazonaws.com/%s',
-            $this->bucketName,
-            $key
+        $this->bucketProvider->putObject(
+            $key,
+            file_get_contents($file->getPathname()),
+            $file->getMimeType()
         );
+
+        return $this->buildUrlFromKey($key);
     }
 
     public function buildUrl(string $prefix): string
@@ -90,29 +92,12 @@ class MediatorS3Service
 
     public function fetchContentUrls(string $prefix): array
     {
-        $result = $this->s3->listObjectsV2([
-            'Bucket' => $this->bucketName,
-            'Prefix' => $prefix,
-        ]);
+        $keys = $this->bucketProvider->listObjects($prefix);
 
-        $urls = [];
-
-        foreach ($result->getContents() as $object) {
-            $key = $object->getKey();
-
-            if ($key === $prefix) {
-                continue;
-            }
-
-            $urls[] = sprintf(
-                'https://%s.s3.%s.amazonaws.com/%s',
-                $this->bucketName,
-                $this->region,
-                $key
-            );
-        }
-
-        return $urls;
+        return array_map(
+            fn(string $key) => $this->buildUrlFromKey($key),
+            $keys
+        );
     }
 
     public function deleteContent(string $url, HashValueObject $hash): void
@@ -151,28 +136,11 @@ class MediatorS3Service
 
     private function deleteByKey(string $key): void
     {
-        if (!$this->objectExists($key)) {
+        if (!$this->bucketProvider->objectExists($key)) {
             throw new NotFoundException('Media not found');
         }
 
-        $this->s3->deleteObject([
-            'Bucket' => $this->bucketName,
-            'Key' => $key,
-        ]);
-    }
-
-    private function objectExists(string $key): bool
-    {
-        try {
-            $this->s3->headObject([
-                'Bucket' => $this->bucketName,
-                'Key' => $key,
-            ])->resolve();
-
-            return true;
-        } catch (\Throwable) {
-            return false;
-        }
+        $this->bucketProvider->deleteObject($key);
     }
 
     public function deleteByUrl(string $url): void

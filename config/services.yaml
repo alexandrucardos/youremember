@@ -23,16 +23,23 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
-  App\Service\MediatorS3Service:
-    arguments:
-      $bucketName: '%env(AWS_S3_BUCKET)%'
-      $region: '%env(AWS_REGION)%'
-
   AsyncAws\S3\S3Client:
     arguments:
       - region: '%env(AWS_REGION)%'
         accessKeyId: '%env(AWS_ACCESS_KEY_ID)%'
         accessKeySecret: '%env(AWS_SECRET_ACCESS_KEY)%'
+
+  App\Service\Bucket\BucketProviderInterface:
+    alias: App\Service\Bucket\AwsProviderService
+
+  App\Service\Bucket\AwsProviderService:
+    arguments:
+      $bucketName: '%env(AWS_S3_BUCKET)%'
+
+  App\Service\MediatorS3Service:
+    arguments:
+      $bucketName: '%env(AWS_S3_BUCKET)%'
+      $region: '%env(AWS_REGION)%'
 
   App\Service\FrontendTokenParserService:
     arguments:
