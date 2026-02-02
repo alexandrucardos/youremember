@@ -19,7 +19,7 @@ final class EventFetchService
 
     public function fetchByOrderId(OrderIdValueObject $orderId): EventFetchValueObject
     {
-        $event = $this->eventRepository->find($orderId->value);
+        $event = $this->eventRepository->findOneBy(['order_id' => $orderId->value]);
 
         if (!$event instanceof Event) {
             throw new NotFoundException('Event not found.');

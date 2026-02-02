@@ -16,15 +16,18 @@ final class UserAddService
 
     public function add(UserAddValueObject $userAddDto): User
     {
-        $user = $this->userRepository->findBy(['email' => $userAddDto->email]);
+        $user = $this->userRepository->findOneBy(['email' => $userAddDto->email->value]);
         if ($user) {
             return $user;
         }
-        
+
+        $now = new \DateTimeImmutable('now');
+
         $user = new User();
-        $user->setEmail($userAddDto->email->value);
-        $user->setHash($userAddDto->hash->value);
-        $user->setRole($userAddDto->role);
+        $user->setEmail($userAddDto->email->value)
+            ->setRole($userAddDto->role)
+            ->setCreatedAt($now)
+            ->setModifiedAt($now);
 
         $this->userRepository->save($user);
 

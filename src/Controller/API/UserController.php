@@ -4,7 +4,6 @@ namespace App\Controller\API;
 
 use App\Service\User\UserAddService;
 use App\ValueObject\EmailValueObject;
-use App\ValueObject\HashValueObject;
 use App\ValueObject\User\UserAddValueObject;
 use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,7 +27,6 @@ final class UserController extends AbstractController
 
         $userAddVO = new UserAddValueObject(
             email: new EmailValueObject($data['email'] ?? null),
-            hash: new HashValueObject($data['hash'] ?? null),
             role: UserRole::ROLE_CLIENT
         );
 
@@ -36,7 +34,6 @@ final class UserController extends AbstractController
 
         return $this->json([
             'email' => $user->getEmail(),
-            'hash' => $user->getHash(),
         ], Response::HTTP_CREATED);
     }
 }

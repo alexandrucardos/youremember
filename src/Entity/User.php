@@ -17,33 +17,22 @@ class User
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+    #[ORM\Column(length: 180)]
+    private ?string $email = null;
+    #[ORM\Column(enumType: UserRole::class)]
+    private UserRole $role;
+    #[ORM\Column(type: 'datetime_immutable', columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP')]
+    private ?DateTimeImmutable $created_at = null;
+    #[ORM\Column(type: 'datetime_immutable', columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')]
+    private ?DateTimeImmutable $modified_at = null;
+    /** @var Collection<int, Event> */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Event::class)]
+    private Collection $events;
 
     public function __construct()
     {
         $this->events = new ArrayCollection();
     }
-
-    #[ORM\Column(length: 180)]
-    private ?string $email = null;
-
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $hash = null;
-
-    #[ORM\Column(enumType: UserRole::class)]
-    private UserRole $role;
-
-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private ?DateTimeImmutable $created_at = null;
-
-    #[ORM\Column(options: [
-        'default' => 'CURRENT_TIMESTAMP',
-        'on update' => 'CURRENT_TIMESTAMP'
-    ])]
-    private ?DateTimeImmutable $modified_at = null;
-
-    /** @var Collection<int, Event> */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Event::class)]
-    private Collection $events;
 
     public function getId(): ?int
     {
@@ -117,18 +106,6 @@ class User
     public function removeEvent(Event $event): static
     {
         $this->events->removeElement($event);
-
-        return $this;
-    }
-
-    public function getHash(): ?string
-    {
-        return $this->hash;
-    }
-
-    public function setHash(?string $hash): static
-    {
-        $this->hash = $hash;
 
         return $this;
     }

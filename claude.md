@@ -34,6 +34,16 @@
 ## Overview
 
 - use symfony best practices
+- created_at and modified_at want to be set at the database level, use the doctrine annotations to acheive that, i dont
+  want them to be set in code
+- use chaining of method calls as shown bellow
+
+```php
+        $user->setEmail($userAddDto->email->value)
+            ->setRole($userAddDto->role)
+            ->setCreatedAt($now)
+            ->setModifiedAt($now);
+```
 
 ## Exceptions
 
@@ -43,7 +53,7 @@
 
 ## Naming
 
-- names should be explicit, instead of $repo use full name $productRepository
+- names should be explicit, instead of \$repo use full name \$productRepository
 
 ## Tests
 

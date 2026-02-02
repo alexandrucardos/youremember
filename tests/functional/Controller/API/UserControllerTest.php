@@ -19,7 +19,6 @@ class UserControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'email' => 'newuser@example.com',
-                'hash' => null,
             ])
         );
 
@@ -39,7 +38,6 @@ class UserControllerTest extends WebTestCase
             ],
             json_encode([
                 'email' => 'newuser@example.com',
-                'hash' => null,
             ])
         );
 
@@ -59,7 +57,6 @@ class UserControllerTest extends WebTestCase
             ],
             json_encode([
                 'email' => 'newuser@example.com',
-                'hash' => null,
             ])
         );
 
@@ -76,7 +73,7 @@ class UserControllerTest extends WebTestCase
         return $data . '|' . $hmac;
     }
 
-    public function testCreateUserWithValidTokenReturns400WhenHashIsNull(): void
+    public function testCreateUserWithValidTokenReturns201(): void
     {
         $this->client->request(
             'POST',
@@ -89,12 +86,10 @@ class UserControllerTest extends WebTestCase
             ],
             json_encode([
                 'email' => 'newuser@example.com',
-                'hash' => null,
             ])
         );
 
-        // Hash value object rejects null - returns 400
-        self::assertResponseStatusCodeSame(400);
+        self::assertResponseStatusCodeSame(201);
     }
 
     private function generateValidToken(string $email): string
@@ -120,7 +115,6 @@ class UserControllerTest extends WebTestCase
             ],
             json_encode([
                 'email' => null,
-                'hash' => 'uniquehash123',
             ])
         );
 

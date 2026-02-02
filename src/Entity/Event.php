@@ -18,7 +18,7 @@ class Event
     #[ORM\Column(type: Types::GUID)]
     private ?string $uuid = null;
 
-    #[ORM\Column]
+    #[ORM\Column(unique: true)]
     private ?int $order_id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -41,14 +41,26 @@ class Event
     #[ORM\Column]
     private int $max_media_count = 100;
 
-    #[ORM\Column(options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private \DateTimeImmutable $created_at;
+    #[ORM\Column(
+        insertable: false,
+        updatable: false,
+        options: ['default' => 'CURRENT_TIMESTAMP']
+    )]
+    private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(options: [
-        'default' => 'CURRENT_TIMESTAMP',
-        'on update' => 'CURRENT_TIMESTAMP'
-    ])]
+    #[ORM\Column(
+        insertable: false,
+        updatable: false,
+        options: [
+            'default' => 'CURRENT_TIMESTAMP',
+            'on update' => 'CURRENT_TIMESTAMP'
+        ])]
     private ?\DateTimeImmutable $modified_at = null;
+
+    public function __construct()
+    {
+        $this->status = Status::VALID;
+    }
 
     public function getId(): ?int
     {
