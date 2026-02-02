@@ -26,7 +26,7 @@ final class EventController extends AbstractController
     public const NAME_EVENT_GUEST_GET_BY_UUID = 'api_event_guest_get_by_uuid';
 
     #[Route('/client', name: self::NAME_EVENT_CLIENT_CREATE, methods: ['POST'])]
-    public function create(
+    public function createClient(
         Request         $request,
         EventAddService $eventAddService,
     ): JsonResponse
@@ -48,7 +48,7 @@ final class EventController extends AbstractController
     }
 
     #[Route('/client/{orderId}', name: self::NAME_EVENT_CLIENT_UPDATE, methods: ['PATCH'])]
-    public function update(
+    public function updateClientByOrderId(
         Request            $request,
         EventUpdateService $eventUpdateService,
     ): JsonResponse
@@ -68,7 +68,7 @@ final class EventController extends AbstractController
     }
 
     #[Route('/client/{orderId}', name: self::NAME_EVENT_CLIENT_GET, methods: ['GET'])]
-    public function get(
+    public function getClientByOrderId(
         Request           $request,
         EventFetchService $eventFetchService,
         EventDataService  $eventDataService,
@@ -91,7 +91,7 @@ final class EventController extends AbstractController
     }
 
     #[Route('/{uuid}', name: self::NAME_EVENT_GUEST_GET_BY_UUID, methods: ['GET'])]
-    public function getByUuid(
+    public function getGuestByUuid(
         Request           $request,
         EventFetchService $eventFetchService,
         EventDataService  $eventDataService,

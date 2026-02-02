@@ -16,7 +16,7 @@ class EventDataService
 
     public function fetch(EventFetchValueObject $eventFetchDto): EventDataValueObject
     {
-        $eventUuid = $eventFetchDto->uuid;
+        $orderId = $eventFetchDto->orderId;
 
         $backgroundPictureUrl = $eventFetchDto->backgroundImage;
 
@@ -24,18 +24,17 @@ class EventDataService
             $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(
                 sprintf(
                     '%d/%s/%s',
-                    $eventUuid,
-                    MediatorS3Service::FOLDER_PROFILE,
-                    MediatorS3Service::PROFILE_BACKGROUND
+                    $orderId,
+                    MediatorS3Service::FOLDER_CLIENT,
+                    MediatorS3Service::FILE_BACKGROUND_NAME
                 )
             );
         }
 
         $picturesUrls = $this->mediatorS3Service->fetchContentUrls(
             sprintf(
-                '%d/%s',
-                $eventUuid,
-                MediatorS3Service::FOLDER_CLIENT,
+                '%d',
+                $orderId,
             )
         );
 

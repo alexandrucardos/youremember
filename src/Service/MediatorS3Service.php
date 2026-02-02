@@ -11,9 +11,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class MediatorS3Service
 {
     public const FOLDER_CLIENT = 'client';
-    public const FOLDER_PROFILE = 'profile';
-
-    public const PROFILE_BACKGROUND = 'background';
+    public const FILE_BACKGROUND_NAME = 'background';
 
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
@@ -62,13 +60,13 @@ class MediatorS3Service
         );
     }
 
-    public function uploadSingle(int $profileId, UploadedFile $file, string $type): string
+    public function uploadSingle(int $orderId, UploadedFile $file): string
     {
         $key = sprintf(
             '%d/%s/%s',
-            $profileId,
-            self::FOLDER_PROFILE,
-            $type
+            $orderId,
+            self::FOLDER_CLIENT,
+            self::FILE_BACKGROUND_NAME
         );
 
         $this->bucketProvider->putObject(

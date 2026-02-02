@@ -17,12 +17,34 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MediaController extends AbstractController
 {
     public const NAME_MEDIA_CLIENT_ADD = 'api_media_client_add';
+    public const NAME_MEDIA_CLIENT_BACKGROUND_ADD = 'api_media_client_background_add';
     public const NAME_MEDIA_CLIENT_DELETE = 'api_media_client_delete';
     public const NAME_MEDIA_GUEST_ADD = 'api_media_guest_add';
     public const NAME_MEDIA_GUEST_DELETE = 'api_media_guest_delete';
 
+    #[Route('/client/background/{orderId}', name: self::NAME_MEDIA_CLIENT_BACKGROUND_ADD, methods: ['POST'])]
+    public function clientBackgroundAdd(
+        Request           $request,
+        MediatorS3Service $mediatorS3Service,
+    ): JsonResponse
+    {
+        $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
+
+        $file = $request->files->get('file', '');
+
+        if (empty($file)) {
+            return $this->json(['error' => 'No files uploaded'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $url = $mediatorS3Service->uploadSingle($orderId->value, $file);
+
+        return $this->json([
+            'url' => $url,
+        ], Response::HTTP_CREATED);
+    }
+
     #[Route('/client/{orderId}', name: self::NAME_MEDIA_CLIENT_ADD, methods: ['POST'])]
-    public function add(
+    public function clientAdd(
         Request           $request,
         MediatorS3Service $mediatorS3Service,
     ): JsonResponse
@@ -43,7 +65,7 @@ final class MediaController extends AbstractController
     }
 
     #[Route('/client', name: self::NAME_MEDIA_CLIENT_DELETE, methods: ['DELETE'])]
-    public function delete(
+    public function clientDelete(
         Request           $request,
         MediatorS3Service $mediatorS3Service,
     ): JsonResponse
