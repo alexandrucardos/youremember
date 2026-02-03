@@ -29,7 +29,7 @@ class Event
         options: ['default' => Status::VALID]
 
     )]
-    private ?Status $status = null;
+    private ?Status $status;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -40,6 +40,9 @@ class Event
 
     #[ORM\Column]
     private int $max_media_count = 100;
+
+    #[ORM\Column]
+    private int $media_count = 0;
 
     #[ORM\Column(
         insertable: false,
@@ -171,6 +174,18 @@ class Event
     public function setMaxMediaCount(int $max_media_count): static
     {
         $this->max_media_count = $max_media_count;
+
+        return $this;
+    }
+
+    public function getMediaCount(): int
+    {
+        return $this->media_count;
+    }
+
+    public function setMediaCount(int $media_count): static
+    {
+        $this->media_count = $media_count;
 
         return $this;
     }

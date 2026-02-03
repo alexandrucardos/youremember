@@ -2,11 +2,14 @@
 
 namespace App\Controller\API;
 
+use App\Event\ImageUploadedEvent;
 use App\Service\Event\EventFetchService;
+use App\Service\Media\MediaCountService;
 use App\Service\MediatorS3Service;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,8 +27,9 @@ final class MediaController extends AbstractController
 
     #[Route('/client/background/{orderId}', name: self::NAME_MEDIA_CLIENT_BACKGROUND_ADD, methods: ['POST'])]
     public function clientBackgroundAdd(
-        Request           $request,
-        MediatorS3Service $mediatorS3Service,
+        Request                  $request,
+        MediatorS3Service        $mediatorS3Service,
+        EventDispatcherInterface $eventDispatcher,
     ): JsonResponse
     {
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
@@ -38,6 +42,8 @@ final class MediaController extends AbstractController
 
         $url = $mediatorS3Service->uploadSingle($orderId->value, $file);
 
+        $eventDispatcher->dispatch(new ImageUploadedEvent($orderId->value));
+
         return $this->json([
             'url' => $url,
         ], Response::HTTP_CREATED);
@@ -45,8 +51,10 @@ final class MediaController extends AbstractController
 
     #[Route('/client/{orderId}', name: self::NAME_MEDIA_CLIENT_ADD, methods: ['POST'])]
     public function clientAdd(
-        Request           $request,
-        MediatorS3Service $mediatorS3Service,
+        Request                  $request,
+        MediatorS3Service        $mediatorS3Service,
+        MediaCountService        $mediaCountService,
+        EventDispatcherInterface $eventDispatcher,
     ): JsonResponse
     {
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
@@ -56,8 +64,11 @@ final class MediaController extends AbstractController
         if (empty($files)) {
             return $this->json(['error' => 'No files uploaded'], Response::HTTP_BAD_REQUEST);
         }
+        $mediaCountService->incrementByOrderId($orderId->value, count($files));
 
         $url = $mediatorS3Service->uploadMultiple($orderId->value, $files);
+
+        $eventDispatcher->dispatch(new ImageUploadedEvent($orderId->value));
 
         return $this->json([
             'url' => $url,
@@ -68,6 +79,7 @@ final class MediaController extends AbstractController
     public function clientDelete(
         Request           $request,
         MediatorS3Service $mediatorS3Service,
+        MediaCountService $mediaCountService,
     ): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -78,6 +90,7 @@ final class MediaController extends AbstractController
             return $this->json(['error' => 'URL is required'], Response::HTTP_BAD_REQUEST);
         }
 
+        $mediaCountService->decrementByUrl($url);
         $mediatorS3Service->deleteByUrl($url);
 
         return $this->json(['deleted' => true]);
@@ -85,9 +98,11 @@ final class MediaController extends AbstractController
 
     #[Route('/guest/{uuid}', name: self::NAME_MEDIA_GUEST_ADD, methods: ['POST'])]
     public function guestAdd(
-        Request           $request,
-        MediatorS3Service $mediatorS3Service,
-        EventFetchService $eventFetchService,
+        Request                  $request,
+        MediatorS3Service        $mediatorS3Service,
+        EventFetchService        $eventFetchService,
+        MediaCountService        $mediaCountService,
+        EventDispatcherInterface $eventDispatcher,
     ): JsonResponse
     {
         $hashHeader = $request->headers->get('hash');
@@ -105,8 +120,11 @@ final class MediaController extends AbstractController
         if (empty($files)) {
             return $this->json(['error' => 'No files uploaded'], Response::HTTP_BAD_REQUEST);
         }
+        $mediaCountService->incrementByOrderId($eventFetchVO->orderId, count($files));
 
         $url = $mediatorS3Service->uploadMultiple($eventFetchVO->orderId, $files, $hash->value);
+
+        $eventDispatcher->dispatch(new ImageUploadedEvent($eventFetchVO->orderId));
 
         return $this->json([
             'url' => $url,
@@ -117,6 +135,7 @@ final class MediaController extends AbstractController
     public function guestDelete(
         Request           $request,
         MediatorS3Service $mediatorS3Service,
+        MediaCountService $mediaCountService,
     ): JsonResponse
     {
         $hashHeader = $request->headers->get('hash');
@@ -134,6 +153,7 @@ final class MediaController extends AbstractController
             return $this->json(['error' => 'URL is required'], Response::HTTP_BAD_REQUEST);
         }
 
+        $mediaCountService->decrementByUrl($url);
         $mediatorS3Service->deleteContent($url, $hash);
 
         return $this->json(['deleted' => true]);
