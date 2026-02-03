@@ -21,9 +21,25 @@ final class MediaController extends AbstractController
 {
     public const NAME_MEDIA_CLIENT_ADD = 'api_media_client_add';
     public const NAME_MEDIA_CLIENT_BACKGROUND_ADD = 'api_media_client_background_add';
+    public const NAME_MEDIA_CLIENT_BACKGROUND_GET = 'api_media_client_background_get';
     public const NAME_MEDIA_CLIENT_DELETE = 'api_media_client_delete';
     public const NAME_MEDIA_GUEST_ADD = 'api_media_guest_add';
     public const NAME_MEDIA_GUEST_DELETE = 'api_media_guest_delete';
+
+    #[Route('/client/background/{orderId}', name: self::NAME_MEDIA_CLIENT_BACKGROUND_GET, methods: ['GET'])]
+    public function clientBackgroundGet(
+        Request           $request,
+        EventFetchService $eventFetchService,
+    ): JsonResponse
+    {
+        $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
+
+        $eventFetchVO = $eventFetchService->fetchByOrderId($orderId);
+
+        return $this->json([
+            'url' => $eventFetchVO->backgroundImage,
+        ]);
+    }
 
     #[Route('/client/background/{orderId}', name: self::NAME_MEDIA_CLIENT_BACKGROUND_ADD, methods: ['POST'])]
     public function clientBackgroundAdd(
