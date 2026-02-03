@@ -31,7 +31,7 @@ class EventDataService
             );
         }
 
-        $picturesUrls = $this->mediatorS3Service->fetchContentUrls(
+        $urls = $this->mediatorS3Service->fetchContentUrls(
             sprintf(
                 '%d',
                 $orderId,
@@ -40,7 +40,10 @@ class EventDataService
 
         return new EventDataValueObject(
             backgroundPictureUrl: $backgroundPictureUrl,
-            pictures: $picturesUrls
+            pictures: array_filter(
+                $urls,
+                fn(string $url) => !str_ends_with($url, '/' . MediatorS3Service::FILE_BACKGROUND_NAME)
+            )
         );
     }
 }
