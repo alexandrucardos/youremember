@@ -4,7 +4,7 @@ namespace App\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-final class ImageUploadedEvent extends Event
+final class MediaUploadedEvent extends Event
 {
     public const NAME = 'image.uploaded';
 

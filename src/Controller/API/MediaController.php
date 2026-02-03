@@ -2,7 +2,7 @@
 
 namespace App\Controller\API;
 
-use App\Event\ImageUploadedEvent;
+use App\Event\MediaUploadedEvent;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaCountService;
 use App\Service\MediatorS3Service;
@@ -42,7 +42,7 @@ final class MediaController extends AbstractController
 
         $url = $mediatorS3Service->uploadSingle($orderId->value, $file);
 
-        $eventDispatcher->dispatch(new ImageUploadedEvent($orderId->value));
+        $eventDispatcher->dispatch(new MediaUploadedEvent($orderId->value));
 
         return $this->json([
             'url' => $url,
@@ -68,7 +68,7 @@ final class MediaController extends AbstractController
 
         $url = $mediatorS3Service->uploadMultiple($orderId->value, $files);
 
-        $eventDispatcher->dispatch(new ImageUploadedEvent($orderId->value));
+        $eventDispatcher->dispatch(new MediaUploadedEvent($orderId->value));
 
         return $this->json([
             'url' => $url,
@@ -124,7 +124,7 @@ final class MediaController extends AbstractController
 
         $url = $mediatorS3Service->uploadMultiple($eventFetchVO->orderId, $files, $hash->value);
 
-        $eventDispatcher->dispatch(new ImageUploadedEvent($eventFetchVO->orderId));
+        $eventDispatcher->dispatch(new MediaUploadedEvent($eventFetchVO->orderId));
 
         return $this->json([
             'url' => $url,
