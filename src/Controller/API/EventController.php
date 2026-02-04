@@ -48,7 +48,7 @@ final class EventController extends AbstractController
         ], Response::HTTP_CREATED);
     }
 
-    #[Route('/client/{orderId}/name', name: self::NAME_EVENT_CLIENT_NAME_GET, methods: ['GET'])]
+    #[Route('/client/name/{orderId}', name: self::NAME_EVENT_CLIENT_NAME_GET, methods: ['GET'])]
     public function getClientNameByOrderId(
         Request           $request,
         EventFetchService $eventFetchService,

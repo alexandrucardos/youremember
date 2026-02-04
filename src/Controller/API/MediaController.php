@@ -3,6 +3,7 @@
 namespace App\Controller\API;
 
 use App\Event\MediaUploadedEvent;
+use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaCountService;
 use App\Service\MediatorS3Service;
@@ -22,6 +23,7 @@ final class MediaController extends AbstractController
     public const NAME_MEDIA_CLIENT_ADD = 'api_media_client_add';
     public const NAME_MEDIA_CLIENT_BACKGROUND_ADD = 'api_media_client_background_add';
     public const NAME_MEDIA_CLIENT_BACKGROUND_GET = 'api_media_client_background_get';
+    public const API_MEDIA_CLIENT_GET = 'api_media_client_get';
     public const NAME_MEDIA_CLIENT_DELETE = 'api_media_client_delete';
     public const NAME_MEDIA_GUEST_ADD = 'api_media_guest_add';
     public const NAME_MEDIA_GUEST_DELETE = 'api_media_guest_delete';
@@ -65,6 +67,24 @@ final class MediaController extends AbstractController
         ], Response::HTTP_CREATED);
     }
 
+    #[Route('/client/{orderId}', name: self::API_MEDIA_CLIENT_GET, methods: ['GET'])]
+    public function clientGet(
+        Request           $request,
+        EventFetchService $eventFetchService,
+        EventDataService  $eventDataService,
+    ): JsonResponse
+    {
+        $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
+
+        $eventFetchVO = $eventFetchService->fetchByOrderId($orderId);
+
+        $eventDataDto = $eventDataService->fetch($eventFetchVO);
+
+        return $this->json([
+            'pictures' => $eventDataDto->pictures,
+        ]);
+    }
+
     #[Route('/client/{orderId}', name: self::NAME_MEDIA_CLIENT_ADD, methods: ['POST'])]
     public function clientAdd(
         Request                  $request,
@@ -100,7 +120,7 @@ final class MediaController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $url = $data['url'] ?? null;
+        $url = $data['urls'] ?? null;
 
         if (!$url) {
             return $this->json(['error' => 'URL is required'], Response::HTTP_BAD_REQUEST);
