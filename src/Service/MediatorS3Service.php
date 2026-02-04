@@ -143,6 +143,7 @@ class MediatorS3Service
 
     public function deleteByUrl(string $url): void
     {
+        //todo make it by batch delete
         $key = $this->getS3KeyFromUrl($url);
 
         $this->deleteByKey($key);

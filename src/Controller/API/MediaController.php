@@ -120,14 +120,17 @@ final class MediaController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $url = $data['urls'] ?? null;
+        $urls = $data['urls'] ?? [];
 
-        if (!$url) {
-            return $this->json(['error' => 'URL is required'], Response::HTTP_BAD_REQUEST);
+        if (empty($urls)) {
+            return $this->json(['error' => 'URLs are required'], Response::HTTP_BAD_REQUEST);
         }
 
-        $mediaCountService->decrementByUrl($url);
-        $mediatorS3Service->deleteByUrl($url);
+        //todo do this in batch
+        foreach ($urls as $url) {
+            $mediaCountService->decrementByUrl($url);
+            $mediatorS3Service->deleteByUrl($url);
+        }
 
         return $this->json(['deleted' => true]);
     }
