@@ -198,7 +198,7 @@ class MediatorS3Service
         );
     }
 
-    public function uploadSingle(int $orderId, UploadedFile $file): string
+    public function uploadBackground(int $orderId, UploadedFile $file): string
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
@@ -214,35 +214,26 @@ class MediatorS3Service
         );
 
         $scaledContent = $this->scaleContentToMaxSize($file);
-        $thumbnailContent = $this->createThumbnail($file);
-        $thumbnailKey = $thumbnailContent !== null
-            ? $this->buildThumbnailKey($key)
-            : null;
 
-        $media = (new Media())
-            ->setEvent($event)
-            ->setFilePath($key)
-            ->setThumbnailPath($thumbnailKey)
-            ->setUploaderHash(self::FOLDER_CLIENT)
-            ->setFileType($file->getMimeType())
-            ->setFileSize(strlen($scaledContent))
-            ->setOriginalFilename($file->getClientOriginalName());
+        $mediaBackground = $this->mediaRepository->findOneBy(['file_path' => $key]);
 
-        $this->mediaRepository->save($media);
+        if ($mediaBackground === null) {
+            $mediaBackground = (new Media())
+                ->setEvent($event)
+                ->setFilePath($key)
+                ->setUploaderHash(self::FOLDER_CLIENT)
+                ->setFileType($file->getMimeType())
+                ->setFileSize(strlen($scaledContent))
+                ->setOriginalFilename($file->getClientOriginalName());
+        }
+
+        $this->mediaRepository->save($mediaBackground);
 
         $this->bucketProvider->putObject(
             $key,
             $scaledContent,
             $file->getMimeType()
         );
-
-        if ($thumbnailContent !== null && $thumbnailKey !== null) {
-            $this->bucketProvider->putObject(
-                $thumbnailKey,
-                $thumbnailContent,
-                $file->getMimeType()
-            );
-        }
 
         return $this->buildUrlFromKey($key);
     }

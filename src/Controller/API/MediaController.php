@@ -58,7 +58,7 @@ final class MediaController extends AbstractController
             return $this->json(['error' => 'No files uploaded'], Response::HTTP_BAD_REQUEST);
         }
 
-        $url = $mediatorS3Service->uploadSingle($orderId->value, $file);
+        $url = $mediatorS3Service->uploadBackground($orderId->value, $file);
 
         $eventDispatcher->dispatch(new MediaUploadedEvent($orderId->value));
 

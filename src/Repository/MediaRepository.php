@@ -43,7 +43,7 @@ class MediaRepository extends ServiceEntityRepository
     public function softDeleteByPath(string $path): void
     {
         $media = $this->createQueryBuilder('m')
-            ->where('m.thumbnail_path = :path')
+            ->where('m.thumbnail_path = :path OR m.file_path = :path')
             ->andWhere('m.deleted_at IS NULL')
             ->setParameter('path', $path)
             ->getQuery()
