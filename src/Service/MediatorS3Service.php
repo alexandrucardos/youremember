@@ -300,7 +300,7 @@ class MediatorS3Service
             throw new \InvalidArgumentException('Invalid URL');
         }
 
-        return ltrim($parsed['path'], '/');
+        return urldecode(ltrim($parsed['path'], '/'));
     }
 
     private function extractFolderFromKey(string $key): string
@@ -316,11 +316,7 @@ class MediatorS3Service
 
     private function deleteByKey(string $key): void
     {
-        if (!$this->bucketProvider->objectExists($key)) {
-            throw new NotFoundException('Media not found');
-        }
-
-        $this->bucketProvider->deleteObject($key);
+        $this->mediaRepository->softDeleteByPath($key);
     }
 
     public function deleteByUrl(string $url): void

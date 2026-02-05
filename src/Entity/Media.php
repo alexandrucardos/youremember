@@ -6,6 +6,8 @@ use App\Repository\MediaRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[ORM\Index(name: 'idx_media_file_path', columns: ['file_path'])]
+#[ORM\Index(name: 'idx_media_thumbnail_path', columns: ['thumbnail_path'])]
 class Media
 {
     #[ORM\Id]
@@ -17,10 +19,10 @@ class Media
     #[ORM\JoinColumn(nullable: false)]
     private Event $event;
 
-    #[ORM\Column(length: 500)]
+    #[ORM\Column(length: 255)]
     private string $file_path;
 
-    #[ORM\Column(length: 500, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $thumbnail_path = null;
 
     #[ORM\Column(length: 50)]
@@ -50,6 +52,9 @@ class Media
             'on update' => 'CURRENT_TIMESTAMP'
         ])]
     private ?\DateTimeImmutable $modified_at = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deleted_at = null;
 
     public function getId(): ?int
     {
@@ -162,5 +167,22 @@ class Media
         $this->modified_at = $modified_at;
 
         return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->deleted_at !== null;
     }
 }

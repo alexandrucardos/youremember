@@ -26,7 +26,7 @@ class MediaRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<string>
+     * @return array<array>
      */
     public function findPathsByOrderId(int $orderId): array
     {
@@ -34,8 +34,26 @@ class MediaRepository extends ServiceEntityRepository
             ->select('COALESCE(m.thumbnail_path, m.file_path)')
             ->innerJoin('m.event', 'e')
             ->where('e.order_id = :orderId')
+            ->andWhere('m.deleted_at IS NULL')
             ->setParameter('orderId', $orderId)
             ->getQuery()
             ->getArrayResult();
+    }
+
+    public function softDeleteByPath(string $path): void
+    {
+        $media = $this->createQueryBuilder('m')
+            ->where('m.thumbnail_path = :path')
+            ->andWhere('m.deleted_at IS NULL')
+            ->setParameter('path', $path)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($media === null) {
+            return;
+        }
+
+        $media->setDeletedAt(new \DateTimeImmutable());
+        $this->getEntityManager()->flush();
     }
 }

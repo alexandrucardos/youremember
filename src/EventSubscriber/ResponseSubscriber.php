@@ -11,7 +11,8 @@ class ResponseSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly LoggerInterface $responseLogger,
-    ) {
+    )
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -35,7 +36,8 @@ class ResponseSubscriber implements EventSubscriberInterface
             'uri' => $request->getRequestUri(),
             'status_code' => $response->getStatusCode(),
             'content_type' => $response->headers->get('Content-Type'),
-            'content' => $response->getContent(),
+            'request_content' => $request->getContent(),
+            'response_content' => $response->getContent(),
         ]);
     }
 }
