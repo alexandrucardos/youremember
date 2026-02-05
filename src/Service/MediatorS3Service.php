@@ -42,12 +42,56 @@ class MediatorS3Service
 
             $this->bucketProvider->putObject(
                 $key,
-                file_get_contents($file->getPathname()),
+                $this->scaleContentToMaxSize($file),
                 $file->getMimeType()
             );
         }
 
         return $this->buildUrlFromKey($key);
+    }
+
+    private function scaleContentToMaxSize(UploadedFile $file, int $maxSizeBytes = 1048576): string
+    {
+        $content = file_get_contents($file->getPathname());
+        $mimeType = $file->getMimeType();
+
+        if (strlen($content) <= $maxSizeBytes) {
+            return $content;
+        }
+
+        if (str_starts_with($mimeType, 'video/')) {
+            return $content;
+        }
+
+        if (!str_starts_with($mimeType, 'image/') || !extension_loaded('gd')) {
+            return $content;
+        }
+
+        $image = @imagecreatefromstring($content);
+        if ($image === false) {
+            return $content;
+        }
+
+        $quality = 90;
+        $minQuality = 10;
+
+        while (strlen($content) > $maxSizeBytes && $quality >= $minQuality) {
+            ob_start();
+
+            match ($mimeType) {
+                'image/jpeg', 'image/jpg' => imagejpeg($image, null, $quality),
+                'image/png' => imagepng($image, null, (int)floor((100 - $quality) / 10)),
+                'image/webp' => imagewebp($image, null, $quality),
+                default => imagejpeg($image, null, $quality),
+            };
+
+            $content = ob_get_clean();
+            $quality -= 10;
+        }
+
+        imagedestroy($image);
+
+        return $content;
     }
 
     private function buildUrlFromKey(string $key): string
@@ -71,7 +115,7 @@ class MediatorS3Service
 
         $this->bucketProvider->putObject(
             $key,
-            file_get_contents($file->getPathname()),
+            $this->scaleContentToMaxSize($file),
             $file->getMimeType()
         );
 
