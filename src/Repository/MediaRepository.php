@@ -11,6 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MediaRepository extends ServiceEntityRepository
 {
+    public const THUMBNAIL_SUFFIX = '_thumb';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Media::class);

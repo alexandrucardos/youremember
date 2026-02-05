@@ -2,8 +2,11 @@
 
 namespace App\Service;
 
+use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
 use App\Exception\Media\UnauthorizedException;
+use App\Repository\EventRepository;
+use App\Repository\MediaRepository;
 use App\Service\Bucket\BucketProviderInterface;
 use App\ValueObject\HashValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -15,6 +18,8 @@ class MediatorS3Service
 
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
+        private readonly EventRepository         $eventRepository,
+        private readonly MediaRepository         $mediaRepository,
         private readonly string                  $bucketName,
         private readonly string                  $region,
     )
@@ -30,6 +35,12 @@ class MediatorS3Service
         string $folder = self::FOLDER_CLIENT
     ): string
     {
+        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
+
+        if ($event === null) {
+            throw new NotFoundException('Event not found for order: ' . $orderId);
+        }
+
         $key = '';
 
         foreach ($files as $file) {
@@ -40,9 +51,22 @@ class MediatorS3Service
                 $file->getClientOriginalName()
             );
 
+            $scaledContent = $this->scaleContentToMaxSize($file);
+
+            $media = (new Media())
+                ->setEvent($event)
+                ->setFilePath($key)
+                ->setThumbnailPath($key . MediaRepository::THUMBNAIL_SUFFIX)
+                ->setUploaderHash($folder)
+                ->setFileType($file->getMimeType())
+                ->setFileSize(strlen($scaledContent))
+                ->setOriginalFilename($file->getClientOriginalName());
+
+            $this->mediaRepository->save($media);
+
             $this->bucketProvider->putObject(
                 $key,
-                $this->scaleContentToMaxSize($file),
+                $scaledContent,
                 $file->getMimeType()
             );
         }
@@ -106,12 +130,31 @@ class MediatorS3Service
 
     public function uploadSingle(int $orderId, UploadedFile $file): string
     {
+        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
+
+        if ($event === null) {
+            throw new NotFoundException('Event not found for order: ' . $orderId);
+        }
+
         $key = sprintf(
             '%d/%s/%s',
             $orderId,
             self::FOLDER_CLIENT,
             self::FILE_BACKGROUND_NAME
         );
+
+        $scaledContent = $this->scaleContentToMaxSize($file);
+
+        $media = (new Media())
+            ->setEvent($event)
+            ->setFilePath($key)
+            ->setThumbnailPath($key . MediaRepository::THUMBNAIL_SUFFIX)
+            ->setUploaderHash(self::FOLDER_CLIENT)
+            ->setFileType($file->getMimeType())
+            ->setFileSize(strlen($scaledContent))
+            ->setOriginalFilename($file->getClientOriginalName());
+
+        $this->mediaRepository->save($media);
 
         $this->bucketProvider->putObject(
             $key,
