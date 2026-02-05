@@ -31,12 +31,7 @@ class EventDataService
             );
         }
 
-        $urls = $this->mediatorS3Service->fetchContentUrls(
-            sprintf(
-                '%d',
-                $orderId,
-            )
-        );
+        $urls = $this->mediatorS3Service->fetchContentUrlsByOrderId($orderId);
 
         return new EventDataValueObject(
             backgroundPictureUrl: $backgroundPictureUrl,

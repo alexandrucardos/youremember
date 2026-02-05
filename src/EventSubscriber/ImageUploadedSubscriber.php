@@ -44,8 +44,7 @@ final class ImageUploadedSubscriber implements EventSubscriberInterface
 
     private function countS3Media(int $orderId): int
     {
-        $prefix = sprintf('%d/', $orderId);
-        $urls = $this->mediatorS3Service->fetchContentUrls($prefix);
+        $urls = $this->mediatorS3Service->fetchContentUrlsByOrderId($orderId);
 
         return count(array_filter(
             $urls,

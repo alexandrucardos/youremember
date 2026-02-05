@@ -30,7 +30,7 @@ class EventDataServiceTest extends TestCase
 
         $this->mediatorS3Service
             ->expects($this->once())
-            ->method('fetchContentUrls')
+            ->method('fetchContentUrlsByOrderId')
             ->with('12345/client')
             ->willReturn($picturesUrls);
 
@@ -68,7 +68,7 @@ class EventDataServiceTest extends TestCase
 
         $this->mediatorS3Service
             ->expects($this->once())
-            ->method('fetchContentUrls')
+            ->method('fetchContentUrlsByOrderId')
             ->with('12345/client')
             ->willReturn($picturesUrls);
 
@@ -93,7 +93,7 @@ class EventDataServiceTest extends TestCase
 
         $this->mediatorS3Service
             ->expects($this->once())
-            ->method('fetchContentUrls')
+            ->method('fetchContentUrlsByOrderId')
             ->with('12345/client')
             ->willReturn($picturesUrls);
 

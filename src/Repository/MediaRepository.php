@@ -24,4 +24,18 @@ class MediaRepository extends ServiceEntityRepository
 
         $this->getEntityManager()->flush();
     }
+
+    /**
+     * @return array<string>
+     */
+    public function findPathsByOrderId(int $orderId): array
+    {
+        return $this->createQueryBuilder('m')
+            ->select('COALESCE(m.thumbnail_path, m.file_path)')
+            ->innerJoin('m.event', 'e')
+            ->where('e.order_id = :orderId')
+            ->setParameter('orderId', $orderId)
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

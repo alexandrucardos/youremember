@@ -102,13 +102,11 @@ final class MediaController extends AbstractController
         }
         $mediaCountService->incrementByOrderId($orderId->value, count($files));
 
-        $url = $mediatorS3Service->uploadMultiple($orderId->value, $files);
+        $mediatorS3Service->uploadMultiple($orderId->value, $files);
 
         $eventDispatcher->dispatch(new MediaUploadedEvent($orderId->value));
 
-        return $this->json([
-            'url' => $url,
-        ], Response::HTTP_CREATED);
+        return $this->json([], Response::HTTP_CREATED);
     }
 
     #[Route('/client', name: self::NAME_MEDIA_CLIENT_DELETE, methods: ['DELETE'])]

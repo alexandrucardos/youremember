@@ -33,15 +33,13 @@ class MediatorS3Service
         int    $orderId,
         array  $files,
         string $folder = self::FOLDER_CLIENT
-    ): string
+    ): void
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
         if ($event === null) {
             throw new NotFoundException('Event not found for order: ' . $orderId);
         }
-
-        $key = '';
 
         foreach ($files as $file) {
             $key = sprintf(
@@ -82,8 +80,6 @@ class MediatorS3Service
                 );
             }
         }
-
-        return $this->buildUrlFromKey($key);
     }
 
     private function scaleContentToMaxSize(UploadedFile $file, int $maxSizeBytes = 1048576): string
@@ -202,16 +198,6 @@ class MediatorS3Service
         );
     }
 
-    private function buildUrlFromKey(string $key): string
-    {
-        return sprintf(
-            'https://%s.s3.%s.amazonaws.com/%s',
-            $this->bucketName,
-            $this->region,
-            $key
-        );
-    }
-
     public function uploadSingle(int $orderId, UploadedFile $file): string
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
@@ -261,6 +247,16 @@ class MediatorS3Service
         return $this->buildUrlFromKey($key);
     }
 
+    private function buildUrlFromKey(string $key): string
+    {
+        return sprintf(
+            'https://%s.s3.%s.amazonaws.com/%s',
+            $this->bucketName,
+            $this->region,
+            $key
+        );
+    }
+
     public function buildUrl(string $prefix): string
     {
         return sprintf(
@@ -271,14 +267,17 @@ class MediatorS3Service
         );
     }
 
-    public function fetchContentUrls(string $prefix): array
+    public function fetchContentUrlsByOrderId(int $orderId): array
     {
-        $keys = $this->bucketProvider->listObjects($prefix);
+        $paths = $this->mediaRepository->findPathsByOrderId($orderId);
 
-        return array_map(
-            fn(string $key) => $this->buildUrlFromKey($key),
-            $keys
-        );
+        $urls = [];
+
+        foreach ($paths as $path) {
+            $urls[] = $this->buildUrlFromKey(reset($path));
+        }
+
+        return $urls;
     }
 
     public function deleteContent(string $url, HashValueObject $hash): void
