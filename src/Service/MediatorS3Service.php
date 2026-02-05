@@ -52,11 +52,15 @@ class MediatorS3Service
             );
 
             $scaledContent = $this->scaleContentToMaxSize($file);
+            $thumbnailContent = $this->createThumbnail($file);
+            $thumbnailKey = $thumbnailContent !== null
+                ? $this->buildThumbnailKey($key)
+                : null;
 
             $media = (new Media())
                 ->setEvent($event)
                 ->setFilePath($key)
-                ->setThumbnailPath($key . MediaRepository::THUMBNAIL_SUFFIX)
+                ->setThumbnailPath($thumbnailKey)
                 ->setUploaderHash($folder)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))
@@ -69,6 +73,14 @@ class MediatorS3Service
                 $scaledContent,
                 $file->getMimeType()
             );
+
+            if ($thumbnailContent !== null && $thumbnailKey !== null) {
+                $this->bucketProvider->putObject(
+                    $thumbnailKey,
+                    $thumbnailContent,
+                    $file->getMimeType()
+                );
+            }
         }
 
         return $this->buildUrlFromKey($key);
@@ -118,6 +130,78 @@ class MediatorS3Service
         return $content;
     }
 
+    private function createThumbnail(UploadedFile $file, int $maxWidth = 300): ?string
+    {
+        $mimeType = $file->getMimeType();
+
+        if (str_starts_with($mimeType, 'video/')) {
+            return null;
+        }
+
+        if (!str_starts_with($mimeType, 'image/') || !extension_loaded('gd')) {
+            return null;
+        }
+
+        $content = file_get_contents($file->getPathname());
+        $image = @imagecreatefromstring($content);
+
+        if ($image === false) {
+            return null;
+        }
+
+        $originalWidth = imagesx($image);
+        $originalHeight = imagesy($image);
+
+        if ($originalWidth <= $maxWidth) {
+            imagedestroy($image);
+            return $content;
+        }
+
+        $newWidth = $maxWidth;
+        $newHeight = (int)floor($originalHeight * ($maxWidth / $originalWidth));
+
+        $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
+
+        if ($mimeType === 'image/png') {
+            imagealphablending($thumbnail, false);
+            imagesavealpha($thumbnail, true);
+        }
+
+        imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
+
+        ob_start();
+
+        match ($mimeType) {
+            'image/jpeg', 'image/jpg' => imagejpeg($thumbnail, null, 80),
+            'image/png' => imagepng($thumbnail, null, 6),
+            'image/webp' => imagewebp($thumbnail, null, 80),
+            default => imagejpeg($thumbnail, null, 80),
+        };
+
+        $thumbnailContent = ob_get_clean();
+
+        imagedestroy($image);
+        imagedestroy($thumbnail);
+
+        return $thumbnailContent;
+    }
+
+    private function buildThumbnailKey(string $key): string
+    {
+        $pathInfo = pathinfo($key);
+        $directory = $pathInfo['dirname'] ?? '';
+        $filename = $pathInfo['filename'] ?? '';
+        $extension = $pathInfo['extension'] ?? '';
+
+        return sprintf(
+            '%s/%s%s.%s',
+            $directory,
+            $filename,
+            MediaRepository::THUMBNAIL_SUFFIX,
+            $extension
+        );
+    }
+
     private function buildUrlFromKey(string $key): string
     {
         return sprintf(
@@ -144,11 +228,15 @@ class MediatorS3Service
         );
 
         $scaledContent = $this->scaleContentToMaxSize($file);
+        $thumbnailContent = $this->createThumbnail($file);
+        $thumbnailKey = $thumbnailContent !== null
+            ? $this->buildThumbnailKey($key)
+            : null;
 
         $media = (new Media())
             ->setEvent($event)
             ->setFilePath($key)
-            ->setThumbnailPath($key . MediaRepository::THUMBNAIL_SUFFIX)
+            ->setThumbnailPath($thumbnailKey)
             ->setUploaderHash(self::FOLDER_CLIENT)
             ->setFileType($file->getMimeType())
             ->setFileSize(strlen($scaledContent))
@@ -158,9 +246,17 @@ class MediatorS3Service
 
         $this->bucketProvider->putObject(
             $key,
-            $this->scaleContentToMaxSize($file),
+            $scaledContent,
             $file->getMimeType()
         );
+
+        if ($thumbnailContent !== null && $thumbnailKey !== null) {
+            $this->bucketProvider->putObject(
+                $thumbnailKey,
+                $thumbnailContent,
+                $file->getMimeType()
+            );
+        }
 
         return $this->buildUrlFromKey($key);
     }
