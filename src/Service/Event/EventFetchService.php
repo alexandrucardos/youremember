@@ -5,6 +5,7 @@ namespace App\Service\Event;
 use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
+use App\Service\MediatorS3Service;
 use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
@@ -12,7 +13,8 @@ use App\ValueObject\UuidValueObject;
 final class EventFetchService
 {
     public function __construct(
-        private readonly EventRepository $eventRepository,
+        private readonly EventRepository   $eventRepository,
+        private readonly MediatorS3Service $mediatorS3Service,
     )
     {
     }
@@ -25,11 +27,26 @@ final class EventFetchService
             throw new NotFoundException('Event not found.');
         }
 
+        $backgroundPictureUrl = $event->getBackgroundImage();
+
+
+        //todo this is allways null
+        if (null === $event->getBackgroundImage()) {
+            $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(
+                sprintf(
+                    '%d/%s/%s',
+                    $orderId->value,
+                    MediatorS3Service::FOLDER_CLIENT,
+                    MediatorS3Service::FILE_BACKGROUND_NAME
+                )
+            );
+        }
+
         return new EventFetchValueObject(
             uuid: $event->getUuid(),
             name: $event->getName(),
             orderId: $event->getOrderId(),
-            backgroundImage: $event->getBackgroundImage(),
+            backgroundImage: $backgroundPictureUrl,
         );
     }
 

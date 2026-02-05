@@ -20,6 +20,7 @@ final class SecurityValidationRequestSubscriber implements EventSubscriberInterf
         UserController::NAME_USER_CLIENT_CREATE,
         MediaController::NAME_MEDIA_CLIENT_ADD,
         MediaController::NAME_MEDIA_CLIENT_DELETE,
+        EventController::NAME_EVENT_CLIENT_PAGE_URL_GET,
     ];
 
     public function __construct(

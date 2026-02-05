@@ -24,7 +24,23 @@ final class EventController extends AbstractController
     public const NAME_EVENT_CLIENT_NAME_GET = 'api_event_client_name_get';
     public const NAME_EVENT_CLIENT_CREATE = 'api_event_client_create';
     public const NAME_EVENT_CLIENT_UPDATE = 'api_event_client_update';
+    public const NAME_EVENT_CLIENT_PAGE_URL_GET = 'api_event_client_page_url_get';
     public const NAME_EVENT_GUEST_GET_BY_UUID = 'api_event_guest_get_by_uuid';
+
+    #[Route('/client/page-url/{orderId}', name: self::NAME_EVENT_CLIENT_PAGE_URL_GET, methods: ['GET'])]
+    public function getClientEventUrlByOrderId(
+        Request           $request,
+        EventFetchService $eventFetchService,
+    ): JsonResponse
+    {
+        $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
+
+        $eventFetchVO = $eventFetchService->fetchByOrderId($orderId);
+
+        return $this->json([
+            'uuid' => $eventFetchVO->uuid,
+        ]);
+    }
 
     #[Route('/client', name: self::NAME_EVENT_CLIENT_CREATE, methods: ['POST'])]
     public function createClient(
