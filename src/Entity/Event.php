@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\EventRepository;
 use App\ValueObject\Status;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -44,6 +46,10 @@ class Event
     #[ORM\Column]
     private int $media_count = 0;
 
+    /** @var Collection<int, Media> */
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Media::class, cascade: ['remove'])]
+    private Collection $media;
+
     #[ORM\Column(
         insertable: false,
         updatable: false,
@@ -63,6 +69,7 @@ class Event
     public function __construct()
     {
         $this->status = Status::VALID;
+        $this->media = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -186,6 +193,31 @@ class Event
     public function setMediaCount(int $media_count): static
     {
         $this->media_count = $media_count;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Media>
+     */
+    public function getMedia(): Collection
+    {
+        return $this->media;
+    }
+
+    public function addMedia(Media $media): static
+    {
+        if (!$this->media->contains($media)) {
+            $this->media->add($media);
+            $media->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMedia(Media $media): static
+    {
+        $this->media->removeElement($media);
 
         return $this;
     }
