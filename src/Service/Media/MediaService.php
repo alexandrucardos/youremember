@@ -14,6 +14,8 @@ class MediaService
     public const FOLDER_CLIENT = 'client';
     public const FILE_BACKGROUND_NAME = 'background';
 
+    public const APPLE_EXTENSIONS = ['image/heic', 'image/heif'];
+
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
         private readonly EventRepository         $eventRepository,
@@ -38,8 +40,10 @@ class MediaService
         if ($event === null) {
             throw new NotFoundException('Event not found for order: ' . $orderId);
         }
-
         foreach ($files as $file) {
+            $processedContent = $this->processContent($file);
+            $thumbnailContent = $this->createThumbnail($file);
+
             $key = sprintf(
                 '%d/%s/%s',
                 $orderId,
@@ -47,8 +51,15 @@ class MediaService
                 $file->getClientOriginalName()
             );
 
-            $scaledContent = $this->scaleContentToMaxSize($file);
-            $thumbnailContent = $this->createThumbnail($file);
+            if (in_array($file->getMimeType(), self::APPLE_EXTENSIONS)) {
+                $key = sprintf(
+                    '%d/%s/%s.jpeg',
+                    $orderId,
+                    $folder,
+                    $file->getClientOriginalName()
+                );
+            }
+
             $thumbnailKey = $thumbnailContent !== null
                 ? $this->buildThumbnailKey($key)
                 : null;
@@ -59,14 +70,14 @@ class MediaService
                 ->setThumbnailPath($thumbnailKey)
                 ->setUploaderHash($folder)
                 ->setFileType($file->getMimeType())
-                ->setFileSize(strlen($scaledContent))
+                ->setFileSize(strlen($processedContent))
                 ->setOriginalFilename($file->getClientOriginalName());
 
             $this->mediaRepository->save($media);
 
             $this->bucketProvider->putObject(
                 $key,
-                $scaledContent,
+                $processedContent,
                 $file->getMimeType()
             );
 
@@ -80,7 +91,7 @@ class MediaService
         }
     }
 
-    private function scaleContentToMaxSize(UploadedFile $file, int $maxSizeBytes = 1048576): string
+    private function processContent(UploadedFile $file, int $maxSizeBytes = 1048576): string
     {
         $content = file_get_contents($file->getPathname());
 
@@ -96,6 +107,10 @@ class MediaService
         $mimeType = $file->getMimeType();
         $quality = 90;
         $minQuality = 10;
+
+        if (in_array($mimeType, self::APPLE_EXTENSIONS)) {
+            $content = $this->convertToJpeg($image, $quality);
+        }
 
         while (strlen($content) > $maxSizeBytes && $quality >= $minQuality) {
             $content = $this->encodeImage($image, $mimeType, $quality);
@@ -171,10 +186,22 @@ class MediaService
             return null;
         }
 
+        if (in_array($mimeType, self::APPLE_EXTENSIONS)) {
+            return $this->createImageResourceFromAppleExtensions($file->getPathname());
+        }
+
         $content = file_get_contents($file->getPathname());
         $image = @imagecreatefromstring($content);
 
         return $image === false ? null : $image;
+    }
+
+    private function convertToJpeg(\GdImage $image, int $quality): string
+    {
+        ob_start();
+        imagejpeg($image, null, $quality);
+
+        return ob_get_clean();
     }
 
     private function encodeImage(\GdImage $image, string $mimeType, int $quality): string
@@ -189,6 +216,20 @@ class MediaService
         };
 
         return ob_get_clean();
+    }
+
+    private function createImageResourceFromAppleExtensions(string $filePath): ?\GdImage
+    {
+        $imagick = new \Imagick($filePath);
+        $imagick->setImageFormat('jpeg');
+
+        $jpegContent = $imagick->getImageBlob();
+        $imagick->clear();
+        $imagick->destroy();
+
+        $image = @imagecreatefromstring($jpegContent);
+
+        return $image === false ? null : $image;
     }
 
     public function uploadBackground(int $orderId, UploadedFile $file): void
@@ -206,7 +247,7 @@ class MediaService
             self::FILE_BACKGROUND_NAME
         );
 
-        $scaledContent = $this->scaleContentToMaxSize($file);
+        $scaledContent = $this->processContent($file);
 
         $mediaBackground = $this->mediaRepository->findOneBy(['file_path' => $key]);
 
