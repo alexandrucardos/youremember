@@ -95,10 +95,6 @@ class MediaService
     {
         $content = file_get_contents($file->getPathname());
 
-        if (strlen($content) <= $maxSizeBytes) {
-            return $content;
-        }
-
         $image = $this->createImageResource($file);
         if ($image === null) {
             return $content;
@@ -110,6 +106,10 @@ class MediaService
 
         if (in_array($mimeType, self::APPLE_EXTENSIONS)) {
             $content = $this->convertToJpeg($image, $quality);
+        }
+
+        if (strlen($content) <= $maxSizeBytes) {
+            return $content;
         }
 
         while (strlen($content) > $maxSizeBytes && $quality >= $minQuality) {

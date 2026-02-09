@@ -225,6 +225,68 @@ class MediaServiceTest extends TestCase
     }
 
     /**
+     * @dataProvider appleExtensionsDataProvider
+     */
+    public function testUploadMultipleWithAppleExtensionAppendsJpegToKey(
+        string $mimeType,
+        string $originalFilename,
+        string $expectedKey
+    ): void {
+        $event = new Event();
+        $orderId = 200;
+        $tempFile = $this->createTempImageFile(400, 300);
+
+        $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('getClientOriginalName')->willReturn($originalFilename);
+        $uploadedFile->method('getMimeType')->willReturn($mimeType);
+        $uploadedFile->method('getPathname')->willReturn($tempFile);
+
+        $this->eventRepository
+            ->expects($this->once())
+            ->method('findOneBy')
+            ->willReturn($event);
+
+        $this->mediaRepository
+            ->expects($this->once())
+            ->method('save')
+            ->with($this->callback(function (Media $media) use ($expectedKey, $mimeType) {
+                return $media->getFilePath() === $expectedKey
+                    && $media->getFileType() === $mimeType;
+            }));
+
+        $this->bucketProvider
+            ->expects($this->atLeastOnce())
+            ->method('putObject');
+
+        $this->mediaService->uploadMultiple($orderId, [$uploadedFile]);
+
+        unlink($tempFile);
+    }
+
+    public static function appleExtensionsDataProvider(): array
+    {
+        return [
+            'heic file gets jpeg extension' => [
+                'mimeType' => 'image/heic',
+                'originalFilename' => 'photo.heic',
+                'expectedKey' => '200/client/photo.heic.jpeg',
+            ],
+            'heif file gets jpeg extension' => [
+                'mimeType' => 'image/heif',
+                'originalFilename' => 'photo.heif',
+                'expectedKey' => '200/client/photo.heif.jpeg',
+            ],
+        ];
+    }
+
+    public function testAppleExtensionsConstantContainsExpectedMimeTypes(): void
+    {
+        $this->assertContains('image/heic', MediaService::APPLE_EXTENSIONS);
+        $this->assertContains('image/heif', MediaService::APPLE_EXTENSIONS);
+        $this->assertCount(2, MediaService::APPLE_EXTENSIONS);
+    }
+
+    /**
      * @dataProvider buildUrlDataProvider
      */
     public function testBuildUrlReturnsCorrectS3Url(string $prefix, string $expectedUrl): void
