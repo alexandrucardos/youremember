@@ -45,6 +45,15 @@
             ->setModifiedAt($now);
 ```
 
+- methods visibility should be always, public, protected, private (construct always on top)
+
+```php
+public function __construt(){};
+public function aa(){};
+protected function bb(){};
+private function cc(){};
+```
+
 ## Exceptions
 
 - all exceptions should have a specific folder, and a base exception in that folder
@@ -53,7 +62,8 @@
 
 ## Naming
 
-- names should be explicit, instead of \$repo use full name \$productRepository
+- names should be explicit, instead of \$repo use full name \$productRepository , \$service -> \$orderProcessService ,
+  \$value -> $userValueObject
 
 ## Tests
 
