@@ -85,39 +85,22 @@ class MediaService
     private function scaleContentToMaxSize(UploadedFile $file, int $maxSizeBytes = 1048576): string
     {
         $content = file_get_contents($file->getPathname());
-        $mimeType = $file->getMimeType();
 
         if (strlen($content) <= $maxSizeBytes) {
             return $content;
         }
 
-        if (str_starts_with($mimeType, 'video/')) {
+        $image = $this->createImageResource($file);
+        if ($image === null) {
             return $content;
         }
 
-        if (!str_starts_with($mimeType, 'image/') || !extension_loaded('gd')) {
-            return $content;
-        }
-
-        $image = @imagecreatefromstring($content);
-        if ($image === false) {
-            return $content;
-        }
-
+        $mimeType = $file->getMimeType();
         $quality = 90;
         $minQuality = 10;
 
         while (strlen($content) > $maxSizeBytes && $quality >= $minQuality) {
-            ob_start();
-
-            match ($mimeType) {
-                'image/jpeg', 'image/jpg' => imagejpeg($image, null, $quality),
-                'image/png' => imagepng($image, null, (int)floor((100 - $quality) / 10)),
-                'image/webp' => imagewebp($image, null, $quality),
-                default => imagejpeg($image, null, $quality),
-            };
-
-            $content = ob_get_clean();
+            $content = $this->encodeImage($image, $mimeType, $quality);
             $quality -= 10;
         }
 
@@ -128,20 +111,8 @@ class MediaService
 
     private function createThumbnail(UploadedFile $file, int $maxWidth = 300): ?string
     {
-        $mimeType = $file->getMimeType();
-
-        if (str_starts_with($mimeType, 'video/')) {
-            return null;
-        }
-
-        if (!str_starts_with($mimeType, 'image/') || !extension_loaded('gd')) {
-            return null;
-        }
-
-        $content = file_get_contents($file->getPathname());
-        $image = @imagecreatefromstring($content);
-
-        if ($image === false) {
+        $image = $this->createImageResource($file);
+        if ($image === null) {
             return null;
         }
 
@@ -149,6 +120,7 @@ class MediaService
         $originalHeight = imagesy($image);
 
         if ($originalWidth <= $maxWidth) {
+            $content = $this->encodeImage($image, $file->getMimeType(), 80);
             imagedestroy($image);
             return $content;
         }
@@ -158,23 +130,14 @@ class MediaService
 
         $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
 
-        if ($mimeType === 'image/png') {
+        if ($file->getMimeType() === 'image/png') {
             imagealphablending($thumbnail, false);
             imagesavealpha($thumbnail, true);
         }
 
         imagecopyresampled($thumbnail, $image, 0, 0, 0, 0, $newWidth, $newHeight, $originalWidth, $originalHeight);
 
-        ob_start();
-
-        match ($mimeType) {
-            'image/jpeg', 'image/jpg' => imagejpeg($thumbnail, null, 80),
-            'image/png' => imagepng($thumbnail, null, 6),
-            'image/webp' => imagewebp($thumbnail, null, 80),
-            default => imagejpeg($thumbnail, null, 80),
-        };
-
-        $thumbnailContent = ob_get_clean();
+        $thumbnailContent = $this->encodeImage($thumbnail, $file->getMimeType(), 80);
 
         imagedestroy($image);
         imagedestroy($thumbnail);
@@ -196,6 +159,38 @@ class MediaService
             MediaRepository::THUMBNAIL_SUFFIX,
             $extension
         );
+    }
+
+    private function createImageResource(UploadedFile $file): ?\GdImage
+    {
+        $mimeType = $file->getMimeType();
+
+        if (str_starts_with($mimeType, 'video/')) {
+            return null;
+        }
+
+        if (!str_starts_with($mimeType, 'image/') || !extension_loaded('gd')) {
+            return null;
+        }
+
+        $content = file_get_contents($file->getPathname());
+        $image = @imagecreatefromstring($content);
+
+        return $image === false ? null : $image;
+    }
+
+    private function encodeImage(\GdImage $image, string $mimeType, int $quality): string
+    {
+        ob_start();
+
+        match ($mimeType) {
+            'image/jpeg', 'image/jpg' => imagejpeg($image, null, $quality),
+            'image/png' => imagepng($image, null, (int)floor((100 - $quality) / 10)),
+            'image/webp' => imagewebp($image, null, $quality),
+            default => imagejpeg($image, null, $quality),
+        };
+
+        return ob_get_clean();
     }
 
     public function uploadBackground(int $orderId, UploadedFile $file): void
