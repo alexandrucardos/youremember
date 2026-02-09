@@ -15,7 +15,32 @@ use PHPUnit\Framework\TestCase;
 
 class EventAddServiceTest extends TestCase
 {
-    public function testAddCreatesEventSuccessfully(): void
+    private const UUID_PATTERN = '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/';
+
+    public static function successfulAddDataProvider(): array
+    {
+        return [
+            'standard user with regular order' => [
+                'email' => 'test@example.com',
+                'orderId' => 123,
+            ]
+        ];
+    }
+
+    public static function userNotFoundDataProvider(): array
+    {
+        return [
+            'nonexistent user' => [
+                'email' => 'nonexistent@example.com',
+                'orderId' => 456,
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider successfulAddDataProvider
+     */
+    public function testAddCreatesEventSuccessfully(string $email, int $orderId): void
     {
         $user = new User();
 
@@ -23,7 +48,7 @@ class EventAddServiceTest extends TestCase
         $userRepository
             ->expects($this->once())
             ->method('findBy')
-            ->with(['email' => 'test@example.com'])
+            ->with(['email' => $email])
             ->willReturn([$user]);
 
         $eventRepository = $this->createMock(EventRepository::class);
@@ -35,28 +60,29 @@ class EventAddServiceTest extends TestCase
         $service = new EventAddService($eventRepository, $userRepository);
 
         $valueObject = new EventAddValueObject(
-            new EmailValueObject('test@example.com'),
-            new OrderIdValueObject(123)
+            new EmailValueObject($email),
+            new OrderIdValueObject($orderId)
         );
 
         $event = $service->add($valueObject);
 
         $this->assertInstanceOf(Event::class, $event);
         $this->assertNotNull($event->getUuid());
-        $this->assertMatchesRegularExpression(
-            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/',
-            $event->getUuid()
-        );
-        $this->assertSame(123, $event->getOrderId());
+        $this->assertMatchesRegularExpression(self::UUID_PATTERN, $event->getUuid());
+        $this->assertSame($orderId, $event->getOrderId());
+        $this->assertSame($user, $event->getUser());
     }
 
-    public function testAddThrowsNotFoundExceptionWhenUserNotFound(): void
+    /**
+     * @dataProvider userNotFoundDataProvider
+     */
+    public function testAddThrowsNotFoundExceptionWhenUserNotFound(string $email, int $orderId): void
     {
         $userRepository = $this->createMock(UserRepository::class);
         $userRepository
             ->expects($this->once())
             ->method('findBy')
-            ->with(['email' => 'nonexistent@example.com'])
+            ->with(['email' => $email])
             ->willReturn([]);
 
         $eventRepository = $this->createMock(EventRepository::class);
@@ -67,8 +93,8 @@ class EventAddServiceTest extends TestCase
         $service = new EventAddService($eventRepository, $userRepository);
 
         $valueObject = new EventAddValueObject(
-            new EmailValueObject('nonexistent@example.com'),
-            new OrderIdValueObject(456)
+            new EmailValueObject($email),
+            new OrderIdValueObject($orderId)
         );
 
         $this->expectException(NotFoundException::class);

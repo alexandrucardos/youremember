@@ -2,7 +2,6 @@
 
 namespace App\Controller\API;
 
-use App\Event\MediaUploadedEvent;
 use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaCountService;
@@ -58,13 +57,9 @@ final class MediaController extends AbstractController
             return $this->json(['error' => 'No files uploaded'], Response::HTTP_BAD_REQUEST);
         }
 
-        $url = $mediatorS3Service->uploadBackground($orderId->value, $file);
+        $mediatorS3Service->uploadBackground($orderId->value, $file);
 
-        $eventDispatcher->dispatch(new MediaUploadedEvent($orderId->value));
-
-        return $this->json([
-            'url' => $url,
-        ], Response::HTTP_CREATED);
+        return $this->json([], Response::HTTP_CREATED);
     }
 
     #[Route('/client/{orderId}', name: self::API_MEDIA_CLIENT_GET, methods: ['GET'])]
@@ -103,8 +98,6 @@ final class MediaController extends AbstractController
         $mediaCountService->incrementByOrderId($orderId->value, count($files));
 
         $mediatorS3Service->uploadMultiple($orderId->value, $files);
-
-        $eventDispatcher->dispatch(new MediaUploadedEvent($orderId->value));
 
         return $this->json([], Response::HTTP_CREATED);
     }
@@ -159,13 +152,9 @@ final class MediaController extends AbstractController
         }
         $mediaCountService->incrementByOrderId($eventFetchVO->orderId, count($files));
 
-        $url = $mediatorS3Service->uploadMultiple($eventFetchVO->orderId, $files, $hash->value);
+        $mediatorS3Service->uploadMultiple($eventFetchVO->orderId, $files, $hash->value);
 
-        $eventDispatcher->dispatch(new MediaUploadedEvent($eventFetchVO->orderId));
-
-        return $this->json([
-            'url' => $url,
-        ], Response::HTTP_CREATED);
+        return $this->json([], Response::HTTP_CREATED);
     }
 
     #[Route('/guest', name: self::NAME_MEDIA_GUEST_DELETE, methods: ['DELETE'])]

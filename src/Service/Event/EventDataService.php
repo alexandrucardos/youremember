@@ -2,6 +2,7 @@
 
 namespace App\Service\Event;
 
+use App\Repository\MediaRepository;
 use App\Service\MediatorS3Service;
 use App\ValueObject\Event\EventDataValueObject;
 use App\ValueObject\Event\EventFetchValueObject;
@@ -10,6 +11,7 @@ class EventDataService
 {
     public function __construct(
         private readonly MediatorS3Service $mediatorS3Service,
+        private readonly MediaRepository   $mediaRepository,
     )
     {
     }
@@ -31,7 +33,7 @@ class EventDataService
             );
         }
 
-        $urls = $this->mediatorS3Service->fetchContentUrlsByOrderId($orderId);
+        $urls = $this->fetchContentUrlsByOrderId($orderId);
 
         return new EventDataValueObject(
             backgroundPictureUrl: $backgroundPictureUrl,
@@ -40,6 +42,19 @@ class EventDataService
                 fn(string $url) => !str_ends_with($url, '/' . MediatorS3Service::FILE_BACKGROUND_NAME)
             )
         );
+    }
+
+    public function fetchContentUrlsByOrderId(int $orderId): array
+    {
+        $paths = $this->mediaRepository->findPathsByOrderId($orderId);
+
+        $urls = [];
+
+        foreach ($paths as $path) {
+            $urls[] = $this->mediatorS3Service->buildUrl(reset($path));
+        }
+
+        return $urls;
     }
 }
 

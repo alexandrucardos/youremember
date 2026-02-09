@@ -198,7 +198,7 @@ class MediatorS3Service
         );
     }
 
-    public function uploadBackground(int $orderId, UploadedFile $file): string
+    public function uploadBackground(int $orderId, UploadedFile $file): void
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
@@ -234,18 +234,6 @@ class MediatorS3Service
             $scaledContent,
             $file->getMimeType()
         );
-
-        return $this->buildUrlFromKey($key);
-    }
-
-    private function buildUrlFromKey(string $key): string
-    {
-        return sprintf(
-            'https://%s.s3.%s.amazonaws.com/%s',
-            $this->bucketName,
-            $this->region,
-            $key
-        );
     }
 
     public function buildUrl(string $prefix): string
@@ -256,19 +244,6 @@ class MediatorS3Service
             $this->region,
             $prefix
         );
-    }
-
-    public function fetchContentUrlsByOrderId(int $orderId): array
-    {
-        $paths = $this->mediaRepository->findPathsByOrderId($orderId);
-
-        $urls = [];
-
-        foreach ($paths as $path) {
-            $urls[] = $this->buildUrlFromKey(reset($path));
-        }
-
-        return $urls;
     }
 
     public function deleteContent(string $url, HashValueObject $hash): void

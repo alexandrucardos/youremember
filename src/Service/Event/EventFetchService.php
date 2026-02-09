@@ -27,20 +27,14 @@ final class EventFetchService
             throw new NotFoundException('Event not found.');
         }
 
-        $backgroundPictureUrl = $event->getBackgroundImage();
-
-
-        //todo this is allways null
-        if (null === $event->getBackgroundImage()) {
-            $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(
-                sprintf(
-                    '%d/%s/%s',
-                    $orderId->value,
-                    MediatorS3Service::FOLDER_CLIENT,
-                    MediatorS3Service::FILE_BACKGROUND_NAME
-                )
-            );
-        }
+        $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(
+            sprintf(
+                '%d/%s/%s',
+                $orderId->value,
+                MediatorS3Service::FOLDER_CLIENT,
+                MediatorS3Service::FILE_BACKGROUND_NAME
+            )
+        );
 
         return new EventFetchValueObject(
             uuid: $event->getUuid(),
@@ -62,7 +56,7 @@ final class EventFetchService
             uuid: $event->getUuid(),
             name: $event->getName(),
             orderId: $event->getOrderId(),
-            backgroundImage: $event->getBackgroundImage(),
+            backgroundImage: null,
         );
     }
 }
