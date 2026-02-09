@@ -36,7 +36,7 @@ services:
     arguments:
       $bucketName: '%env(AWS_S3_BUCKET)%'
 
-  App\Service\MediatorS3Service:
+  App\Service\Media\MediaService:
     arguments:
       $bucketName: '%env(AWS_S3_BUCKET)%'
       $region: '%env(AWS_REGION)%'
