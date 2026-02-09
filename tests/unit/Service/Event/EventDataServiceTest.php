@@ -4,7 +4,7 @@ namespace App\Tests\unit\Service\Event;
 
 use App\Repository\MediaRepository;
 use App\Service\Event\EventDataService;
-use App\Service\MediatorS3Service;
+use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventFetchValueObject;
 use PHPUnit\Framework\TestCase;
 
@@ -12,7 +12,7 @@ class EventDataServiceTest extends TestCase
 {
     private EventDataService $eventDataService;
     private MediaRepository $mediaRepository;
-    private MediatorS3Service $mediatorS3Service;
+    private MediaService $mediatorS3Service;
 
     public function testFetchWithExistingBackgroundImage(): void
     {
@@ -84,7 +84,7 @@ class EventDataServiceTest extends TestCase
             ->expects($this->exactly(3))
             ->method('buildUrl')
             ->willReturnCallback(fn(string $path) => match ($path) {
-                sprintf('%d/%s/%s', $orderId, MediatorS3Service::FOLDER_CLIENT, MediatorS3Service::FILE_BACKGROUND_NAME) => $backgroundImageUrl,
+                sprintf('%d/%s/%s', $orderId, MediaService::FOLDER_CLIENT, MediaService::FILE_BACKGROUND_NAME) => $backgroundImageUrl,
                 '123/client/photo1.jpg' => $picturesUrls[0],
                 '123/client/photo2.jpg' => $picturesUrls[1],
             });
@@ -122,7 +122,7 @@ class EventDataServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->mediatorS3Service = $this->createMock(MediatorS3Service::class);
+        $this->mediatorS3Service = $this->createMock(MediaService::class);
         $this->mediaRepository = $this->createMock(MediaRepository::class);
 
         $this->eventDataService = new EventDataService(

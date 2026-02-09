@@ -3,15 +3,15 @@
 namespace App\Service\Event;
 
 use App\Repository\MediaRepository;
-use App\Service\MediatorS3Service;
+use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventDataValueObject;
 use App\ValueObject\Event\EventFetchValueObject;
 
 class EventDataService
 {
     public function __construct(
-        private readonly MediatorS3Service $mediatorS3Service,
-        private readonly MediaRepository   $mediaRepository,
+        private readonly MediaService    $mediatorS3Service,
+        private readonly MediaRepository $mediaRepository,
     )
     {
     }
@@ -27,8 +27,8 @@ class EventDataService
                 sprintf(
                     '%d/%s/%s',
                     $orderId,
-                    MediatorS3Service::FOLDER_CLIENT,
-                    MediatorS3Service::FILE_BACKGROUND_NAME
+                    MediaService::FOLDER_CLIENT,
+                    MediaService::FILE_BACKGROUND_NAME
                 )
             );
         }
@@ -39,7 +39,7 @@ class EventDataService
             backgroundPictureUrl: $backgroundPictureUrl,
             pictures: array_filter(
                 $urls,
-                fn(string $url) => !str_ends_with($url, '/' . MediatorS3Service::FILE_BACKGROUND_NAME)
+                fn(string $url) => !str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)
             )
         );
     }

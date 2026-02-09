@@ -6,7 +6,7 @@ use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
 use App\Service\Event\EventFetchService;
-use App\Service\MediatorS3Service;
+use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ final class EventFetchServiceTest extends TestCase
     public function testFetchByOrderIdThrowsNotFoundExceptionWhenEventNotFound(): void
     {
         $repo = $this->createMock(EventRepository::class);
-        $s3Service = $this->createMock(MediatorS3Service::class);
+        $s3Service = $this->createMock(MediaService::class);
 
         $orderId = 123;
 
@@ -48,10 +48,10 @@ final class EventFetchServiceTest extends TestCase
             ->with(['order_id' => $orderId])
             ->willReturn($event);
 
-        $s3Service = $this->createMock(MediatorS3Service::class);
+        $s3Service = $this->createMock(MediaService::class);
         $s3Service->expects(self::once())
             ->method('buildUrl')
-            ->with(sprintf('%d/%s/%s', $orderId, MediatorS3Service::FOLDER_CLIENT, MediatorS3Service::FILE_BACKGROUND_NAME))
+            ->with(sprintf('%d/%s/%s', $orderId, MediaService::FOLDER_CLIENT, MediaService::FILE_BACKGROUND_NAME))
             ->willReturn($expectedBackgroundUrl);
 
         $service = new EventFetchService($repo, $s3Service);

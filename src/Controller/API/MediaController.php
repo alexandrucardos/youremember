@@ -5,7 +5,7 @@ namespace App\Controller\API;
 use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaCountService;
-use App\Service\MediatorS3Service;
+use App\Service\Media\MediaService;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
@@ -45,7 +45,7 @@ final class MediaController extends AbstractController
     #[Route('/client/background/{orderId}', name: self::NAME_MEDIA_CLIENT_BACKGROUND_ADD, methods: ['POST'])]
     public function clientBackgroundAdd(
         Request                  $request,
-        MediatorS3Service        $mediatorS3Service,
+        MediaService             $mediatorS3Service,
         EventDispatcherInterface $eventDispatcher,
     ): JsonResponse
     {
@@ -82,10 +82,9 @@ final class MediaController extends AbstractController
 
     #[Route('/client/{orderId}', name: self::NAME_MEDIA_CLIENT_ADD, methods: ['POST'])]
     public function clientAdd(
-        Request                  $request,
-        MediatorS3Service        $mediatorS3Service,
-        MediaCountService        $mediaCountService,
-        EventDispatcherInterface $eventDispatcher,
+        Request           $request,
+        MediaService      $mediatorS3Service,
+        MediaCountService $mediaCountService,
     ): JsonResponse
     {
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
@@ -105,7 +104,7 @@ final class MediaController extends AbstractController
     #[Route('/client', name: self::NAME_MEDIA_CLIENT_DELETE, methods: ['DELETE'])]
     public function clientDelete(
         Request           $request,
-        MediatorS3Service $mediatorS3Service,
+        MediaService      $mediatorS3Service,
         MediaCountService $mediaCountService,
     ): JsonResponse
     {
@@ -128,11 +127,10 @@ final class MediaController extends AbstractController
 
     #[Route('/guest/{uuid}', name: self::NAME_MEDIA_GUEST_ADD, methods: ['POST'])]
     public function guestAdd(
-        Request                  $request,
-        MediatorS3Service        $mediatorS3Service,
-        EventFetchService        $eventFetchService,
-        MediaCountService        $mediaCountService,
-        EventDispatcherInterface $eventDispatcher,
+        Request           $request,
+        MediaService      $mediatorS3Service,
+        EventFetchService $eventFetchService,
+        MediaCountService $mediaCountService,
     ): JsonResponse
     {
         $hashHeader = $request->headers->get('hash');
@@ -160,7 +158,7 @@ final class MediaController extends AbstractController
     #[Route('/guest', name: self::NAME_MEDIA_GUEST_DELETE, methods: ['DELETE'])]
     public function guestDelete(
         Request           $request,
-        MediatorS3Service $mediatorS3Service,
+        MediaService      $mediatorS3Service,
         MediaCountService $mediaCountService,
     ): JsonResponse
     {

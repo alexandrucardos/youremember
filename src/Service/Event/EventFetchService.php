@@ -5,7 +5,7 @@ namespace App\Service\Event;
 use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
-use App\Service\MediatorS3Service;
+use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
@@ -13,8 +13,8 @@ use App\ValueObject\UuidValueObject;
 final class EventFetchService
 {
     public function __construct(
-        private readonly EventRepository   $eventRepository,
-        private readonly MediatorS3Service $mediatorS3Service,
+        private readonly EventRepository $eventRepository,
+        private readonly MediaService    $mediatorS3Service,
     )
     {
     }
@@ -31,8 +31,8 @@ final class EventFetchService
             sprintf(
                 '%d/%s/%s',
                 $orderId->value,
-                MediatorS3Service::FOLDER_CLIENT,
-                MediatorS3Service::FILE_BACKGROUND_NAME
+                MediaService::FOLDER_CLIENT,
+                MediaService::FILE_BACKGROUND_NAME
             )
         );
 

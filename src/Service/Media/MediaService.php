@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Media;
 
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
@@ -11,7 +11,7 @@ use App\Service\Bucket\BucketProviderInterface;
 use App\ValueObject\HashValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class MediatorS3Service
+class MediaService
 {
     public const FOLDER_CLIENT = 'client';
     public const FILE_BACKGROUND_NAME = 'background';
