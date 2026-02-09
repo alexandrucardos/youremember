@@ -4,11 +4,9 @@ namespace App\Service\Media;
 
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
-use App\Exception\Media\UnauthorizedException;
 use App\Repository\EventRepository;
 use App\Repository\MediaRepository;
 use App\Service\Bucket\BucketProviderInterface;
-use App\ValueObject\HashValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class MediaService
@@ -239,52 +237,5 @@ class MediaService
             $this->region,
             $prefix
         );
-    }
-
-    public function deleteContent(string $url, HashValueObject $hash): void
-    {
-        $key = $this->getS3KeyFromUrl($url);
-        $folder = $this->extractFolderFromKey($key);
-
-        if ($folder !== $hash->value) {
-            throw new UnauthorizedException('Not authorized to delete this media');
-        }
-
-        $this->deleteByKey($key);
-    }
-
-    private function getS3KeyFromUrl(string $url): string
-    {
-        $parsed = parse_url($url);
-
-        if (!isset($parsed['host'], $parsed['path'])) {
-            throw new \InvalidArgumentException('Invalid URL');
-        }
-
-        return urldecode(ltrim($parsed['path'], '/'));
-    }
-
-    private function extractFolderFromKey(string $key): string
-    {
-        $parts = explode('/', $key);
-
-        if (count($parts) < 2) {
-            throw new \InvalidArgumentException('Invalid key format');
-        }
-
-        return $parts[1];
-    }
-
-    private function deleteByKey(string $key): void
-    {
-        $this->mediaRepository->softDeleteByPath($key);
-    }
-
-    public function deleteByUrl(string $url): void
-    {
-        //todo make it by batch delete
-        $key = $this->getS3KeyFromUrl($url);
-
-        $this->deleteByKey($key);
     }
 }

@@ -2,12 +2,10 @@
 
 namespace App\Tests\unit\Service\Media;
 
-use App\Exception\Media\UnauthorizedException;
 use App\Repository\EventRepository;
 use App\Repository\MediaRepository;
 use App\Service\Bucket\BucketProviderInterface;
 use App\Service\Media\MediaService;
-use App\ValueObject\HashValueObject;
 use PHPUnit\Framework\TestCase;
 
 class MediaServiceTest extends TestCase
@@ -33,105 +31,26 @@ class MediaServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider successfulDeleteDataProvider
+     * @dataProvider buildUrlDataProvider
      */
-    public function testDeleteContentSucceedsWhenHashMatchesFolder(
-        string $url,
-        string $hash,
-        string $expectedKey
-    ): void {
-        $this->mediaRepository
-            ->expects($this->once())
-            ->method('softDeleteByPath')
-            ->with($expectedKey);
-
-        $this->mediaService->deleteContent($url, new HashValueObject($hash));
-    }
-
-    /**
-     * @dataProvider unauthorizedDeleteDataProvider
-     */
-    public function testDeleteContentThrowsUnauthorizedExceptionWhenHashDoesNotMatch(
-        string $url,
-        string $hash
-    ): void {
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('softDeleteByPath');
-
-        $this->expectException(UnauthorizedException::class);
-        $this->expectExceptionMessage('Not authorized to delete this media');
-
-        $this->mediaService->deleteContent($url, new HashValueObject($hash));
-    }
-
-    /**
-     * @dataProvider invalidUrlDataProvider
-     */
-    public function testDeleteContentThrowsInvalidArgumentExceptionForInvalidUrl(string $url): void
+    public function testBuildUrlReturnsCorrectS3Url(string $prefix, string $expectedUrl): void
     {
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('softDeleteByPath');
+        $result = $this->mediaService->buildUrl($prefix);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid URL');
-
-        $this->mediaService->deleteContent($url, new HashValueObject('somehash'));
+        $this->assertSame($expectedUrl, $result);
     }
 
-    public function testDeleteContentThrowsInvalidArgumentExceptionForInvalidKeyFormat(): void
-    {
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('softDeleteByPath');
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid key format');
-
-        $this->mediaService->deleteContent(
-            'https://bucket.s3.eu-west-1.amazonaws.com/onlyone',
-            new HashValueObject('somehash')
-        );
-    }
-
-    public static function successfulDeleteDataProvider(): array
+    public static function buildUrlDataProvider(): array
     {
         return [
-            'client folder delete' => [
-                'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/123/client/photo.jpg',
-                'hash' => 'client',
-                'expectedKey' => '123/client/photo.jpg',
+            'simple prefix' => [
+                'prefix' => '123/client/photo.jpg',
+                'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo.jpg',
             ],
-            'guest hash folder delete' => [
-                'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/456/abc123hash/image.png',
-                'hash' => 'abc123hash',
-                'expectedKey' => '456/abc123hash/image.png',
+            'prefix with spaces' => [
+                'prefix' => '123/client/photo with spaces.jpg',
+                'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo with spaces.jpg',
             ],
-            'url with encoded characters' => [
-                'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/789/myfolder/photo%20with%20spaces.jpg',
-                'hash' => 'myfolder',
-                'expectedKey' => '789/myfolder/photo with spaces.jpg',
-            ],
-        ];
-    }
-
-    public static function unauthorizedDeleteDataProvider(): array
-    {
-        return [
-            'different guest hash' => [
-                'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/123/hash1/photo.jpg',
-                'hash' => 'hash2',
-            ],
-        ];
-    }
-
-    public static function invalidUrlDataProvider(): array
-    {
-        return [
-            'empty string' => ['url' => ''],
-            'no path' => ['url' => 'https://bucket.s3.eu-west-1.amazonaws.com'],
-            'invalid url format' => ['url' => 'not-a-valid-url'],
         ];
     }
 }

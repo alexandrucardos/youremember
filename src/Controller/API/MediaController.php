@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaCountService;
+use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaService;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\OrderIdValueObject;
@@ -103,9 +104,9 @@ final class MediaController extends AbstractController
 
     #[Route('/client', name: self::NAME_MEDIA_CLIENT_DELETE, methods: ['DELETE'])]
     public function clientDelete(
-        Request           $request,
-        MediaService      $mediatorS3Service,
-        MediaCountService $mediaCountService,
+        Request            $request,
+        MediaDeleteService $mediaDeleteService,
+        MediaCountService  $mediaCountService,
     ): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -119,7 +120,7 @@ final class MediaController extends AbstractController
         //todo do this in batch
         foreach ($urls as $url) {
             $mediaCountService->decrementByUrl($url);
-            $mediatorS3Service->deleteByUrl($url);
+            $mediaDeleteService->deleteByUrl($url);
         }
 
         return $this->json(['deleted' => true]);
@@ -157,9 +158,9 @@ final class MediaController extends AbstractController
 
     #[Route('/guest', name: self::NAME_MEDIA_GUEST_DELETE, methods: ['DELETE'])]
     public function guestDelete(
-        Request           $request,
-        MediaService      $mediatorS3Service,
-        MediaCountService $mediaCountService,
+        Request            $request,
+        MediaDeleteService $mediaDeleteService,
+        MediaCountService  $mediaCountService,
     ): JsonResponse
     {
         $hashHeader = $request->headers->get('hash');
@@ -178,7 +179,7 @@ final class MediaController extends AbstractController
         }
 
         $mediaCountService->decrementByUrl($url);
-        $mediatorS3Service->deleteContent($url, $hash);
+        $mediaDeleteService->deleteContent($url, $hash);
 
         return $this->json(['deleted' => true]);
     }
