@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class ResponseSubscriber implements EventSubscriberInterface
+class ResponseLoggerSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly LoggerInterface $responseLogger,

@@ -3,8 +3,8 @@
 namespace App\Controller\API;
 
 use App\Service\Event\EventAddService;
-use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
+use App\Service\Event\EventMediaFetchService;
 use App\Service\Event\EventUpdateService;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\Event\EventAddValueObject;
@@ -101,9 +101,9 @@ final class EventController extends AbstractController
 
     #[Route('/client/{orderId}', name: self::NAME_EVENT_CLIENT_GET, methods: ['GET'])]
     public function getClientByOrderId(
-        Request           $request,
-        EventFetchService $eventFetchService,
-        EventDataService  $eventDataService,
+        Request                $request,
+        EventFetchService      $eventFetchService,
+        EventMediaFetchService $eventDataService,
     ): JsonResponse
     {
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));
@@ -124,9 +124,9 @@ final class EventController extends AbstractController
 
     #[Route('/{uuid}', name: self::NAME_EVENT_GUEST_GET_BY_UUID, methods: ['GET'])]
     public function getGuestByUuid(
-        Request           $request,
-        EventFetchService $eventFetchService,
-        EventDataService  $eventDataService,
+        Request                $request,
+        EventFetchService      $eventFetchService,
+        EventMediaFetchService $eventDataService,
     ): JsonResponse
     {
         $uuid = new UuidValueObject($request->attributes->get('uuid'));

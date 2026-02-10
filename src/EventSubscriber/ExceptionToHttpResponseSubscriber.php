@@ -6,7 +6,6 @@ use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
 use App\Exception\Event\NotFoundException as EventNotFoundException;
-use App\Exception\Media\BaseMediaException;
 use App\Exception\Media\NotFoundException as MediaNotFoundException;
 use App\Exception\Media\UnauthorizedException as MediaUnauthorizedException;
 use App\Exception\User\NotFoundException as UserNotFoundException;
@@ -16,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-final class ExceptionSubscriber implements EventSubscriberInterface
+final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterface
 {
     public static function getSubscribedEvents(): array
     {
@@ -31,15 +30,15 @@ final class ExceptionSubscriber implements EventSubscriberInterface
 
         $response = match (true) {
             $exception instanceof InvalidStructureException,
-            $exception instanceof InvalidHmacException,
-            $exception instanceof ExpiredException => new JsonResponse(
+                $exception instanceof InvalidHmacException,
+                $exception instanceof ExpiredException => new JsonResponse(
                 ['error' => $exception->getMessage()],
                 Response::HTTP_UNAUTHORIZED
             ),
 
             $exception instanceof EventNotFoundException,
-            $exception instanceof UserNotFoundException,
-            $exception instanceof MediaNotFoundException => new JsonResponse(
+                $exception instanceof UserNotFoundException,
+                $exception instanceof MediaNotFoundException => new JsonResponse(
                 ['error' => $exception->getMessage()],
                 Response::HTTP_NOT_FOUND
             ),

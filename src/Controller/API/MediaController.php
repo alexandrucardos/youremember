@@ -2,8 +2,8 @@
 
 namespace App\Controller\API;
 
-use App\Service\Event\EventDataService;
 use App\Service\Event\EventFetchService;
+use App\Service\Event\EventMediaFetchService;
 use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaService;
@@ -65,9 +65,9 @@ final class MediaController extends AbstractController
 
     #[Route('/client/{orderId}', name: self::API_MEDIA_CLIENT_GET, methods: ['GET'])]
     public function clientGet(
-        Request           $request,
-        EventFetchService $eventFetchService,
-        EventDataService  $eventDataService,
+        Request                $request,
+        EventFetchService      $eventFetchService,
+        EventMediaFetchService $eventDataService,
     ): JsonResponse
     {
         $orderId = new OrderIdValueObject($request->attributes->get('orderId'));

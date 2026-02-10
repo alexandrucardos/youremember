@@ -29,11 +29,12 @@ final class MediaCountService
                 throw new NotFoundException('Event not found');
             }
 
+            $this->entityManager->lock($event, LockMode::PESSIMISTIC_WRITE);
+            $this->entityManager->refresh($event);
+
             if ($event->getMediaCount() + $count >= $event->getMaxMediaCount()) {
                 throw new MaximumMediaItemsReachedException('Maximum media items reached');
             }
-
-            $this->entityManager->lock($event, LockMode::PESSIMISTIC_WRITE);
 
             $event->setMediaCount($event->getMediaCount() + $count);
 

@@ -7,7 +7,7 @@ use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventDataValueObject;
 use App\ValueObject\Event\EventFetchValueObject;
 
-class EventDataService
+class EventMediaFetchService
 {
     public function __construct(
         private readonly MediaService    $mediatorS3Service,
