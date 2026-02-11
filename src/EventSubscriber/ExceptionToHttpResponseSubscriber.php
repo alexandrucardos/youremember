@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
+use App\Exception\Event\EventInvalidException;
 use App\Exception\Event\NotFoundException as EventNotFoundException;
 use App\Exception\Media\NotFoundException as MediaNotFoundException;
 use App\Exception\Media\UnauthorizedException as MediaUnauthorizedException;
@@ -46,6 +47,11 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
             $exception instanceof MediaUnauthorizedException => new JsonResponse(
                 ['error' => $exception->getMessage()],
                 Response::HTTP_FORBIDDEN
+            ),
+
+            $exception instanceof EventInvalidException => new JsonResponse(
+                ['error' => $exception->getMessage()],
+                Response::HTTP_GONE
             ),
 
             $exception instanceof \InvalidArgumentException => new JsonResponse(

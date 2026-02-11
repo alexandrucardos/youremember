@@ -47,6 +47,7 @@ class MediaRepository extends ServiceEntityRepository
             ->andWhere('m.deleted_at IS NULL')
             ->setParameter('path', $path)
             ->getQuery()
+            ->setMaxResults(1)
             ->getOneOrNullResult();
 
         if ($media === null) {

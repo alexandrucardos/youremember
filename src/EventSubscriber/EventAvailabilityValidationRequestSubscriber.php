@@ -4,34 +4,34 @@ namespace App\EventSubscriber;
 
 use App\Controller\API\EventController;
 use App\Controller\API\MediaController;
-use App\Controller\API\UserController;
-use App\Service\FrontendTokenParserService;
+use App\Exception\Event\EventInvalidException;
+use App\Service\Event\EventAvailabilityService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-final class SecurityValidationRequestSubscriber implements EventSubscriberInterface
+final class EventAvailabilityValidationRequestSubscriber implements EventSubscriberInterface
 {
     private const ROUTES = [
-        EventController::NAME_EVENT_CLIENT_CREATE,
-        UserController::NAME_USER_CLIENT_CREATE,
-
         EventController::NAME_EVENT_CLIENT_GET,
         EventController::NAME_EVENT_CLIENT_UPDATE,
         EventController::NAME_EVENT_CLIENT_PAGE_URL_GET,
         EventController::NAME_EVENT_CLIENT_NAME_GET,
+        EventController::NAME_EVENT_GUEST_GET_BY_UUID, //uuid
 
         MediaController::NAME_MEDIA_CLIENT_GET,
         MediaController::NAME_MEDIA_CLIENT_ADD,
-        MediaController::NAME_MEDIA_CLIENT_DELETE,
+//        MediaController::NAME_MEDIA_CLIENT_DELETE,
 
         MediaController::NAME_MEDIA_CLIENT_BACKGROUND_ADD,
         MediaController::NAME_MEDIA_CLIENT_BACKGROUND_GET,
+
+        MediaController::NAME_MEDIA_GUEST_ADD, // uuid
+//        MediaController::NAME_MEDIA_GUEST_DELETE,
     ];
 
     public function __construct(
-        private readonly FrontendTokenParserService $tokenParser,
+        private readonly EventAvailabilityService $availabilityService,
     )
     {
     }
@@ -56,12 +56,14 @@ final class SecurityValidationRequestSubscriber implements EventSubscriberInterf
             return;
         }
 
-        $token = $request->headers->get('token');
+        $orderId = $request->attributes->get('orderId');
+        $uuid = $request->attributes->get('uuid');
 
-        if ($token === null) {
-            throw new UnauthorizedHttpException('Token', 'Missing token header');
+
+        $shouldContinue = ($this->availabilityService)($orderId, $uuid);
+
+        if ($shouldContinue === false) {
+            throw new EventInvalidException('The event is no longer valid!');
         }
-
-        $this->tokenParser->validateToken($token);
     }
 }

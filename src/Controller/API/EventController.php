@@ -21,9 +21,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class EventController extends AbstractController
 {
     public const NAME_EVENT_CLIENT_GET = 'api_event_client_get';
-    public const NAME_EVENT_CLIENT_NAME_GET = 'api_event_client_name_get';
     public const NAME_EVENT_CLIENT_CREATE = 'api_event_client_create';
     public const NAME_EVENT_CLIENT_UPDATE = 'api_event_client_update';
+    public const NAME_EVENT_CLIENT_NAME_GET = 'api_event_client_name_get';
     public const NAME_EVENT_CLIENT_PAGE_URL_GET = 'api_event_client_page_url_get';
     public const NAME_EVENT_GUEST_GET_BY_UUID = 'api_event_guest_get_by_uuid';
 
