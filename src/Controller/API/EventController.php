@@ -92,7 +92,7 @@ final class EventController extends AbstractController
         $event = $eventUpdateService->updateName(
             new OrderIdValueObject($request->attributes->get('orderId')),
             new EventNameValueObject($data['name']),
-            new EventNameFontValueObject($data['font'] ?? null)
+            new EventNameFontValueObject($data['font'])
         );
 
         return $this->json([
@@ -141,6 +141,7 @@ final class EventController extends AbstractController
         return $this->json([
             'token' => $eventFetchVO->uuid,
             'name' => $eventFetchVO->name,
+            'font' => $eventFetchVO->nameFont,
             'media' => [
                 'backgroundPictureUrl' => $eventDataDto->backgroundPictureUrl,
                 'pictures' => $eventDataDto->pictures,

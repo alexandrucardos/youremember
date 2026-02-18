@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Validation;
 
 final class EventNameFontValueObject
 {
-    private const DEFAULT_FONT = 'Arial';
+    private const DEFAULT_FONT = 'elegant';
 
     #[Assert\NotBlank]
     #[Assert\Length(max: 50, min: 2)]

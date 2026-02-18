@@ -27,7 +27,7 @@ class Event
     private ?string $name = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $name_font = null;
+    private string $name_font;
 
     #[ORM\Column(
         enumType: Status::class,
@@ -225,12 +225,12 @@ class Event
         return $this;
     }
 
-    public function getNameFont(): ?string
+    public function getNameFont(): string
     {
         return $this->name_font;
     }
 
-    public function setNameFont(?string $name_font): self
+    public function setNameFont(string $name_font): self
     {
         $this->name_font = $name_font;
 

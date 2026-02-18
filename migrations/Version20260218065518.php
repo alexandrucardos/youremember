@@ -20,7 +20,7 @@ final class Version20260218065518 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE event ADD name_font VARCHAR(50) DEFAULT NULL AFTER name');
+        $this->addSql('ALTER TABLE event ADD name_font VARCHAR(50) AFTER name');
         $this->addSql('ALTER TABLE user CHANGE created_at created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CHANGE modified_at modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
     }
 
