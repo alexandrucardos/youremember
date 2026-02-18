@@ -26,6 +26,9 @@ class Event
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $name_font = null;
+
     #[ORM\Column(
         enumType: Status::class,
         options: ['default' => Status::VALID]
@@ -220,5 +223,15 @@ class Event
         $this->media->removeElement($media);
 
         return $this;
+    }
+
+    public function getNameFont(): ?string
+    {
+        return $this->name_font;
+    }
+
+    public function setNameFont(?string $name_font): void
+    {
+        $this->name_font = $name_font;
     }
 }

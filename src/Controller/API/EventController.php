@@ -8,6 +8,7 @@ use App\Service\Event\EventMediaFetchService;
 use App\Service\Event\EventUpdateService;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\Event\EventAddValueObject;
+use App\ValueObject\EventNameFontValueObject;
 use App\ValueObject\EventNameValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
@@ -89,7 +90,8 @@ final class EventController extends AbstractController
 
         $event = $eventUpdateService->updateName(
             new OrderIdValueObject($request->attributes->get('orderId')),
-            new EventNameValueObject($data['name'])
+            new EventNameValueObject($data['name']),
+            new EventNameFontValueObject($data['font'])
         );
 
         return $this->json([

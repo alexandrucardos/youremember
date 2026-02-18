@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
 use App\Service\Event\EventUpdateService;
+use App\ValueObject\EventNameFontValueObject;
 use App\ValueObject\EventNameValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
@@ -21,10 +22,12 @@ class EventUpdateServiceTest extends TestCase
             'simple name update' => [
                 'orderId' => 123,
                 'newName' => 'Birthday Party',
+                'font' => 'font1'
             ],
             'name with special characters' => [
                 'orderId' => 456,
                 'newName' => 'Wedding - John & Jane',
+                'font' => 'font2'
             ],
             'unicode name' => [
                 'orderId' => 789,
@@ -36,7 +39,11 @@ class EventUpdateServiceTest extends TestCase
     /**
      * @dataProvider successfulUpdateNameDataProvider
      */
-    public function testUpdateNameSucceedsWhenEventExists(int $orderId, string $newName): void
+    public function testUpdateNameSucceedsWhenEventExists(
+        int    $orderId,
+        string $newName,
+        string $font = null
+    ): void
     {
         $event = new Event();
         $event->setName('Old Name');
@@ -54,7 +61,8 @@ class EventUpdateServiceTest extends TestCase
 
         $result = $this->eventUpdateService->updateName(
             new OrderIdValueObject($orderId),
-            new EventNameValueObject($newName)
+            new EventNameValueObject($newName),
+            new EventNameFontValueObject($font)
         );
 
         $this->assertSame($event, $result);
@@ -80,7 +88,8 @@ class EventUpdateServiceTest extends TestCase
 
         $this->eventUpdateService->updateName(
             new OrderIdValueObject($orderId),
-            new EventNameValueObject('New Name')
+            new EventNameValueObject('New Name'),
+            new EventNameFontValueObject('Oswald')
         );
     }
 
