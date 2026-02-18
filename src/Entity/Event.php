@@ -230,8 +230,10 @@ class Event
         return $this->name_font;
     }
 
-    public function setNameFont(?string $name_font): void
+    public function setNameFont(?string $name_font): self
     {
         $this->name_font = $name_font;
+
+        return $this;
     }
 }

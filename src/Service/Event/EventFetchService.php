@@ -39,6 +39,7 @@ final class EventFetchService
         return new EventFetchValueObject(
             uuid: $event->getUuid(),
             name: $event->getName(),
+            nameFont: $event->getNameFont(),
             orderId: $event->getOrderId(),
             backgroundImage: $backgroundPictureUrl,
         );
@@ -55,6 +56,7 @@ final class EventFetchService
         return new EventFetchValueObject(
             uuid: $event->getUuid(),
             name: $event->getName(),
+            nameFont: $event->getNameFont(),
             orderId: $event->getOrderId(),
             backgroundImage: null,
         );

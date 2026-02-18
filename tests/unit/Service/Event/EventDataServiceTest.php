@@ -27,6 +27,7 @@ class EventDataServiceTest extends TestCase
         $eventFetchDto = new EventFetchValueObject(
             uuid: $eventUuid,
             name: 'Test Event',
+            nameFont: 'Arial',
             orderId: $orderId,
             backgroundImage: $backgroundImage
         );
@@ -67,6 +68,7 @@ class EventDataServiceTest extends TestCase
         $eventFetchDto = new EventFetchValueObject(
             uuid: $eventUuid,
             name: 'Test Event',
+            nameFont: 'Arial',
             orderId: $orderId,
             backgroundImage: null
         );
@@ -104,6 +106,7 @@ class EventDataServiceTest extends TestCase
         $eventFetchDto = new EventFetchValueObject(
             uuid: $eventUuid,
             name: 'Test Event',
+            nameFont: 'Arial',
             orderId: $orderId,
             backgroundImage: $backgroundImage
         );

@@ -38,6 +38,7 @@ final class EventFetchServiceTest extends TestCase
         $event = (new Event())
             ->setUuid('550e8400-e29b-41d4-a716-446655440000')
             ->setName('Test Event')
+            ->setNameFont('Arial')
             ->setOrderId($orderId);
 
         $expectedBackgroundUrl = 'https://s3.example.com/123/client/background.webp';
