@@ -91,7 +91,7 @@ class MediaService
         }
     }
 
-    private function processContent(UploadedFile $file, int $maxSizeBytes = 1048576): string
+    private function processContent(UploadedFile $file, int $maxSizeBytes = 10485760): string
     {
         $content = file_get_contents($file->getPathname());
 
