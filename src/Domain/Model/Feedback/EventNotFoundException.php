@@ -2,7 +2,7 @@
 
 namespace App\Domain\Model\Feedback;
 
-class EventNotFoundException extends ImageArchiveException
+class EventNotFoundException extends FeedbackBaseEventException
 {
 
 }

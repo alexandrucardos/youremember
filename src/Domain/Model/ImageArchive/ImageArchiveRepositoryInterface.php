@@ -6,7 +6,7 @@ interface ImageArchiveRepositoryInterface
 {
 
     /**
-     * @throws EventNotFoundException
+     * @throws EventNotFoundBaseException
      */
     public function save(ImageArchiveEntity $imageArchiveEntity): void;
 }
