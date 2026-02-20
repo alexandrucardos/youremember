@@ -18,7 +18,7 @@ class FeedbackRepository extends ServiceEntityRepository implements FeedbackRepo
 
     public function __construct(
         ManagerRegistry $registry,
-        EventRepository $eventRepository, EventRepository $eventRepository,
+        EventRepository $eventRepository,
     )
     {
         parent::__construct($registry, Feedback::class);
@@ -30,14 +30,18 @@ class FeedbackRepository extends ServiceEntityRepository implements FeedbackRepo
      */
     public function save(FeedbackEntity $feedbackEntity): void
     {
-        $event = $this->eventRepository->findOneBy(['uuid', $feedbackEntity->getUuid()]);
+        $event = $this->eventRepository->findOneBy(
+            [
+                'uuid' => $feedbackEntity->eventUuidValueObject->value
+            ]
+        );
 
         if (!$event) {
             throw new EventNotFoundException();
         }
 
         $feedback = (new Feedback())->setEvent($event)
-            ->setFeedback($feedbackEntity->getFeedback()->value);
+            ->setFeedback($feedbackEntity->feedbackValueObject->value);
 
         $this->getEntityManager()->persist($feedback);
 

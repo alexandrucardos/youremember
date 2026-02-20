@@ -16,10 +16,9 @@ class AddFeedbackHandler
     public function __invoke(AddFeedbackCommand $command): void
     {
         $feedbackEntity = new FeedbackEntity(
-            $command->uuidValueObject
+            $command->uuidValueObject,
+            $command->feedbackValueObject,
         );
-
-        $feedbackEntity->setFeedback($command->feedbackValueObject);
 
         $this->feedbackRepository->save($feedbackEntity);
     }

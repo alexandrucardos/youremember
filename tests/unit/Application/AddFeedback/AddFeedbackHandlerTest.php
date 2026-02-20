@@ -36,8 +36,8 @@ class AddFeedbackHandlerTest extends TestCase
             ->expects($this->once())
             ->method('save')
             ->with($this->callback(function (FeedbackEntity $feedbackEntity) use ($uuid, $feedback) {
-                return $feedbackEntity->getUuid()->value === $uuid
-                    && $feedbackEntity->getFeedback()->value === $feedback;
+                return $feedbackEntity->eventUuidValueObject->value === $uuid
+                    && $feedbackEntity->feedbackValueObject->value === $feedback;
             }));
 
         $command = new AddFeedbackCommand(
