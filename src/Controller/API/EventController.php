@@ -2,6 +2,9 @@
 
 namespace App\Controller\API;
 
+use App\Application\AddFeedback\AddFeedbackCommand;
+use App\Application\AddFeedback\AddFeedbackHandler;
+use App\Domain\ValueObject\FeedbackValueObject;
 use App\Service\Event\EventAddService;
 use App\Service\Event\EventFetchService;
 use App\Service\Event\EventMediaFetchService;
@@ -27,6 +30,7 @@ final class EventController extends AbstractController
     public const NAME_EVENT_CLIENT_NAME_GET = 'api_event_client_name_get';
     public const NAME_EVENT_CLIENT_PAGE_URL_GET = 'api_event_client_page_url_get';
     public const NAME_EVENT_GUEST_GET_BY_UUID = 'api_event_guest_get_by_uuid';
+    public const NAME_ADD_FEEDBACK_GUEST_BY_UUID = 'api_event_guest_add_feedback_by_uuid';
 
     #[Route('/client/page-url/{orderId}', name: self::NAME_EVENT_CLIENT_PAGE_URL_GET, methods: ['GET'])]
     public function getClientEventUrlByOrderId(
@@ -147,6 +151,24 @@ final class EventController extends AbstractController
                 'pictures' => $eventDataDto->pictures,
             ],
         ]);
+    }
+
+    #[Route('/feedback/{uuid}', name: self::NAME_ADD_FEEDBACK_GUEST_BY_UUID, methods: ['POST'])]
+    public function addFeedbackByUuid(
+        Request            $request,
+        AddFeedbackHandler $addFeedbackHandler,
+    ): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $addFeedbackCommand = new AddFeedbackCommand(
+            feedbackValueObject: new FeedbackValueObject($data['feedback'] ?? null),
+            uuidValueObject: new UuidValueObject($request->attributes->get('uuid'))
+        );
+
+        $addFeedbackHandler($addFeedbackCommand);
+
+        return $this->json([]);
     }
 }
 

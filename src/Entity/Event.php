@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\EventRepository;
 use App\ValueObject\Status;
+use App\Entity\Feedback;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -53,6 +54,10 @@ class Event
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Media::class, cascade: ['remove'])]
     private Collection $media;
 
+    /** @var Collection<int, Feedback> */
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Feedback::class, cascade: ['remove'])]
+    private Collection $feedbacks;
+
     #[ORM\Column(
         insertable: false,
         updatable: false,
@@ -73,6 +78,7 @@ class Event
     {
         $this->status = Status::VALID;
         $this->media = new ArrayCollection();
+        $this->feedbacks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -223,6 +229,14 @@ class Event
         $this->media->removeElement($media);
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Feedback>
+     */
+    public function getFeedbacks(): Collection
+    {
+        return $this->feedbacks;
     }
 
     public function getNameFont(): string
