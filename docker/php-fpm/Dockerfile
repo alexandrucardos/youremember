@@ -10,7 +10,7 @@ RUN apk update \
      && apk add --no-cache freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev \
         imagemagick imagemagick-dev imagemagick-heic libheif libheif-dev  autoconf g++ make \
      && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-     && docker-php-ext-install mysqli pdo pdo_mysql gd \
+     && docker-php-ext-install mysqli pdo pdo_mysql gd exif \
      && pecl install imagick \
      && docker-php-ext-enable pdo_mysql gd imagick
 
