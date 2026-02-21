@@ -93,6 +93,10 @@ class MediaService
 
     private function processContent(UploadedFile $file, int $maxSizeBytes = 10485760): string
     {
+        if (!$file->isValid()) {
+            throw new \RuntimeException('File upload failed: ' . $file->getErrorMessage());
+        }
+
         $content = file_get_contents($file->getPathname());
 
         $image = $this->createImageResource($file);
@@ -176,6 +180,10 @@ class MediaService
 
     private function createImageResource(UploadedFile $file): ?\GdImage
     {
+        if (!$file->isValid()) {
+            return null;
+        }
+
         $mimeType = $file->getMimeType();
 
         if (str_starts_with($mimeType, 'video/')) {
@@ -193,7 +201,11 @@ class MediaService
         $content = file_get_contents($file->getPathname());
         $image = @imagecreatefromstring($content);
 
-        return $image === false ? null : $image;
+        if ($image === false) {
+            return null;
+        }
+
+        return $this->applyExifOrientation($image, $file->getPathname());
     }
 
     private function convertToJpeg(\GdImage $image, int $quality): string
@@ -230,6 +242,30 @@ class MediaService
         $image = @imagecreatefromstring($jpegContent);
 
         return $image === false ? null : $image;
+    }
+
+    private function applyExifOrientation(\GdImage $image, string $filePath): \GdImage
+    {
+        $exif = @exif_read_data($filePath);
+        if ($exif === false || !isset($exif['Orientation'])) {
+            return $image;
+        }
+
+        $degrees = match ((int)$exif['Orientation']) {
+            3 => 180,
+            6 => -90,
+            8 => 90,
+            default => 0,
+        };
+
+        if ($degrees === 0) {
+            return $image;
+        }
+
+        $rotated = imagerotate($image, $degrees, 0);
+        imagedestroy($image);
+
+        return $rotated === false ? $image : $rotated;
     }
 
     public function uploadBackground(int $orderId, UploadedFile $file): void
