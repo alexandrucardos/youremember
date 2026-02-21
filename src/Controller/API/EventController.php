@@ -4,6 +4,8 @@ namespace App\Controller\API;
 
 use App\Application\AddFeedback\AddFeedbackCommand;
 use App\Application\AddFeedback\AddFeedbackHandler;
+use App\Application\AddImageArchiveEmail\AddImageArchiveEmailCommand;
+use App\Application\AddImageArchiveEmail\AddImageArchiveEmailHandler;
 use App\Domain\ValueObject\FeedbackValueObject;
 use App\Service\Event\EventAddService;
 use App\Service\Event\EventFetchService;
@@ -31,6 +33,7 @@ final class EventController extends AbstractController
     public const NAME_EVENT_CLIENT_PAGE_URL_GET = 'api_event_client_page_url_get';
     public const NAME_EVENT_GUEST_GET_BY_UUID = 'api_event_guest_get_by_uuid';
     public const NAME_ADD_FEEDBACK_GUEST_BY_UUID = 'api_event_guest_add_feedback_by_uuid';
+    public const NAME_ADD_IMAGE_ARCHIVE_EMAIL_GUEST_BY_UUID = 'api_event_guest_add_image_arvhive_email_by_uuid';
 
     #[Route('/client/page-url/{orderId}', name: self::NAME_EVENT_CLIENT_PAGE_URL_GET, methods: ['GET'])]
     public function getClientEventUrlByOrderId(
@@ -167,6 +170,24 @@ final class EventController extends AbstractController
         );
 
         $addFeedbackHandler($addFeedbackCommand);
+
+        return $this->json([]);
+    }
+
+    #[Route('/image-archive/{uuid}', name: self::NAME_ADD_IMAGE_ARCHIVE_EMAIL_GUEST_BY_UUID, methods: ['POST'])]
+    public function addImageArchiveEmail(
+        Request                     $request,
+        AddImageArchiveEmailHandler $addImageArchiveEmailHandler,
+    ): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $addImageArchiveEmailCommand = new AddImageArchiveEmailCommand(
+            emailValueObject: new EmailValueObject($data['email'] ?? null),
+            uuidValueObject: new UuidValueObject($request->attributes->get('uuid'))
+        );
+
+        $addImageArchiveEmailHandler($addImageArchiveEmailCommand);
 
         return $this->json([]);
     }

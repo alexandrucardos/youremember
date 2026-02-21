@@ -11,7 +11,6 @@ class AddImageArchiveEmailHandler
         private readonly ImageArchiveRepositoryInterface $imageArchiveRepository,
     )
     {
-
     }
 
     public function __invoke(AddImageArchiveEmailCommand $command): void
