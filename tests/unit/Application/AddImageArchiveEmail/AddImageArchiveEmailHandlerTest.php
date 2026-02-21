@@ -4,7 +4,7 @@ namespace App\Tests\unit\Application\AddImageArchiveEmail;
 
 use App\Application\AddImageArchiveEmail\AddImageArchiveEmailCommand;
 use App\Application\AddImageArchiveEmail\AddImageArchiveEmailHandler;
-use App\Domain\Model\ImageArchive\EventNotFoundBaseException;
+use App\Domain\Model\ImageArchive\EventNotFoundException;
 use App\Domain\Model\ImageArchive\ImageArchiveEntity;
 use App\Domain\Model\ImageArchive\ImageArchiveRepositoryInterface;
 use App\ValueObject\EmailValueObject;
@@ -52,14 +52,14 @@ class AddImageArchiveEmailHandlerTest extends TestCase
         $imageArchiveRepository
             ->expects($this->once())
             ->method('save')
-            ->willThrowException(new EventNotFoundBaseException());
+            ->willThrowException(new EventNotFoundException());
 
         $command = new AddImageArchiveEmailCommand(
             emailValueObject: new EmailValueObject('user@example.com'),
             uuidValueObject: new UuidValueObject('550e8400-e29b-41d4-a716-446655440000'),
         );
 
-        $this->expectException(EventNotFoundBaseException::class);
+        $this->expectException(EventNotFoundException::class);
 
         $handler = new AddImageArchiveEmailHandler($imageArchiveRepository);
         $handler($command);
