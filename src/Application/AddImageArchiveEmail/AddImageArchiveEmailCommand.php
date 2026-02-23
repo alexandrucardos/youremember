@@ -8,8 +8,8 @@ use App\ValueObject\UuidValueObject;
 class AddImageArchiveEmailCommand
 {
     public function __construct(
-        public readonly EmailValueObject $emailValueObject,
         public readonly UuidValueObject  $uuidValueObject,
+        public readonly EmailValueObject $emailValueObject,
     )
     {
     }

@@ -2,24 +2,25 @@
 
 namespace App\Application\AddFeedback;
 
-use App\Domain\Model\Feedback\FeedbackEntity;
-use App\Domain\Model\Feedback\FeedbackRepositoryInterface;
+use App\Domain\Model\Event\EventEntity;
+use App\Domain\Model\Event\EventRepositoryInterface;
 
 class AddFeedbackHandler
 {
     public function __construct(
-        private readonly FeedbackRepositoryInterface $feedbackRepository,
+        private readonly EventRepositoryInterface $eventRepository,
     )
     {
     }
 
     public function __invoke(AddFeedbackCommand $command): void
     {
-        $feedbackEntity = new FeedbackEntity(
+        $eventEntity = new EventEntity(
             $command->uuidValueObject,
-            $command->feedbackValueObject,
         );
 
-        $this->feedbackRepository->save($feedbackEntity);
+        $eventEntity->setFeedbackValueObject($command->feedbackValueObject);
+
+        $this->eventRepository->saveFeedbackForEvent($eventEntity);
     }
 }

@@ -2,24 +2,25 @@
 
 namespace App\Application\AddImageArchiveEmail;
 
-use App\Domain\Model\ImageArchive\ImageArchiveEntity;
-use App\Domain\Model\ImageArchive\ImageArchiveRepositoryInterface;
+use App\Domain\Model\Event\EventEntity;
+use App\Domain\Model\Event\EventRepositoryInterface;
 
 class AddImageArchiveEmailHandler
 {
     public function __construct(
-        private readonly ImageArchiveRepositoryInterface $imageArchiveRepository,
+        private readonly EventRepositoryInterface $eventRepository,
     )
     {
     }
 
     public function __invoke(AddImageArchiveEmailCommand $command): void
     {
-        $imageArchiveEntity = new ImageArchiveEntity(
+        $eventEntity = new EventEntity(
             eventUuidValueObject: $command->uuidValueObject,
-            emailValueObject: $command->emailValueObject,
         );
 
-        $this->imageArchiveRepository->save($imageArchiveEntity);
+        $eventEntity->setImageArchiveEmail($command->emailValueObject);
+
+        $this->eventRepository->saveArchiveEmailForEvent($eventEntity);
     }
 }
