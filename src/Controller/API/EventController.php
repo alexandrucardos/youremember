@@ -183,8 +183,8 @@ final class EventController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         $addImageArchiveEmailCommand = new AddImageArchiveEmailCommand(
-            emailValueObject: new EmailValueObject($data['email'] ?? null),
-            uuidValueObject: new UuidValueObject($request->attributes->get('uuid'))
+            uuidValueObject: new UuidValueObject($request->attributes->get('uuid')),
+            emailValueObject: new EmailValueObject($data['email'] ?? null)
         );
 
         $addImageArchiveEmailHandler($addImageArchiveEmailCommand);
