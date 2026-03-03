@@ -28,6 +28,7 @@ services:
       - region: '%env(AWS_REGION)%'
         accessKeyId: '%env(AWS_ACCESS_KEY_ID)%'
         accessKeySecret: '%env(AWS_SECRET_ACCESS_KEY)%'
+        endpoint: 'https://s3-accelerate.amazonaws.com'
 
   App\Service\Bucket\BucketProviderInterface:
     alias: App\Service\Bucket\AwsProviderService
