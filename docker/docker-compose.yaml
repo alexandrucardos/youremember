@@ -1,3 +1,5 @@
+name: "be-events-photoshare"
+
 services:
   photoshare-nginx:
     build:

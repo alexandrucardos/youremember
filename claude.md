@@ -54,6 +54,10 @@ protected function bb(){};
 private function cc(){};
 ```
 
+## Formating
+
+do not reformat code, keep the existing formating
+
 ## Exceptions
 
 - all exceptions should have a specific folder, and a base exception in that folder
