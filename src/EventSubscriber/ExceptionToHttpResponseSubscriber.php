@@ -10,6 +10,8 @@ use App\Exception\Event\NotFoundException as EventNotFoundException;
 use App\Exception\Media\NotFoundException as MediaNotFoundException;
 use App\Exception\Media\UnauthorizedException as MediaUnauthorizedException;
 use App\Exception\User\NotFoundException as UserNotFoundException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +20,12 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterface
 {
+    public function __construct(
+        private readonly LoggerInterface $errorLogger,
+    )
+    {
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -59,11 +67,16 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
                 Response::HTTP_BAD_REQUEST
             ),
 
-            default => null,
+            default => $this->logUnexpected($exception),
         };
 
         if ($response !== null) {
             $event->setResponse($response);
         }
+    }
+
+    private function logUnexpected(\Exception $e): void
+    {
+        $this->errorLogger->log(LogLevel::ERROR, $e->getMessage(), ['trace' => $e->getTraceAsString()]);
     }
 }

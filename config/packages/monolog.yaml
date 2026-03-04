@@ -2,6 +2,7 @@ monolog:
     channels:
         - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
         - response # Response logging channel
+        - error # Error logging channel
 
 when@dev:
     monolog:
@@ -10,16 +11,24 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ["!event", "!response"]
+                channels: [ "!event", "!response", "!error" ]
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ["!event", "!doctrine", "!console", "!response"]
+                channels: [ "!event", "!doctrine", "!console", "!response", "!error" ]
             response:
                 type: rotating_file
                 path: "%kernel.logs_dir%/response.log"
                 level: info
-                channels: [response]
+                channels: [ response ]
+                max_files: 30
+                filename_format: '{filename}-{date}'
+                date_format: 'Y-m-d'
+            error:
+                type: rotating_file
+                path: "%kernel.logs_dir%/error.log"
+                level: error
+                channels: [ error ]
                 max_files: 30
                 filename_format: '{filename}-{date}'
                 date_format: 'Y-m-d'
@@ -31,12 +40,20 @@ when@test:
                 type: fingers_crossed
                 action_level: error
                 handler: nested
-                excluded_http_codes: [404, 405]
-                channels: ["!event"]
+                excluded_http_codes: [ 404, 405 ]
+                channels: [ "!event", "!error" ]
             nested:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
+            error:
+                type: rotating_file
+                path: "%kernel.logs_dir%/error.log"
+                level: error
+                channels: [ error ]
+                max_files: 30
+                filename_format: '{filename}-{date}'
+                date_format: 'Y-m-d'
 
 when@prod:
     monolog:
@@ -45,8 +62,8 @@ when@prod:
                 type: fingers_crossed
                 action_level: error
                 handler: nested
-                excluded_http_codes: [404, 405]
-                channels: ["!deprecation", "!response"]
+                excluded_http_codes: [ 404, 405 ]
+                channels: [ "!deprecation", "!response", "!error" ]
                 buffer_size: 50 # How many messages should be saved? Prevent memory leaks
             nested:
                 type: stream
@@ -56,17 +73,25 @@ when@prod:
             console:
                 type: console
                 process_psr_3_messages: false
-                channels: ["!event", "!doctrine", "!response"]
+                channels: [ "!event", "!doctrine", "!response", "!error" ]
             deprecation:
                 type: stream
-                channels: [deprecation]
+                channels: [ deprecation ]
                 path: php://stderr
                 formatter: monolog.formatter.json
             response:
                 type: rotating_file
                 path: "%kernel.logs_dir%/response.log"
                 level: info
-                channels: [response]
+                channels: [ response ]
+                max_files: 30
+                filename_format: '{filename}-{date}'
+                date_format: 'Y-m-d'
+            error:
+                type: rotating_file
+                path: "%kernel.logs_dir%/error.log"
+                level: error
+                channels: [ error ]
                 max_files: 30
                 filename_format: '{filename}-{date}'
                 date_format: 'Y-m-d'
