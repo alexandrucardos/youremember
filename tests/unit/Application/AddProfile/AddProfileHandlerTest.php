@@ -46,11 +46,11 @@ class AddEventHandlerTest extends TestCase
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
-            ->method('saveEvent')
+            ->method('saveProfile')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->getOrderId()->value === $orderId
-                    && $eventEntity->eventUuidValueObject->value === self::UUID
+                    && $eventEntity->profileUuidValueObject->value === self::UUID
                     && $eventEntity->needsManualProcessing() === $needsManualProcessing
                     && $eventEntity->getEventStartDate()->value->format('Y-m-d H:i:s') === $eventStartDate->format(
                         'Y-m-d H:i:s'

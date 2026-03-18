@@ -1,14 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Application\ListEventInformation\ProfileViewModel;
 use App\Application\ListEventInformation\MediaViewModel;
+use App\Application\ListEventInformation\ProfileViewModel;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Entity\Event;
 use App\Entity\Feedback;
 use App\Entity\ImageArchive;
@@ -21,28 +21,28 @@ use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaPresignService;
 use App\Service\Media\MediaService;
-use App\ValueObject\EventNameFontValueObject;
-use App\ValueObject\EventNameValueObject;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\UserRole;
 use App\ValueObject\UuidValueObject;
 
-class ProfileAggregateRepository implements ProfileRepositoryInterface
+class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
     public function __construct(
-        private readonly EventRepository $eventRepository,
-        private readonly FeedbackRepository $feedbackRepository,
-        private readonly ImageArchiveRepository $imageArchiveRepository,
-        private readonly UserRepository $userRepository,
-        private readonly MediaService $mediaService,
-        private readonly MediaCountService $mediaCountService,
-        private readonly MediaDeleteService $mediaDeleteService,
-        private readonly EventUpdateService $eventUpdateService,
-        private readonly EventMediaFetchService $eventMediaFetchService,
+        private readonly EventRepository         $eventRepository,
+        private readonly FeedbackRepository      $feedbackRepository,
+        private readonly ImageArchiveRepository  $imageArchiveRepository,
+        private readonly UserRepository          $userRepository,
+        private readonly MediaService            $mediaService,
+        private readonly MediaCountService       $mediaCountService,
+        private readonly MediaDeleteService      $mediaDeleteService,
+        private readonly EventUpdateService      $eventUpdateService,
+        private readonly EventMediaFetchService  $eventMediaFetchService,
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly MediaRepository $mediaRepository,
-        private readonly MediaPresignService $mediaPresignService
-    ) {
+        private readonly MediaRepository         $mediaRepository,
+        private readonly MediaPresignService     $mediaPresignService
+    )
+    {
     }
 
     /**
@@ -50,7 +50,7 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
      */
     public function saveFeedbackForEvent(ProfileEntity $eventEntity): void
     {
-        $event = $this->getEvent($eventEntity->eventUuidValueObject);
+        $event = $this->getEvent($eventEntity->profileUuidValueObject);
 
         $feedback = (new Feedback())
             ->setEvent($event)
@@ -64,7 +64,7 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
      */
     public function saveArchiveEmailForEvent(ProfileEntity $eventEntity): void
     {
-        $event = $this->getEvent($eventEntity->eventUuidValueObject);
+        $event = $this->getEvent($eventEntity->profileUuidValueObject);
 
         $imageArchive = (new ImageArchive())
             ->setEvent($event)
@@ -80,12 +80,12 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
         return $event ? $event->getOrderId() : null;
     }
 
-    public function updateEventNameAndFont(ProfileEntity $eventEntity): void
+    public function updateProfileNameAndFont(ProfileEntity $eventEntity): void
     {
         $this->eventUpdateService->updateNameForEventUuid(
-            eventUuid: $eventEntity->eventUuidValueObject,
-            name: $eventEntity->getEventName(),
-            nameFont: $eventEntity->getEventNameFont()
+            eventUuid: $eventEntity->profileUuidValueObject,
+            name: $eventEntity->getProfileName(),
+            nameFont: $eventEntity->getProfileNameFont()
         );
     }
 
@@ -98,7 +98,7 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
         return new ProfileViewModel(
             eventUuid: new UuidValueObject($event ? $event->getUuid() : null),
             eventName: $event->getName(),
-            eventNameFont: new EventNameFontValueObject($event->getNameFont()),
+            eventNameFont: new ProfileNameFontValueObject($event->getNameFont()),
             media: new MediaViewModel(
                 backgroundPictureUrl: $eventDataValueObject->backgroundPictureUrl,
                 picturesUrls: $eventDataValueObject->pictures
@@ -106,7 +106,7 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
         );
     }
 
-    public function getExistingEventUuidAndStatus(UuidValueObject $uuidValueObject): array
+    public function getExistingProfileUuid(UuidValueObject $uuidValueObject): array
     {
         $event = $this->getEvent($uuidValueObject);
 
@@ -117,34 +117,32 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
         return [$event->getUuid(), $event->getStatus()];
     }
 
-    public function getExistingMediaInfo(UuidValueObject $uuidValueObject): array
+    public function getExistingMediaInfo(OrderIdValueObject $orderId): array
     {
-        $event = $this->getEvent($uuidValueObject);
+        $event = $this->getEvent($orderId);
 
         return [$event->getMaxMediaCount(), $event->getMediaCount()];
     }
 
-    public function saveEvent(ProfileEntity $eventEntity): void
+    public function saveProfile(ProfileEntity $profileEntity): void
     {
-        $user = $this->userRepository->findBy(['email' => $eventEntity->getUser()->emailValueObject->value]);
+        $user = $this->userRepository->findBy(['email' => $profileEntity->getUser()->emailValueObject->value]);
 
         $user = reset($user);
 
         if (empty($user)) {
             $user = new User();
-            $user->setEmail($eventEntity->getUser()->emailValueObject->value)->setRole(UserRole::ROLE_ADMIN);
+            $user->setEmail($profileEntity->getUser()->emailValueObject->value)->setRole(UserRole::ROLE_ADMIN);
 
             $this->userRepository->save($user);
         }
 
         $event = (new Event())
-            ->setStatus($eventEntity->getStatus())
-            ->setUuid($eventEntity->eventUuidValueObject->value)
-            ->setOrderId($eventEntity->getOrderId()->value)
-            ->setNameFont($eventEntity->getEventNameFont()->value)
-            ->setUser($user)
-            ->setEventStartDate($eventEntity->getEventStartDate()->value)
-            ->setNeedsManualProcessing($eventEntity->needsManualProcessing());
+            ->setStatus($profileEntity->getStatus())
+            ->setUuid($profileEntity->profileUuidValueObject->value)
+            ->setOrderId($profileEntity->getOrderId()->value)
+            ->setNameFont($profileEntity->getProfileNameFont()->value)
+            ->setUser($user);
 
         $this->eventRepository->save($event);
     }
@@ -164,10 +162,11 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int $maxFileSizeBytes,
-        int $maxTotalDemoSizeBytes
-    ): void {
-        $event = $this->getEvent($eventEntity->eventUuidValueObject);
+        int           $maxFileSizeBytes,
+        int           $maxTotalDemoSizeBytes
+    ): void
+    {
+        $event = $this->getEvent($eventEntity->profileUuidValueObject);
 
         $this->mediaService->uploadMultiple(
             orderId: $event->getOrderId(),
@@ -192,20 +191,7 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
         }
     }
 
-    private function getEvent(UuidValueObject $uuidValueObject): Event
-    {
-        $event = $this->eventRepository->findOneBy([
-            'uuid' => $uuidValueObject->value
-        ]);
-
-        if (!$event) {
-            throw new ProfileNotFoundException();
-        }
-
-        return $event;
-    }
-
-    public function getExistingEventUuidForOrderId(OrderIdValueObject $orderIdValueObject): ?string
+    public function getExistingProfileUuidForOrderIdAndEmail(OrderIdValueObject $orderIdValueObject): ?string
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
@@ -214,7 +200,7 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
 
     public function updateEventStatus(ProfileEntity $eventEntity): void
     {
-        $event = $this->eventRepository->findOneBy(['uuid' => $eventEntity->eventUuidValueObject->value]);
+        $event = $this->eventRepository->findOneBy(['uuid' => $eventEntity->profileUuidValueObject->value]);
 
         if (!$event) {
             throw new ProfileNotFoundException();
@@ -254,5 +240,18 @@ class ProfileAggregateRepository implements ProfileRepositoryInterface
             mimeType: $eventEntity->getMultipartMimeType(),
             folder: $eventEntity->getMediaUserIdentifier()->value
         );
+    }
+
+    private function getEvent(UuidValueObject $uuidValueObject): Event
+    {
+        $event = $this->eventRepository->findOneBy([
+            'uuid' => $uuidValueObject->value
+        ]);
+
+        if (!$event) {
+            throw new ProfileNotFoundException();
+        }
+
+        return $event;
     }
 }

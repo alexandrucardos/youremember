@@ -7,17 +7,15 @@ namespace App\ValueObject;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class EventNameFontValueObject
+final class ProfileNameValueObject
 {
-    private const DEFAULT_FONT = 'elegant';
-
     #[Assert\NotBlank]
-    #[Assert\Length(max: 50, min: 2)]
+    #[Assert\Length(max: 255, min: 2)]
     public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = $value ?? self::DEFAULT_FONT;
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 

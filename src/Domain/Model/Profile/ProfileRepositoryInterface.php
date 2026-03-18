@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\Model\Profile;
 
-use App\Application\ListEventInformation\ProfileViewModel;
+use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
+use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -24,22 +25,24 @@ interface ProfileRepositoryInterface
 
     public function fetchOrderIdForUuid(string $uuid): ?int;
 
-    public function updateEventNameAndFont(ProfileEntity $eventEntity): void;
+    public function updateProfileNameAndFont(ProfileEntity $eventEntity): void;
 
     public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
 
-    public function getExistingEventUuidAndStatus(UuidValueObject $uuidValueObject): array;
+    public function getExistingProfileUuid(UuidValueObject $uuidValueObject): ?string;
 
-    public function getExistingEventUuidForOrderId(OrderIdValueObject $orderIdValueObject): ?string;
+    public function getExistingProfileUuidForOrderIdAndEmail(
+        OrderIdValueObject $orderIdValueObject,
+        EmailValueObject   $emailValueObject
+    ): ?string;
 
-    public function getExistingMediaInfo(UuidValueObject $uuidValueObject): array;
+    public function getExistingMediaInfo(OrderIdValueObject $orderId): array;
 
-    public function saveEvent(ProfileEntity $eventEntity): void;
+    public function saveProfile(ProfileEntity $profileEntity): void;
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int $maxFileSizeBytes,
-        int $maxTotalDemoSizeBytes
+        int           $maxFileSizeBytes
     ): void;
 
     /**

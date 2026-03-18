@@ -26,9 +26,9 @@ final class InitiateMediaUploadHandler
 
     public function __invoke(InitiateMediaUploadCommand $command): array
     {
-        [$uuid, $status] = $this->eventRepository->getExistingEventUuidAndStatus($command->eventUuidValueObject);
+        [$uuid, $status] = $this->eventRepository->getExistingProfileUuid($command->eventUuidValueObject);
 
-        $eventEntity = new ProfileEntity(eventUuidValueObject: new UuidValueObject($uuid), eventStatus: $status);
+        $eventEntity = new ProfileEntity(profileUuidValueObject: new UuidValueObject($uuid), eventStatus: $status);
 
         $orderId = $this->eventRepository->fetchOrderIdForUuid($command->eventUuidValueObject->value);
 

@@ -1,35 +1,41 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace App\Application\UpdateEventName;
+namespace App\Application\UpdateProfileName;
 
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\ValueObject\UuidValueObject;
 
 class UpdateProfileNameHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    ) {
+    )
+    {
     }
 
     public function __invoke(UpdateProfileNameCommand $command): void
     {
-        [$eventUuid, $eventStatus] =
-            $this->eventRepository->getExistingEventUuidAndStatus($command->eventUuidValueObject);
+        $profileUuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+            $command->orderIdValueObject,
+            $command->userEmail
+        );
+
+        if ($profileUuid === null || $profileUuid === '') {
+            throw new ProfileNotFoundException('Profile not found');
+        }
 
         $eventEntity = new ProfileEntity(
-            eventUuidValueObject: new UuidValueObject($eventUuid),
-            eventStatus: $eventStatus
+            profileUuidValueObject: new UuidValueObject($profileUuid),
         );
 
         $eventEntity
-            ->setEventName($command->eventNameValueObject)
-            ->setEventNameFont($command->eventNameFontValueObject);
+            ->setProfileName($command->eventNameValueObject)
+            ->setProfileNameFont($command->eventNameFontValueObject);
 
-        $this->eventRepository->updateEventNameAndFont($eventEntity);
+        $this->eventRepository->updateProfileNameAndFont($eventEntity);
     }
 }

@@ -1,20 +1,19 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\DeleteMedia;
 
-use App\ValueObject\HashValueObject;
-use App\ValueObject\UserRole;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\EmailValueObject;
+use App\ValueObject\OrderIdValueObject;
 
 class DeleteMediaCommand
 {
     public function __construct(
-        public readonly UuidValueObject $eventUuidValueObject,
-        public readonly HashValueObject $userIdentifier,
-        public readonly UserRole $userRole,
-        public readonly array $filePaths
-    ) {
+        public readonly OrderIdValueObject $orderIdValueObject,
+        public readonly array              $filePaths,
+        public readonly EmailValueObject   $userEmail
+    )
+    {
     }
 }

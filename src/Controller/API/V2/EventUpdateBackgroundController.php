@@ -2,13 +2,13 @@
 
 namespace App\Controller\API\V2;
 
-use App\Application\UpdateProfileBackground\UpdateProfileBackgroundCommand;
-use App\Application\UpdateProfileBackground\UpdateProfileBackgroundHandler;
 use App\Application\UpdateEventStatus\UpdateEventStatusCommand;
 use App\Application\UpdateEventStatus\UpdateEventStatusHandler;
+use App\Application\UpdateProfileBackground\UpdateProfileBackgroundCommand;
+use App\Application\UpdateProfileBackground\UpdateProfileBackgroundHandler;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
+use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\OrderStatusValueObject;
 use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,9 +23,10 @@ final class EventUpdateBackgroundController extends AbstractController
 
     #[Route('/orderId/{order_id}', name: self::NAME_EVENT_BACKGROUND_UPDATE, methods: ['POST'])]
     public function update(
-        Request $request,
+        Request                        $request,
         UpdateProfileBackgroundHandler $updateEventBackgroundHandler
-    ): JsonResponse {
+    ): JsonResponse
+    {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
@@ -34,7 +35,7 @@ final class EventUpdateBackgroundController extends AbstractController
 
         $updateEventStatusCommand = new UpdateProfileBackgroundCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
-            userRole: $userRole,
+            userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
             backgroundFile: $request->files->get('file', [])
         );
 

@@ -1,21 +1,20 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\InitiateMultipartMediaUpload;
 
-use App\ValueObject\HashValueObject;
-use App\ValueObject\UserRole;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\EmailValueObject;
+use App\ValueObject\OrderIdValueObject;
 
 class InitiateMediaUploadCommand
 {
     public function __construct(
-        public readonly UuidValueObject $eventUuidValueObject,
-        public readonly HashValueObject $userIdentifier,
-        public readonly UserRole $userRole,
-        public readonly string $filename,
-        public readonly string $mimeType
-    ) {
+        public readonly OrderIdValueObject $orderIdValueObject,
+        public readonly EmailValueObject   $userEmail,
+        public readonly string             $filename,
+        public readonly string             $mimeType
+    )
+    {
     }
 }

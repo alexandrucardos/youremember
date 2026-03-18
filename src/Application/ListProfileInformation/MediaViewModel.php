@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\ListEventInformation;
+namespace App\Application\ListProfileInformation;
 
 class MediaViewModel
 {
@@ -9,7 +9,8 @@ class MediaViewModel
      */
     public function __construct(
         public readonly string $backgroundPictureUrl,
-        public readonly array $picturesUrls
-    ) {
+        public readonly array  $picturesUrls
+    )
+    {
     }
 }

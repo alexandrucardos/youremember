@@ -2,21 +2,22 @@
 
 declare(strict_types = 1);
 
-namespace App\Domain\ValueObject;
+namespace App\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class EventStartDateValueObject
+final class ProfileNameFontValueObject
 {
+    private const DEFAULT_FONT = 'elegant';
+
     #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\DateTime]
-    public mixed $value;
+    #[Assert\Length(max: 50, min: 2)]
+    public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = $value;
+        $this->value = $value ?? self::DEFAULT_FONT;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
@@ -29,7 +30,5 @@ final class EventStartDateValueObject
             }
             throw new \InvalidArgumentException(implode(' ', $messages));
         }
-
-        $this->value = new \DateTimeImmutable($value);
     }
 }

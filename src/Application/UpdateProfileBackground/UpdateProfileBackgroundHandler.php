@@ -1,35 +1,37 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\UpdateProfileBackground;
 
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
-use App\ValueObject\Status;
 use App\ValueObject\UuidValueObject;
 
 class UpdateProfileBackgroundHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    ) {
+    )
+    {
     }
 
     public function __invoke(UpdateProfileBackgroundCommand $command): void
     {
-        $uuid = $this->eventRepository->getExistingEventUuidForOrderId($command->orderIdValueObject);
+        $uuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+            $command->orderIdValueObject,
+            $command->userEmail
+        );
 
         if ($uuid === null || $uuid === '') {
-            throw new ProfileNotFoundException('Event not found');
+            throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(new UuidValueObject($uuid), Status::VALID);
+        $eventEntity = new ProfileEntity(new UuidValueObject($uuid));
 
         $eventEntity
             ->setOrderId($command->orderIdValueObject)
-            ->setIsAdmin($command->userRole)
             ->setBackgroundFile($command->backgroundFile);
 
         $this->eventRepository->updateBackgroundFile($eventEntity);

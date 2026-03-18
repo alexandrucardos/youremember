@@ -7,8 +7,8 @@ namespace App\Service\Event;
 use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
-use App\ValueObject\EventNameFontValueObject;
-use App\ValueObject\EventNameValueObject;
+use App\ValueObject\ProfileNameFontValueObject;
+use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
 
@@ -21,8 +21,8 @@ final class EventUpdateService
 
     public function updateName(
         OrderIdValueObject $orderId,
-        EventNameValueObject $name,
-        EventNameFontValueObject $nameFont
+        ProfileNameValueObject $name,
+        ProfileNameFontValueObject $nameFont
     ): Event {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId->value]);
 
@@ -39,8 +39,8 @@ final class EventUpdateService
 
     public function updateNameForEventUuid(
         UuidValueObject $eventUuid,
-        EventNameValueObject $name,
-        EventNameFontValueObject $nameFont
+        ProfileNameValueObject $name,
+        ProfileNameFontValueObject $nameFont
     ): Event {
         $event = $this->eventRepository->findOneBy(['uuid' => $eventUuid->value]);
 

@@ -2,13 +2,14 @@
 
 namespace App\Controller\API\V2;
 
-use App\Application\UpdateEventName\UpdateProfileNameCommand;
-use App\Application\UpdateEventName\UpdateProfileNameHandler;
+use App\Application\UpdateProfileName\UpdateProfileNameCommand;
+use App\Application\UpdateProfileName\UpdateProfileNameHandler;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
-use App\ValueObject\EventNameFontValueObject;
-use App\ValueObject\EventNameValueObject;
+use App\ValueObject\EmailValueObject;
+use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileNameFontValueObject;
+use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\UserRole;
-use App\ValueObject\UuidValueObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,11 +21,12 @@ final class EventUpdateNameAndFontController extends AbstractController
 {
     public const NAME_EVENT_NAME_UPDATE = 'api_event_name_update';
 
-    #[Route('/eventUuid/{uuid}', name: self::NAME_EVENT_NAME_UPDATE, methods: ['PATCH'])]
+    #[Route('/orderId/{order_id}', name: self::NAME_EVENT_NAME_UPDATE, methods: ['PATCH'])]
     public function update(
-        Request $request,
+        Request                  $request,
         UpdateProfileNameHandler $eventNameHandler
-    ): JsonResponse {
+    ): JsonResponse
+    {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
@@ -34,9 +36,10 @@ final class EventUpdateNameAndFontController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         $updateEventNameCommand = new UpdateProfileNameCommand(
-            eventUuidValueObject: new UuidValueObject($request->attributes->get('uuid')),
-            eventNameValueObject: new EventNameValueObject($data['name']),
-            eventNameFontValueObject: new EventNameFontValueObject($data['font'])
+            orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
+            userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
+            eventNameValueObject: new ProfileNameValueObject($data['name']),
+            eventNameFontValueObject: new ProfileNameFontValueObject($data['font'])
         );
 
         $eventNameHandler($updateEventNameCommand);
