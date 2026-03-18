@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Media;
 
 use App\Entity\Event;
@@ -11,9 +13,8 @@ use Doctrine\ORM\EntityManagerInterface;
 final class MediaCountService
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-    )
-    {
+        private readonly EntityManagerInterface $entityManager
+    ) {
     }
 
     public function incrementByOrderId(int $orderId, int $count): void
@@ -21,9 +22,7 @@ final class MediaCountService
         $this->entityManager->beginTransaction();
 
         try {
-            $event = $this->entityManager
-                ->getRepository(Event::class)
-                ->findOneBy(['order_id' => $orderId]);
+            $event = $this->entityManager->getRepository(Event::class)->findOneBy(['order_id' => $orderId]);
 
             if (!$event instanceof Event) {
                 throw new NotFoundException('Event not found');
@@ -32,7 +31,7 @@ final class MediaCountService
             $this->entityManager->lock($event, LockMode::PESSIMISTIC_WRITE);
             $this->entityManager->refresh($event);
 
-            if ($event->getMediaCount() + $count >= $event->getMaxMediaCount()) {
+            if (( $event->getMediaCount() + $count ) >= $event->getMaxMediaCount()) {
                 throw new MaximumMediaItemsReachedException('Maximum media items reached');
             }
 
@@ -53,9 +52,7 @@ final class MediaCountService
         $this->entityManager->beginTransaction();
 
         try {
-            $event = $this->entityManager
-                ->getRepository(Event::class)
-                ->findOneBy(['order_id' => $orderId]);
+            $event = $this->entityManager->getRepository(Event::class)->findOneBy(['order_id' => $orderId]);
 
             if (!$event instanceof Event) {
                 throw new NotFoundException('Event not found');

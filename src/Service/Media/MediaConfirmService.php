@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Media;
 
 use App\Entity\Media;
@@ -11,22 +13,20 @@ use App\Service\Bucket\BucketProviderInterface;
 class MediaConfirmService
 {
     public function __construct(
-        private readonly MediaRepository          $mediaRepository,
-        private readonly EventRepository          $eventRepository,
-        private readonly BucketProviderInterface  $bucketProvider,
-    )
-    {
+        private readonly MediaRepository $mediaRepository,
+        private readonly EventRepository $eventRepository,
+        private readonly BucketProviderInterface $bucketProvider
+    ) {
     }
 
     public function confirm(
-        int    $orderId,
+        int $orderId,
         string $key,
         string $filename,
         string $mimeType,
-        int    $fileSize,
+        int $fileSize,
         string $folder
-    ): void
-    {
+    ): void {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
         if ($event === null) {
@@ -49,16 +49,15 @@ class MediaConfirmService
      * @param array<array{PartNumber: int, ETag: string}> $parts
      */
     public function completeMultipartUpload(
-        int    $orderId,
+        int $orderId,
         string $key,
         string $uploadId,
         string $filename,
         string $mimeType,
-        int    $fileSize,
+        int $fileSize,
         string $folder,
-        array  $parts
-    ): void
-    {
+        array $parts
+    ): void {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
         if ($event === null) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Event;
 
 use App\Entity\Event;
@@ -20,10 +22,7 @@ final class EventFetchServiceTest extends TestCase
 
         $orderId = 123;
 
-        $repo->expects(self::once())
-            ->method('findOneBy')
-            ->with(['order_id' => $orderId])
-            ->willReturn(null);
+        $repo->expects(self::once())->method('findOneBy')->with(['order_id' => $orderId])->willReturn(null);
 
         $service = new EventFetchService($repo, $s3Service);
 
@@ -44,13 +43,11 @@ final class EventFetchServiceTest extends TestCase
         $expectedBackgroundUrl = 'https://s3.example.com/123/client/background.webp';
 
         $repo = $this->createMock(EventRepository::class);
-        $repo->expects(self::once())
-            ->method('findOneBy')
-            ->with(['order_id' => $orderId])
-            ->willReturn($event);
+        $repo->expects(self::once())->method('findOneBy')->with(['order_id' => $orderId])->willReturn($event);
 
         $s3Service = $this->createMock(MediaService::class);
-        $s3Service->expects(self::once())
+        $s3Service
+            ->expects(self::once())
             ->method('buildUrl')
             ->with(sprintf('%d/%s/%s', $orderId, MediaService::FOLDER_CLIENT, MediaService::FILE_BACKGROUND_NAME))
             ->willReturn($expectedBackgroundUrl);

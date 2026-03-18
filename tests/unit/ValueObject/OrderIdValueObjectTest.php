@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\ValueObject;
 
 use App\Exception\Event\InvalidOrderIdException;
@@ -12,7 +14,7 @@ final class OrderIdValueObjectTest extends TestCase
     {
         yield 'integer' => [123, 123];
         yield 'string numeric' => ['456', 456];
-        yield 'large integer' => [999999, 999999];
+        yield 'large integer' => [999_999, 999_999];
     }
 
     public static function invalidIdProvider(): iterable

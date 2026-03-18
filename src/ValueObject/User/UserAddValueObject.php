@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\ValueObject\User;
 
 use App\ValueObject\EmailValueObject;
@@ -9,8 +11,7 @@ class UserAddValueObject
 {
     public function __construct(
         public readonly EmailValueObject $email,
-        public readonly UserRole         $role = UserRole::ROLE_GUEST,
-    )
-    {
+        public readonly UserRole $role = UserRole::ROLE_GUEST
+    ) {
     }
 }

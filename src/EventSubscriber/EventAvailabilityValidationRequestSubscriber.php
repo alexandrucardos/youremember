@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\EventSubscriber;
 
-use App\Controller\API\EventController;
-use App\Controller\API\MediaController;
+use App\Controller\old\EventController;
+use App\Controller\old\MediaController;
 use App\Exception\Event\EventInvalidException;
 use App\Service\Event\EventAvailabilityService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -21,25 +23,24 @@ final class EventAvailabilityValidationRequestSubscriber implements EventSubscri
 
         MediaController::NAME_MEDIA_CLIENT_GET,
         MediaController::NAME_MEDIA_CLIENT_ADD,
-//        MediaController::NAME_MEDIA_CLIENT_DELETE,
+        //        MediaController::NAME_MEDIA_CLIENT_DELETE,
 
         MediaController::NAME_MEDIA_CLIENT_BACKGROUND_ADD,
         MediaController::NAME_MEDIA_CLIENT_BACKGROUND_GET,
 
-        MediaController::NAME_MEDIA_GUEST_ADD, // uuid
-//        MediaController::NAME_MEDIA_GUEST_DELETE,
+        MediaController::NAME_MEDIA_GUEST_ADD // uuid
+        //        MediaController::NAME_MEDIA_GUEST_DELETE,
     ];
 
     public function __construct(
-        private readonly EventAvailabilityService $availabilityService,
-    )
-    {
+        private readonly EventAvailabilityService $availabilityService
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => 'onKernelRequest',
+            KernelEvents::REQUEST => 'onKernelRequest'
         ];
     }
 
@@ -59,8 +60,7 @@ final class EventAvailabilityValidationRequestSubscriber implements EventSubscri
         $orderId = $request->attributes->get('orderId');
         $uuid = $request->attributes->get('uuid');
 
-
-        $shouldContinue = ($this->availabilityService)($orderId, $uuid);
+        $shouldContinue = ( $this->availabilityService )($orderId, $uuid);
 
         if ($shouldContinue === false) {
             throw new EventInvalidException('The event is no longer valid!');

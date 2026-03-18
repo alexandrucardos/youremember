@@ -57,6 +57,7 @@ private function cc(){};
 ## Formating
 
 do not reformat code, keep the existing formating
+after every change in code, run "mago format"
 
 ## Exceptions
 
@@ -71,6 +72,6 @@ do not reformat code, keep the existing formating
 
 ## Tests
 
-- use Data provides whenever possible to reduce code
+- use Data provides whenever possible to reduce code, dont make multiple scenarios if not needed
 - 80% code coverage for services is advisable
 - services should be written in such a manner that they can be tested easily 

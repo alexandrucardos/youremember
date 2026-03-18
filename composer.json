@@ -6,7 +6,10 @@
   "require": {
     "php": ">=8.1",
     "ext-ctype": "*",
+    "ext-exif": "*",
+    "ext-gd": "*",
     "ext-iconv": "*",
+    "ext-imagick": "*",
     "async-aws/s3": "^2.10",
     "doctrine/doctrine-bundle": "^2.18",
     "doctrine/doctrine-migrations-bundle": "^3.7",
@@ -22,14 +25,12 @@
     "symfony/monolog-bundle": "^3.11",
     "symfony/runtime": "6.4.*",
     "symfony/twig-bundle": "6.4.*",
+    "symfony/uid": "6.4.*",
     "symfony/validator": "6.4.*",
     "symfony/yaml": "6.4.*",
     "twig/extra-bundle": "^2.12|^3.0",
     "twig/string-extra": "^3.22",
-    "twig/twig": "^2.12|^3.0",
-    "ext-gd": "*",
-    "ext-imagick": "*",
-    "ext-exif": "*"
+    "twig/twig": "^2.12|^3.0"
   },
   "config": {
     "allow-plugins": {
@@ -80,6 +81,7 @@
     }
   },
   "require-dev": {
+    "carthage-software/mago": "^1.13.3",
     "phpunit/phpunit": "^10.5",
     "symfony/browser-kit": "6.4.*",
     "symfony/css-selector": "6.4.*",

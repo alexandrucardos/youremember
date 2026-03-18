@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Event;
 
 use App\Entity\Event;
@@ -22,7 +24,7 @@ class EventAddServiceTest extends TestCase
         return [
             'standard user with regular order' => [
                 'email' => 'test@example.com',
-                'orderId' => 123,
+                'orderId' => 123
             ]
         ];
     }
@@ -32,7 +34,7 @@ class EventAddServiceTest extends TestCase
         return [
             'nonexistent user' => [
                 'email' => 'nonexistent@example.com',
-                'orderId' => 456,
+                'orderId' => 456
             ]
         ];
     }
@@ -45,24 +47,14 @@ class EventAddServiceTest extends TestCase
         $user = new User();
 
         $userRepository = $this->createMock(UserRepository::class);
-        $userRepository
-            ->expects($this->once())
-            ->method('findBy')
-            ->with(['email' => $email])
-            ->willReturn([$user]);
+        $userRepository->expects($this->once())->method('findBy')->with(['email' => $email])->willReturn([$user]);
 
         $eventRepository = $this->createMock(EventRepository::class);
-        $eventRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(Event::class));
+        $eventRepository->expects($this->once())->method('save')->with($this->isInstanceOf(Event::class));
 
         $service = new EventAddService($eventRepository, $userRepository);
 
-        $valueObject = new EventAddValueObject(
-            new EmailValueObject($email),
-            new OrderIdValueObject($orderId)
-        );
+        $valueObject = new EventAddValueObject(new EmailValueObject($email), new OrderIdValueObject($orderId));
 
         $event = $service->add($valueObject);
 
@@ -79,23 +71,14 @@ class EventAddServiceTest extends TestCase
     public function testAddThrowsNotFoundExceptionWhenUserNotFound(string $email, int $orderId): void
     {
         $userRepository = $this->createMock(UserRepository::class);
-        $userRepository
-            ->expects($this->once())
-            ->method('findBy')
-            ->with(['email' => $email])
-            ->willReturn([]);
+        $userRepository->expects($this->once())->method('findBy')->with(['email' => $email])->willReturn([]);
 
         $eventRepository = $this->createMock(EventRepository::class);
-        $eventRepository
-            ->expects($this->never())
-            ->method('save');
+        $eventRepository->expects($this->never())->method('save');
 
         $service = new EventAddService($eventRepository, $userRepository);
 
-        $valueObject = new EventAddValueObject(
-            new EmailValueObject($email),
-            new OrderIdValueObject($orderId)
-        );
+        $valueObject = new EventAddValueObject(new EmailValueObject($email), new OrderIdValueObject($orderId));
 
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('User not found');

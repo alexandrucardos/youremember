@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\EventSubscriber;
 
 use Psr\Log\LoggerInterface;
@@ -10,15 +12,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ResponseLoggerSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly LoggerInterface $responseLogger,
-    )
-    {
+        private readonly LoggerInterface $responseLogger
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::RESPONSE => 'onKernelResponse',
+            KernelEvents::RESPONSE => 'onKernelResponse'
         ];
     }
 
@@ -37,7 +38,7 @@ class ResponseLoggerSubscriber implements EventSubscriberInterface
             'status_code' => $response->getStatusCode(),
             'content_type' => $response->headers->get('Content-Type'),
             'request_content' => $request->getContent(),
-            'response_content' => $response->getContent(),
+            'response_content' => $response->getContent()
         ]);
     }
 }

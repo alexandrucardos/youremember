@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\ImageArchiveRepository;
@@ -20,11 +22,7 @@ class ImageArchive
     #[ORM\Column(length: 255)]
     private string $email;
 
-    #[ORM\Column(
-        insertable: false,
-        updatable: false,
-        options: ['default' => 'CURRENT_TIMESTAMP']
-    )]
+    #[ORM\Column(insertable: false, updatable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
     public function getId(): ?int

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Bucket;
 
 interface BucketProviderInterface
@@ -10,7 +12,12 @@ interface BucketProviderInterface
 
     public function createMultipartUpload(string $key, string $contentType): string;
 
-    public function getPresignedUrlForPart(string $key, string $uploadId, int $partNumber, \DateTimeImmutable $expires): string;
+    public function getPresignedUrlForPart(
+        string $key,
+        string $uploadId,
+        int $partNumber,
+        \DateTimeImmutable $expires
+    ): string;
 
     /**
      * @param array<array{PartNumber: int, ETag: string}> $parts
@@ -27,4 +34,6 @@ interface BucketProviderInterface
      * @return array<string>
      */
     public function listObjects(string $prefix): array;
+
+    public function downloadFilesForPaths(array $fileUrls): void;
 }

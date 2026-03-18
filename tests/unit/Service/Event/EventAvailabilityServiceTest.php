@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Event;
 
 use App\Entity\Event;
@@ -17,9 +19,7 @@ class EventAvailabilityServiceTest extends TestCase
     {
         $this->eventRepository = $this->createMock(EventRepository::class);
 
-        $this->eventAvailabilityService = new EventAvailabilityService(
-            $this->eventRepository,
-        );
+        $this->eventAvailabilityService = new EventAvailabilityService($this->eventRepository);
     }
 
     public function testInvokeReturnsTrueWhenEventFoundByOrderId(): void
@@ -36,7 +36,7 @@ class EventAvailabilityServiceTest extends TestCase
             ])
             ->willReturn($event);
 
-        $result = ($this->eventAvailabilityService)($orderId, null);
+        $result = ( $this->eventAvailabilityService )($orderId, null);
 
         $this->assertTrue($result);
     }
@@ -54,7 +54,7 @@ class EventAvailabilityServiceTest extends TestCase
             ])
             ->willReturn(null);
 
-        $result = ($this->eventAvailabilityService)($orderId, null);
+        $result = ( $this->eventAvailabilityService )($orderId, null);
 
         $this->assertFalse($result);
     }
@@ -73,7 +73,7 @@ class EventAvailabilityServiceTest extends TestCase
             ])
             ->willReturn($event);
 
-        $result = ($this->eventAvailabilityService)(null, $uuid);
+        $result = ( $this->eventAvailabilityService )(null, $uuid);
 
         $this->assertTrue($result);
     }
@@ -91,7 +91,7 @@ class EventAvailabilityServiceTest extends TestCase
             ])
             ->willReturn(null);
 
-        $result = ($this->eventAvailabilityService)(null, $uuid);
+        $result = ( $this->eventAvailabilityService )(null, $uuid);
 
         $this->assertFalse($result);
     }
@@ -111,20 +111,18 @@ class EventAvailabilityServiceTest extends TestCase
             ])
             ->willReturn($event);
 
-        $result = ($this->eventAvailabilityService)($orderId, $uuid);
+        $result = ( $this->eventAvailabilityService )($orderId, $uuid);
 
         $this->assertTrue($result);
     }
 
     public function testInvokeThrowsRuntimeExceptionWhenBothParametersAreNull(): void
     {
-        $this->eventRepository
-            ->expects($this->never())
-            ->method('findOneBy');
+        $this->eventRepository->expects($this->never())->method('findOneBy');
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Invalid data provided!');
 
-        ($this->eventAvailabilityService)(null, null);
+        ( $this->eventAvailabilityService )(null, null);
     }
 }

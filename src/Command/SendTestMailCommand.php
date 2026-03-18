@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Command;
 
-use App\Service\EmailService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,16 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
-#[AsCommand(
-    name: 'app:send-mail',
-    description: 'Send a test email'
-)]
+#[AsCommand(name: 'app:send-mail', description: 'Send a test email')]
 class SendTestMailCommand extends Command
 {
     public function __construct(
         private MailerInterface $mailer
-    )
-    {
+    ) {
         parent::__construct();
     }
 

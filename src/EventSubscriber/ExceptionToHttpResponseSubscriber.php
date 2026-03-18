@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Domain\Model\Event\Message\EventBaseMsgException;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
@@ -21,15 +22,14 @@ use Symfony\Component\HttpKernel\KernelEvents;
 final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly LoggerInterface $errorLogger,
-    )
-    {
+        private readonly LoggerInterface $errorLogger
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::EXCEPTION => 'onKernelException',
+            KernelEvents::EXCEPTION => 'onKernelException'
         ];
     }
 
@@ -38,36 +38,22 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
         $exception = $event->getThrowable();
 
         $response = match (true) {
-            $exception instanceof InvalidStructureException,
-                $exception instanceof InvalidHmacException,
-                $exception instanceof ExpiredException => new JsonResponse(
+            $exception instanceof InvalidHmacException, $exception instanceof ExpiredException => new JsonResponse(
                 ['error' => $exception->getMessage()],
                 Response::HTTP_UNAUTHORIZED
             ),
-
             $exception instanceof EventNotFoundException,
-                $exception instanceof UserNotFoundException,
-                $exception instanceof MediaNotFoundException => new JsonResponse(
-                ['error' => $exception->getMessage()],
-                Response::HTTP_NOT_FOUND
-            ),
-
-            $exception instanceof MediaUnauthorizedException => new JsonResponse(
-                ['error' => $exception->getMessage()],
-                Response::HTTP_FORBIDDEN
-            ),
-
-            $exception instanceof EventInvalidException => new JsonResponse(
-                ['error' => $exception->getMessage()],
-                Response::HTTP_GONE
-            ),
-
-            $exception instanceof \InvalidArgumentException => new JsonResponse(
-                ['error' => $exception->getMessage()],
-                Response::HTTP_BAD_REQUEST
-            ),
-
-            default => $this->logUnexpected($exception),
+            $exception instanceof UserNotFoundException,
+            $exception instanceof MediaNotFoundException
+                => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND),
+            $exception instanceof MediaUnauthorizedException => new JsonResponse(['error' =>
+                $exception->getMessage()], Response::HTTP_FORBIDDEN),
+            $exception instanceof EventInvalidException => new JsonResponse(['error' =>
+                $exception->getMessage()], Response::HTTP_GONE),
+            $exception instanceof \InvalidArgumentException,
+            $exception instanceof EventBaseMsgException
+                => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST),
+            default => $this->logUnexpected($exception)
         };
 
         if ($response !== null) {
@@ -75,7 +61,7 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
         }
     }
 
-    private function logUnexpected(\Exception $e): void
+    function logUnexpected(\Throwable $e): void
     {
         $this->errorLogger->log(LogLevel::ERROR, $e->getMessage(), ['trace' => $e->getTraceAsString()]);
     }

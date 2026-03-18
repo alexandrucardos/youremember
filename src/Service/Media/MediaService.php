@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Media;
 
+use App\Domain\Model\Event\EventEntity;
+use App\Domain\Model\Event\MediaServiceInterface;
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
 use App\Repository\EventRepository;
 use App\Repository\MediaRepository;
 use App\Service\Bucket\BucketProviderInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Uid\Uuid;
 
 class MediaService
 {
@@ -16,25 +21,25 @@ class MediaService
 
     public const APPLE_EXTENSIONS = ['image/heic', 'image/heif'];
 
+    public const JPEG_EXTENSION = 'jpeg';
+
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly EventRepository         $eventRepository,
-        private readonly MediaRepository         $mediaRepository,
-        private readonly string                  $bucketName,
-        private readonly string                  $region,
-    )
-    {
+        private readonly EventRepository $eventRepository,
+        private readonly MediaRepository $mediaRepository,
+        private readonly string $bucketName,
+        private readonly string $region
+    ) {
     }
 
     /**
      * @param array<UploadedFile> $files
      */
     public function uploadMultiple(
-        int    $orderId,
-        array  $files,
+        int $orderId,
+        array $files,
         string $folder = self::FOLDER_CLIENT
-    ): void
-    {
+    ): void {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
         if ($event === null) {
@@ -44,25 +49,13 @@ class MediaService
             $processedContent = $this->processContent($file);
             $thumbnailContent = $this->createThumbnail($file);
 
-            $key = sprintf(
-                '%d/%s/%s',
-                $orderId,
-                $folder,
-                $file->getClientOriginalName()
-            );
+            $key = $this->buildKey($orderId, $folder, $file->getClientOriginalExtension());
 
             if (in_array($file->getMimeType(), self::APPLE_EXTENSIONS)) {
-                $key = sprintf(
-                    '%d/%s/%s.jpeg',
-                    $orderId,
-                    $folder,
-                    $file->getClientOriginalName()
-                );
+                $key = $this->buildKey($orderId, $folder, self::JPEG_EXTENSION);
             }
 
-            $thumbnailKey = $thumbnailContent !== null
-                ? $this->buildThumbnailKey($key)
-                : null;
+            $thumbnailKey = $thumbnailContent !== null ? $this->buildThumbnailKey($key) : null;
 
             $media = (new Media())
                 ->setEvent($event)
@@ -75,23 +68,49 @@ class MediaService
 
             $this->mediaRepository->save($media);
 
-            $this->bucketProvider->putObject(
-                $key,
-                $processedContent,
-                $file->getMimeType()
-            );
+            $this->bucketProvider->putObject($key, $processedContent, $file->getMimeType());
 
             if ($thumbnailContent !== null && $thumbnailKey !== null) {
-                $this->bucketProvider->putObject(
-                    $thumbnailKey,
-                    $thumbnailContent,
-                    $file->getMimeType()
-                );
+                $this->bucketProvider->putObject($thumbnailKey, $thumbnailContent, $file->getMimeType());
             }
         }
     }
 
-    private function processContent(UploadedFile $file, int $maxSizeBytes = 10485760): string
+    public function uploadBackground(int $orderId, UploadedFile $file): void
+    {
+        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
+
+        if ($event === null) {
+            throw new NotFoundException('Event not found for order: ' . $orderId);
+        }
+
+        $key = sprintf('%d/%s/%s', $orderId, EventEntity::ADMIN_USER_IDENTIFIER, self::FILE_BACKGROUND_NAME);
+
+        $scaledContent = $this->processContent($file);
+
+        $mediaBackground = $this->mediaRepository->findOneBy(['file_path' => $key]);
+
+        if ($mediaBackground === null) {
+            $mediaBackground = (new Media())
+                ->setEvent($event)
+                ->setFilePath($key)
+                ->setUploaderHash(EventEntity::ADMIN_USER_IDENTIFIER)
+                ->setFileType($file->getMimeType())
+                ->setFileSize(strlen($scaledContent))
+                ->setOriginalFilename($file->getClientOriginalName());
+        }
+
+        $this->mediaRepository->save($mediaBackground);
+
+        $this->bucketProvider->putObject($key, $scaledContent, $file->getMimeType());
+    }
+
+    public function buildUrl(string $prefix): string
+    {
+        return sprintf('https://%s.s3.%s.amazonaws.com/%s', $this->bucketName, $this->region, $prefix);
+    }
+
+    private function processContent(UploadedFile $file, int $maxSizeBytes = 10_485_760): string
     {
         if (!$file->isValid()) {
             throw new \RuntimeException('File upload failed: ' . $file->getErrorMessage());
@@ -143,7 +162,7 @@ class MediaService
         }
 
         $newWidth = $maxWidth;
-        $newHeight = (int)floor($originalHeight * ($maxWidth / $originalWidth));
+        $newHeight = (int) floor($originalHeight * ( $maxWidth / $originalWidth ));
 
         $thumbnail = imagecreatetruecolor($newWidth, $newHeight);
 
@@ -169,13 +188,7 @@ class MediaService
         $filename = $pathInfo['filename'] ?? '';
         $extension = $pathInfo['extension'] ?? '';
 
-        return sprintf(
-            '%s/%s%s.%s',
-            $directory,
-            $filename,
-            MediaRepository::THUMBNAIL_SUFFIX,
-            $extension
-        );
+        return sprintf('%s/%s%s.%s', $directory, $filename, MediaRepository::THUMBNAIL_SUFFIX, $extension);
     }
 
     private function createImageResource(UploadedFile $file): ?\GdImage
@@ -222,9 +235,9 @@ class MediaService
 
         match ($mimeType) {
             'image/jpeg', 'image/jpg' => imagejpeg($image, null, $quality),
-            'image/png' => imagepng($image, null, (int)floor((100 - $quality) / 10)),
+            'image/png' => imagepng($image, null, (int) floor(( 100 - $quality ) / 10)),
             'image/webp' => imagewebp($image, null, $quality),
-            default => imagejpeg($image, null, $quality),
+            default => imagejpeg($image, null, $quality)
         };
 
         return ob_get_clean();
@@ -251,11 +264,11 @@ class MediaService
             return $image;
         }
 
-        $degrees = match ((int)$exif['Orientation']) {
+        $degrees = match ((int) $exif['Orientation']) {
             3 => 180,
             6 => -90,
             8 => 90,
-            default => 0,
+            default => 0
         };
 
         if ($degrees === 0) {
@@ -268,51 +281,8 @@ class MediaService
         return $rotated === false ? $image : $rotated;
     }
 
-    public function uploadBackground(int $orderId, UploadedFile $file): void
+    private function buildKey(int $orderId, string $folder, string $extension): string
     {
-        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
-
-        if ($event === null) {
-            throw new NotFoundException('Event not found for order: ' . $orderId);
-        }
-
-        $key = sprintf(
-            '%d/%s/%s',
-            $orderId,
-            self::FOLDER_CLIENT,
-            self::FILE_BACKGROUND_NAME
-        );
-
-        $scaledContent = $this->processContent($file);
-
-        $mediaBackground = $this->mediaRepository->findOneBy(['file_path' => $key]);
-
-        if ($mediaBackground === null) {
-            $mediaBackground = (new Media())
-                ->setEvent($event)
-                ->setFilePath($key)
-                ->setUploaderHash(self::FOLDER_CLIENT)
-                ->setFileType($file->getMimeType())
-                ->setFileSize(strlen($scaledContent))
-                ->setOriginalFilename($file->getClientOriginalName());
-        }
-
-        $this->mediaRepository->save($mediaBackground);
-
-        $this->bucketProvider->putObject(
-            $key,
-            $scaledContent,
-            $file->getMimeType()
-        );
-    }
-
-    public function buildUrl(string $prefix): string
-    {
-        return sprintf(
-            'https://%s.s3.%s.amazonaws.com/%s',
-            $this->bucketName,
-            $this->region,
-            $prefix
-        );
+        return sprintf('%d/%s/%s.%s', $orderId, $folder, Uuid::v4(), $extension);
     }
 }

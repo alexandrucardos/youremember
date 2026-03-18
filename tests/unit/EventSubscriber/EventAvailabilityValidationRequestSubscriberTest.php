@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\EventSubscriber;
 
-use App\Controller\API\EventController;
-use App\Controller\API\MediaController;
-use App\Exception\Event\EventInvalidException;
+use App\Controller\old\EventController;
+use App\Controller\old\MediaController;
 use App\EventSubscriber\EventAvailabilityValidationRequestSubscriber;
+use App\Exception\Event\EventInvalidException;
 use App\Service\Event\EventAvailabilityService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,9 +24,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
     {
         $this->availabilityService = $this->createMock(EventAvailabilityService::class);
 
-        $this->subscriber = new EventAvailabilityValidationRequestSubscriber(
-            $this->availabilityService,
-        );
+        $this->subscriber = new EventAvailabilityValidationRequestSubscriber($this->availabilityService);
     }
 
     public function testGetSubscribedEventsReturnsKernelRequestEvent(): void
@@ -42,9 +42,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
             isMainRequest: false
         );
 
-        $this->availabilityService
-            ->expects($this->never())
-            ->method('__invoke');
+        $this->availabilityService->expects($this->never())->method('__invoke');
 
         $this->subscriber->onKernelRequest($requestEvent);
     }
@@ -56,9 +54,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
     {
         $requestEvent = $this->createRequestEvent(routeName: $routeName);
 
-        $this->availabilityService
-            ->expects($this->never())
-            ->method('__invoke');
+        $this->availabilityService->expects($this->never())->method('__invoke');
 
         $this->subscriber->onKernelRequest($requestEvent);
     }
@@ -70,10 +66,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
     {
         $orderId = '123';
 
-        $requestEvent = $this->createRequestEvent(
-            routeName: $routeName,
-            orderId: $orderId
-        );
+        $requestEvent = $this->createRequestEvent(routeName: $routeName, orderId: $orderId);
 
         $this->availabilityService
             ->expects($this->once())
@@ -91,10 +84,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
     {
         $uuid = 'abc-123-def';
 
-        $requestEvent = $this->createRequestEvent(
-            routeName: $routeName,
-            uuid: $uuid
-        );
+        $requestEvent = $this->createRequestEvent(routeName: $routeName, uuid: $uuid);
 
         $this->availabilityService
             ->expects($this->once())
@@ -107,10 +97,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
 
     public function testOnKernelRequestThrowsExceptionWhenEventIsInvalid(): void
     {
-        $requestEvent = $this->createRequestEvent(
-            routeName: EventController::NAME_EVENT_CLIENT_GET,
-            orderId: '123'
-        );
+        $requestEvent = $this->createRequestEvent(routeName: EventController::NAME_EVENT_CLIENT_GET, orderId: '123');
 
         $this->availabilityService
             ->expects($this->once())
@@ -125,10 +112,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
 
     public function testOnKernelRequestDoesNotThrowWhenEventIsValid(): void
     {
-        $requestEvent = $this->createRequestEvent(
-            routeName: EventController::NAME_EVENT_CLIENT_GET,
-            orderId: '123'
-        );
+        $requestEvent = $this->createRequestEvent(routeName: EventController::NAME_EVENT_CLIENT_GET, orderId: '123');
 
         $this->availabilityService
             ->expects($this->once())
@@ -145,7 +129,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
         return [
             'random route' => ['routeName' => 'some_random_route'],
             'event create route' => ['routeName' => EventController::NAME_EVENT_CLIENT_CREATE],
-            'empty route' => ['routeName' => ''],
+            'empty route' => ['routeName' => '']
         ];
     }
 
@@ -159,7 +143,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
             'media client get' => ['routeName' => MediaController::NAME_MEDIA_CLIENT_GET],
             'media client add' => ['routeName' => MediaController::NAME_MEDIA_CLIENT_ADD],
             'media client background add' => ['routeName' => MediaController::NAME_MEDIA_CLIENT_BACKGROUND_ADD],
-            'media client background get' => ['routeName' => MediaController::NAME_MEDIA_CLIENT_BACKGROUND_GET],
+            'media client background get' => ['routeName' => MediaController::NAME_MEDIA_CLIENT_BACKGROUND_GET]
         ];
     }
 
@@ -167,7 +151,7 @@ class EventAvailabilityValidationRequestSubscriberTest extends TestCase
     {
         return [
             'event guest get by uuid' => ['routeName' => EventController::NAME_EVENT_GUEST_GET_BY_UUID],
-            'media guest add' => ['routeName' => MediaController::NAME_MEDIA_GUEST_ADD],
+            'media guest add' => ['routeName' => MediaController::NAME_MEDIA_GUEST_ADD]
         ];
     }
 

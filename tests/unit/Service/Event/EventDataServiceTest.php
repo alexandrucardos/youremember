@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Event;
 
 use App\Repository\MediaRepository;
@@ -38,15 +40,15 @@ class EventDataServiceTest extends TestCase
             ->with($orderId)
             ->willReturn([
                 ['123/client/photo1.jpg'],
-                ['123/client/photo2.jpg'],
+                ['123/client/photo2.jpg']
             ]);
 
         $this->mediatorS3Service
             ->expects($this->exactly(2))
             ->method('buildUrl')
-            ->willReturnCallback(fn(string $path) => match ($path) {
+            ->willReturnCallback(static fn(string $path) => match ($path) {
                 '123/client/photo1.jpg' => $picturesUrls[0],
-                '123/client/photo2.jpg' => $picturesUrls[1],
+                '123/client/photo2.jpg' => $picturesUrls[1]
             });
 
         $result = $this->eventDataService->fetch($eventFetchDto);
@@ -79,16 +81,17 @@ class EventDataServiceTest extends TestCase
             ->with($orderId)
             ->willReturn([
                 ['123/client/photo1.jpg'],
-                ['123/client/photo2.jpg'],
+                ['123/client/photo2.jpg']
             ]);
 
         $this->mediatorS3Service
             ->expects($this->exactly(3))
             ->method('buildUrl')
-            ->willReturnCallback(fn(string $path) => match ($path) {
-                sprintf('%d/%s/%s', $orderId, MediaService::FOLDER_CLIENT, MediaService::FILE_BACKGROUND_NAME) => $backgroundImageUrl,
+            ->willReturnCallback(static fn(string $path) => match ($path) {
+                sprintf('%d/%s/%s', $orderId, MediaService::FOLDER_CLIENT, MediaService::FILE_BACKGROUND_NAME)
+                    => $backgroundImageUrl,
                 '123/client/photo1.jpg' => $picturesUrls[0],
-                '123/client/photo2.jpg' => $picturesUrls[1],
+                '123/client/photo2.jpg' => $picturesUrls[1]
             });
 
         $result = $this->eventDataService->fetch($eventFetchDto);
@@ -128,9 +131,6 @@ class EventDataServiceTest extends TestCase
         $this->mediatorS3Service = $this->createMock(MediaService::class);
         $this->mediaRepository = $this->createMock(MediaRepository::class);
 
-        $this->eventDataService = new EventMediaFetchService(
-            $this->mediatorS3Service,
-            $this->mediaRepository,
-        );
+        $this->eventDataService = new EventMediaFetchService($this->mediatorS3Service, $this->mediaRepository);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Media;
 
 use App\Exception\Media\UnauthorizedException;
@@ -9,9 +11,8 @@ use App\ValueObject\HashValueObject;
 final class MediaDeleteService
 {
     public function __construct(
-        private readonly MediaRepository $mediaRepository,
-    )
-    {
+        private readonly MediaRepository $mediaRepository
+    ) {
     }
 
     public function deleteContent(string $url, HashValueObject $hash): void

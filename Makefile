@@ -1,5 +1,5 @@
 PROJECT_NAME := my_project
-ZIP_NAME := $(PROJECT_NAME).zip
+ZIP_NAME := $(PROJECT_NAME)-ddd.zip
 
 all: install zip
 

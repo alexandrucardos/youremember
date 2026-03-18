@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Media;
 
 use App\Exception\Media\NotFoundException;
@@ -10,9 +12,8 @@ class MediaPresignService
 {
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly EventRepository         $eventRepository,
-    )
-    {
+        private readonly EventRepository $eventRepository
+    ) {
     }
 
     /**
@@ -28,11 +29,7 @@ class MediaPresignService
 
         $key = sprintf('%d/%s/%s', $orderId, $folder, $filename);
 
-        $presignedUrl = $this->bucketProvider->getPresignedUrl(
-            $key,
-            $mimeType,
-            new \DateTimeImmutable('+15 minutes')
-        );
+        $presignedUrl = $this->bucketProvider->getPresignedUrl($key, $mimeType, new \DateTimeImmutable('+15 minutes'));
 
         return ['presignedUrl' => $presignedUrl, 'key' => $key];
     }
@@ -48,7 +45,7 @@ class MediaPresignService
             throw new NotFoundException('Event not found for order: ' . $orderId);
         }
 
-        $key      = sprintf('%d/%s/%s', $orderId, $folder, $filename);
+        $key = sprintf('%d/%s/%s', $orderId, $folder, $filename);
         $uploadId = $this->bucketProvider->createMultipartUpload($key, $mimeType);
 
         return ['key' => $key, 'uploadId' => $uploadId];

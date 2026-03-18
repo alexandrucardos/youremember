@@ -1,42 +1,64 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service;
 
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
 use App\Service\FrontendTokenParserService;
+use App\ValueObject\UserRole;
 use PHPUnit\Framework\TestCase;
 
 class FrontendTokenParserServiceTest extends TestCase
 {
     private const API_KEY = 'test-api-key';
 
-    public function testDecodeValidToken(): void
+    public function testDecodeAdminToken(): void
     {
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
-        $username = 'admin';
-        $expiration = time() + 86400; // +1 day
+        $email = 'admin@email.com';
+        $expiration = time() + 86_400; // +1 day
 
-        $data = $username . '|' . $expiration;
+        $data = $email . '|' . $expiration;
         $hmac = hash_hmac(FrontendTokenParserService::HASH_ALGO, $data, self::API_KEY);
         $token = $data . '|' . $hmac;
 
-        $tokenParser->validateToken($token);
+        [$userRole, $parsedEmail] = $tokenParser->validateTokenAndGetUserInfo($token);
 
-        // If we reach this point without exception, the token was valid
-        $this->addToAssertionCount(1);
+        $this->assertEquals(UserRole::ROLE_ADMIN, $userRole);
+        $this->assertEquals($email, $parsedEmail);
     }
 
-    public function testDecodeThrowsInvalidStructureException(): void
+    public function testDecodeSuperAdminToken(): void
     {
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
-        $this->expectException(InvalidStructureException::class);
-        $this->expectExceptionMessage('Invalid token value');
+        $email = FrontendTokenParserService::SUPER_ADMIN_EMAIL;
+        $expiration = time() + 86_400; // +1 day
 
-        $tokenParser->validateToken('invalid|str');
+        $data = $email . '|' . $expiration;
+        $hmac = hash_hmac(FrontendTokenParserService::HASH_ALGO, $data, self::API_KEY);
+        $token = $data . '|' . $hmac;
+
+        [$userRole, $parsedEmail] = $tokenParser->validateTokenAndGetUserInfo($token);
+
+        $this->assertEquals(UserRole::ROLE_SUPER_ADMIN, $userRole);
+        $this->assertEquals($email, $parsedEmail);
+    }
+
+    public function testDecodeGuestToken(): void
+    {
+        $tokenParser = new FrontendTokenParserService(self::API_KEY);
+
+        $token = 'guest_token';
+
+        [$userRole, $parsedEmail] = $tokenParser->validateTokenAndGetUserInfo($token);
+
+        $this->assertEquals(UserRole::ROLE_GUEST, $userRole);
+        $this->assertEquals(null, $parsedEmail);
     }
 
     public function testDecodeThrowsInvalidHmacException(): void
@@ -44,13 +66,13 @@ class FrontendTokenParserServiceTest extends TestCase
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
         $username = 'admin';
-        $expiration = time() + 86400;
+        $expiration = time() + 86_400;
         $token = $username . '|' . $expiration . '|' . 'invalid-hmac';
 
         $this->expectException(InvalidHmacException::class);
         $this->expectExceptionMessage('Invalid token');
 
-        $tokenParser->validateToken($token);
+        $tokenParser->validateTokenAndGetUserInfo($token);
     }
 
     public function testDecodeThrowsExpiredException(): void
@@ -58,12 +80,12 @@ class FrontendTokenParserServiceTest extends TestCase
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
         $username = 'admin';
-        $expiration = time() - 86400; // -1 day (expired)
+        $expiration = time() - 86_400; // -1 day (expired)
         $token = $username . '|' . $expiration . '|' . 'any-hmac';
 
         $this->expectException(ExpiredException::class);
         $this->expectExceptionMessage('Expired token');
 
-        $tokenParser->validateToken($token);
+        $tokenParser->validateTokenAndGetUserInfo($token);
     }
 }

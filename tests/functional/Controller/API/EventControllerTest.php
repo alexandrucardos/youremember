@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\functional\Controller\API;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -19,7 +21,7 @@ class EventControllerTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode([
                 'client_email' => 'test@example.com',
-                'orderId' => 123,
+                'orderId' => 123
             ])
         );
 
@@ -35,11 +37,11 @@ class EventControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => 'invalid-token',
+                'HTTP_TOKEN' => 'invalid-token'
             ],
             json_encode([
                 'client_email' => 'test@example.com',
-                'orderId' => 123,
+                'orderId' => 123
             ])
         );
 
@@ -55,11 +57,11 @@ class EventControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateExpiredToken('test@example.com'),
+                'HTTP_TOKEN' => $this->generateExpiredToken('test@example.com')
             ],
             json_encode([
                 'client_email' => 'test@example.com',
-                'orderId' => 123,
+                'orderId' => 123
             ])
         );
 
@@ -69,7 +71,7 @@ class EventControllerTest extends WebTestCase
     private function generateExpiredToken(string $email): string
     {
         $apiKey = 'test-api-key';
-        $expiration = time() - 86400;
+        $expiration = time() - 86_400;
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac('sha256', $data, $apiKey);
 
@@ -85,11 +87,11 @@ class EventControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com'),
+                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
             ],
             json_encode([
                 'client_email' => 'test@example.com',
-                'orderId' => 123,
+                'orderId' => 123
             ])
         );
 
@@ -101,7 +103,7 @@ class EventControllerTest extends WebTestCase
     private function generateValidToken(string $email): string
     {
         $apiKey = 'test-api-key';
-        $expiration = time() + 86400;
+        $expiration = time() + 86_400;
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac('sha256', $data, $apiKey);
 
@@ -152,7 +154,7 @@ class EventControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com'),
+                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
             ],
             json_encode(['name' => 'Updated Event Name'])
         );

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\functional\Controller\API;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -11,16 +13,9 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateUserReturns401WithoutToken(): void
     {
-        $this->client->request(
-            'POST',
-            '/api/user/client',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'email' => 'newuser@example.com',
-            ])
-        );
+        $this->client->request('POST', '/api/user/client', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+            'email' => 'newuser@example.com'
+        ]));
 
         self::assertResponseStatusCodeSame(401);
     }
@@ -34,10 +29,10 @@ class UserControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => 'invalid-token',
+                'HTTP_TOKEN' => 'invalid-token'
             ],
             json_encode([
-                'email' => 'newuser@example.com',
+                'email' => 'newuser@example.com'
             ])
         );
 
@@ -53,10 +48,10 @@ class UserControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateExpiredToken('admin@example.com'),
+                'HTTP_TOKEN' => $this->generateExpiredToken('admin@example.com')
             ],
             json_encode([
-                'email' => 'newuser@example.com',
+                'email' => 'newuser@example.com'
             ])
         );
 
@@ -66,7 +61,7 @@ class UserControllerTest extends WebTestCase
     private function generateExpiredToken(string $email): string
     {
         $apiKey = 'test-api-key';
-        $expiration = time() - 86400;
+        $expiration = time() - 86_400;
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac('sha256', $data, $apiKey);
 
@@ -82,10 +77,10 @@ class UserControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@example.com'),
+                'HTTP_TOKEN' => $this->generateValidToken('admin@example.com')
             ],
             json_encode([
-                'email' => 'newuser@example.com',
+                'email' => 'newuser@example.com'
             ])
         );
 
@@ -95,7 +90,7 @@ class UserControllerTest extends WebTestCase
     private function generateValidToken(string $email): string
     {
         $apiKey = 'test-api-key';
-        $expiration = time() + 86400;
+        $expiration = time() + 86_400;
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac('sha256', $data, $apiKey);
 
@@ -111,10 +106,10 @@ class UserControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@example.com'),
+                'HTTP_TOKEN' => $this->generateValidToken('admin@example.com')
             ],
             json_encode([
-                'email' => null,
+                'email' => null
             ])
         );
 

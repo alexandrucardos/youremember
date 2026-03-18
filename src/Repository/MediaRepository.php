@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Repository;
 
+use App\Domain\Model\Event\MediaRepositoryInterface;
 use App\Entity\Media;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,7 +33,8 @@ class MediaRepository extends ServiceEntityRepository
      */
     public function findPathsByOrderId(int $orderId): array
     {
-        return $this->createQueryBuilder('m')
+        return $this
+            ->createQueryBuilder('m')
             ->select('COALESCE(m.thumbnail_path, m.file_path)')
             ->innerJoin('m.event', 'e')
             ->where('e.order_id = :orderId')
@@ -40,9 +44,27 @@ class MediaRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+    /**
+     * @return array<array>
+     */
+    public function findPathsByOrderIdForDownload(int $orderId): array
+    {
+        return $this
+            ->createQueryBuilder('m')
+            ->select('m.file_path')
+            ->innerJoin('m.event', 'e')
+            ->where('e.order_id = :orderId')
+            ->andWhere('m.deleted_at IS NULL')
+            ->andWhere('m.is_downloaded = 0')
+            ->setParameter('orderId', $orderId)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     public function softDeleteByPath(string $path): void
     {
-        $media = $this->createQueryBuilder('m')
+        $media = $this
+            ->createQueryBuilder('m')
             ->where('m.thumbnail_path = :path OR m.file_path = :path')
             ->andWhere('m.deleted_at IS NULL')
             ->setParameter('path', $path)

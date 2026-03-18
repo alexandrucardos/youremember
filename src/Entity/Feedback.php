@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\FeedbackRepository;
@@ -21,11 +23,7 @@ class Feedback
     #[ORM\Column(type: Types::TEXT)]
     private string $feedback;
 
-    #[ORM\Column(
-        insertable: false,
-        updatable: false,
-        options: ['default' => 'CURRENT_TIMESTAMP']
-    )]
+    #[ORM\Column(insertable: false, updatable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
     public function getId(): ?int

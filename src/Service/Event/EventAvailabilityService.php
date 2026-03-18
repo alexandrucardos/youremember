@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Event;
 
 use App\Repository\EventRepository;
@@ -9,32 +11,27 @@ class EventAvailabilityService
 {
     public function __construct(
         private readonly EventRepository $eventRepository
-    )
-    {
-
+    ) {
     }
 
     public function __invoke(
         ?string $orderId,
-        ?string $uuid,
-    ): bool
-    {
+        ?string $uuid
+    ): bool {
         if ($orderId !== null) {
-            $event = $this->eventRepository->findOneBy(
-                [
-                    'order_id' => $orderId,
-                    'status' => Status::VALID
-                ]);
+            $event = $this->eventRepository->findOneBy([
+                'order_id' => $orderId,
+                'status' => Status::VALID
+            ]);
 
             return $event !== null;
         }
 
         if ($uuid !== null) {
-            $event = $this->eventRepository->findOneBy(
-                [
-                    'uuid' => $uuid,
-                    'status' => Status::VALID
-                ]);
+            $event = $this->eventRepository->findOneBy([
+                'uuid' => $uuid,
+                'status' => Status::VALID
+            ]);
 
             return $event !== null;
         }

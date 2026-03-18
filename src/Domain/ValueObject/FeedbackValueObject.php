@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Domain\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,9 +17,7 @@ final class FeedbackValueObject
     {
         $this->value = $value;
 
-        $validator = Validation::createValidatorBuilder()
-            ->enableAttributeMapping()
-            ->getValidator();
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
         $violations = $validator->validate($this);
 

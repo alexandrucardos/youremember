@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -8,6 +10,7 @@ use Symfony\Component\Validator\Validation;
 final class UuidValueObject
 {
     #[Assert\NotBlank]
+    #[Assert\NotNull]
     #[Assert\Uuid]
     public readonly string $value;
 
@@ -15,9 +18,7 @@ final class UuidValueObject
     {
         $this->value = (string) $value;
 
-        $validator = Validation::createValidatorBuilder()
-            ->enableAttributeMapping()
-            ->getValidator();
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
         $violations = $validator->validate($this);
 

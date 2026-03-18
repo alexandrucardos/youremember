@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Event;
 
 use App\Entity\Event;
@@ -31,8 +33,8 @@ class EventUpdateServiceTest extends TestCase
             ],
             'unicode name' => [
                 'orderId' => 789,
-                'newName' => 'Petrecere de Crăciun',
-            ],
+                'newName' => 'Petrecere de Crăciun'
+            ]
         ];
     }
 
@@ -40,11 +42,10 @@ class EventUpdateServiceTest extends TestCase
      * @dataProvider successfulUpdateNameDataProvider
      */
     public function testUpdateNameSucceedsWhenEventExists(
-        int    $orderId,
+        int $orderId,
         string $newName,
         string $font = null
-    ): void
-    {
+    ): void {
         $event = new Event();
         $event->setName('Old Name');
 
@@ -79,9 +80,7 @@ class EventUpdateServiceTest extends TestCase
             ->with(['order_id' => $orderId])
             ->willReturn(null);
 
-        $this->eventRepository
-            ->expects($this->never())
-            ->method('save');
+        $this->eventRepository->expects($this->never())->method('save');
 
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('Event not found');
@@ -97,8 +96,6 @@ class EventUpdateServiceTest extends TestCase
     {
         $this->eventRepository = $this->createMock(EventRepository::class);
 
-        $this->eventUpdateService = new EventUpdateService(
-            $this->eventRepository,
-        );
+        $this->eventUpdateService = new EventUpdateService($this->eventRepository);
     }
 }

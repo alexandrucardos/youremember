@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Media;
 
 use App\Exception\Media\UnauthorizedException;
@@ -17,9 +19,7 @@ class MediaDeleteServiceTest extends TestCase
     {
         $this->mediaRepository = $this->createMock(MediaRepository::class);
 
-        $this->mediaDeleteService = new MediaDeleteService(
-            $this->mediaRepository,
-        );
+        $this->mediaDeleteService = new MediaDeleteService($this->mediaRepository);
     }
 
     /**
@@ -45,9 +45,7 @@ class MediaDeleteServiceTest extends TestCase
         string $url,
         string $hash
     ): void {
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('softDeleteByPath');
+        $this->mediaRepository->expects($this->never())->method('softDeleteByPath');
 
         $this->expectException(UnauthorizedException::class);
         $this->expectExceptionMessage('Not authorized to delete this media');
@@ -60,9 +58,7 @@ class MediaDeleteServiceTest extends TestCase
      */
     public function testDeleteContentThrowsInvalidArgumentExceptionForInvalidUrl(string $url): void
     {
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('softDeleteByPath');
+        $this->mediaRepository->expects($this->never())->method('softDeleteByPath');
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid URL');
@@ -72,9 +68,7 @@ class MediaDeleteServiceTest extends TestCase
 
     public function testDeleteContentThrowsInvalidArgumentExceptionForInvalidKeyFormat(): void
     {
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('softDeleteByPath');
+        $this->mediaRepository->expects($this->never())->method('softDeleteByPath');
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid key format');
@@ -104,18 +98,18 @@ class MediaDeleteServiceTest extends TestCase
             'client folder delete' => [
                 'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/123/client/photo.jpg',
                 'hash' => 'client',
-                'expectedKey' => '123/client/photo.jpg',
+                'expectedKey' => '123/client/photo.jpg'
             ],
             'guest hash folder delete' => [
                 'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/456/abc123hash/image.png',
                 'hash' => 'abc123hash',
-                'expectedKey' => '456/abc123hash/image.png',
+                'expectedKey' => '456/abc123hash/image.png'
             ],
             'url with encoded characters' => [
                 'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/789/myfolder/photo%20with%20spaces.jpg',
                 'hash' => 'myfolder',
-                'expectedKey' => '789/myfolder/photo with spaces.jpg',
-            ],
+                'expectedKey' => '789/myfolder/photo with spaces.jpg'
+            ]
         ];
     }
 
@@ -124,8 +118,8 @@ class MediaDeleteServiceTest extends TestCase
         return [
             'different guest hash' => [
                 'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/123/hash1/photo.jpg',
-                'hash' => 'hash2',
-            ],
+                'hash' => 'hash2'
+            ]
         ];
     }
 
@@ -134,7 +128,7 @@ class MediaDeleteServiceTest extends TestCase
         return [
             'empty string' => ['url' => ''],
             'no path' => ['url' => 'https://bucket.s3.eu-west-1.amazonaws.com'],
-            'invalid url format' => ['url' => 'not-a-valid-url'],
+            'invalid url format' => ['url' => 'not-a-valid-url']
         ];
     }
 
@@ -143,12 +137,12 @@ class MediaDeleteServiceTest extends TestCase
         return [
             'simple url' => [
                 'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/123/client/photo.jpg',
-                'expectedKey' => '123/client/photo.jpg',
+                'expectedKey' => '123/client/photo.jpg'
             ],
             'url with encoded characters' => [
                 'url' => 'https://bucket.s3.eu-west-1.amazonaws.com/789/myfolder/photo%20with%20spaces.jpg',
-                'expectedKey' => '789/myfolder/photo with spaces.jpg',
-            ],
+                'expectedKey' => '789/myfolder/photo with spaces.jpg'
+            ]
         ];
     }
 }

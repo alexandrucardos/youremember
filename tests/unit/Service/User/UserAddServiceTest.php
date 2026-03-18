@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\User;
 
 use App\Entity\User;
@@ -12,6 +14,30 @@ use PHPUnit\Framework\TestCase;
 
 class UserAddServiceTest extends TestCase
 {
+    public static function existingUserDataProvider(): array
+    {
+        return [
+            'existing client user' => [
+                'email' => 'client@example.com',
+                'role' => UserRole::ROLE_ADMIN
+            ]
+        ];
+    }
+
+    public static function newUserDataProvider(): array
+    {
+        return [
+            'new client user' => [
+                'email' => 'newclient@example.com',
+                'role' => UserRole::ROLE_ADMIN
+            ],
+            'new guest user' => [
+                'email' => 'newguest@example.com',
+                'role' => UserRole::ROLE_GUEST
+            ]
+        ];
+    }
+
     /**
      * @dataProvider existingUserDataProvider
      */
@@ -27,16 +53,11 @@ class UserAddServiceTest extends TestCase
             ->with(['email' => $email])
             ->willReturn($existingUser);
 
-        $userRepository
-            ->expects($this->never())
-            ->method('save');
+        $userRepository->expects($this->never())->method('save');
 
         $userAddService = new UserAddService($userRepository);
 
-        $userAddValueObject = new UserAddValueObject(
-            new EmailValueObject($email),
-            $role
-        );
+        $userAddValueObject = new UserAddValueObject(new EmailValueObject($email), $role);
 
         $result = $userAddService->add($userAddValueObject);
 
@@ -49,23 +70,13 @@ class UserAddServiceTest extends TestCase
     public function testAddCreatesNewUserWhenEmailNotExists(string $email, UserRole $role): void
     {
         $userRepository = $this->createMock(UserRepository::class);
-        $userRepository
-            ->expects($this->once())
-            ->method('findOneBy')
-            ->with(['email' => $email])
-            ->willReturn(null);
+        $userRepository->expects($this->once())->method('findOneBy')->with(['email' => $email])->willReturn(null);
 
-        $userRepository
-            ->expects($this->once())
-            ->method('save')
-            ->with($this->isInstanceOf(User::class));
+        $userRepository->expects($this->once())->method('save')->with($this->isInstanceOf(User::class));
 
         $userAddService = new UserAddService($userRepository);
 
-        $userAddValueObject = new UserAddValueObject(
-            new EmailValueObject($email),
-            $role
-        );
+        $userAddValueObject = new UserAddValueObject(new EmailValueObject($email), $role);
 
         $result = $userAddService->add($userAddValueObject);
 
@@ -79,46 +90,14 @@ class UserAddServiceTest extends TestCase
     public function testAddSetsCreatedAtAndModifiedAtToSameTime(): void
     {
         $userRepository = $this->createMock(UserRepository::class);
-        $userRepository
-            ->method('findOneBy')
-            ->willReturn(null);
+        $userRepository->method('findOneBy')->willReturn(null);
 
         $userAddService = new UserAddService($userRepository);
 
-        $userAddValueObject = new UserAddValueObject(
-            new EmailValueObject('test@example.com'),
-            UserRole::ROLE_GUEST
-        );
+        $userAddValueObject = new UserAddValueObject(new EmailValueObject('test@example.com'), UserRole::ROLE_GUEST);
 
         $result = $userAddService->add($userAddValueObject);
 
-        $this->assertEquals(
-            $result->getEmail(),
-            $userAddValueObject->email->value
-        );
-    }
-
-    public static function existingUserDataProvider(): array
-    {
-        return [
-            'existing client user' => [
-                'email' => 'client@example.com',
-                'role' => UserRole::ROLE_CLIENT,
-            ],
-        ];
-    }
-
-    public static function newUserDataProvider(): array
-    {
-        return [
-            'new client user' => [
-                'email' => 'newclient@example.com',
-                'role' => UserRole::ROLE_CLIENT,
-            ],
-            'new guest user' => [
-                'email' => 'newguest@example.com',
-                'role' => UserRole::ROLE_GUEST,
-            ],
-        ];
+        $this->assertEquals($result->getEmail(), $userAddValueObject->email->value);
     }
 }

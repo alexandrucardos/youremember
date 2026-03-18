@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\functional\Controller\API;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -33,7 +35,7 @@ class MediaControllerTest extends WebTestCase
     private function generateValidToken(string $email): string
     {
         $apiKey = 'test-api-key';
-        $expiration = time() + 86400;
+        $expiration = time() + 86_400;
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac('sha256', $data, $apiKey);
 
@@ -63,7 +65,7 @@ class MediaControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com'),
+                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
             ],
             json_encode(['url' => 'https://bucket.s3.amazonaws.com/123/client/photo.jpg'])
         );
@@ -122,7 +124,7 @@ class MediaControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_HASH' => 'validhash123',
+                'HTTP_HASH' => 'validhash123'
             ],
             json_encode([])
         );
@@ -142,7 +144,7 @@ class MediaControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_HASH' => 'validhash123',
+                'HTTP_HASH' => 'validhash123'
             ],
             json_encode(['url' => 'https://bucket.s3.amazonaws.com/123/validhash123/photo.jpg'])
         );

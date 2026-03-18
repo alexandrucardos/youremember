@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\ValueObject;
 
 use App\Exception\Event\InvalidOrderIdException;
@@ -23,9 +25,7 @@ final class OrderIdValueObject
 
         $this->value = $intValue;
 
-        $validator = Validation::createValidatorBuilder()
-            ->enableAttributeMapping()
-            ->getValidator();
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
         $violations = $validator->validate($this);
 

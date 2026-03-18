@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\EventSubscriber;
 
-use App\Controller\API\EventController;
-use App\Controller\API\MediaController;
-use App\Controller\API\UserController;
 use App\Service\FrontendTokenParserService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -13,33 +12,19 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final class SecurityValidationRequestSubscriber implements EventSubscriberInterface
 {
-    private const ROUTES = [
-        EventController::NAME_EVENT_CLIENT_CREATE,
-        UserController::NAME_USER_CLIENT_CREATE,
-
-        EventController::NAME_EVENT_CLIENT_GET,
-        EventController::NAME_EVENT_CLIENT_UPDATE,
-        EventController::NAME_EVENT_CLIENT_PAGE_URL_GET,
-        EventController::NAME_EVENT_CLIENT_NAME_GET,
-
-        MediaController::NAME_MEDIA_CLIENT_GET,
-        MediaController::NAME_MEDIA_CLIENT_ADD,
-        MediaController::NAME_MEDIA_CLIENT_DELETE,
-
-        MediaController::NAME_MEDIA_CLIENT_BACKGROUND_ADD,
-        MediaController::NAME_MEDIA_CLIENT_BACKGROUND_GET,
-    ];
+    public const REQUEST_TOKEN = 'token';
+    public const REQUEST_ATTRIBUTE_USER_ROLE = 'user_role';
+    public const REQUEST_ATTRIBUTE_EMAIL = 'email';
 
     public function __construct(
-        private readonly FrontendTokenParserService $tokenParser,
-    )
-    {
+        private readonly FrontendTokenParserService $tokenParser
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => 'onKernelRequest',
+            KernelEvents::REQUEST => 'onKernelRequest'
         ];
     }
 
@@ -50,18 +35,16 @@ final class SecurityValidationRequestSubscriber implements EventSubscriberInterf
         }
 
         $request = $event->getRequest();
-        $routeName = $request->attributes->get('_route');
 
-        if (!in_array($routeName, self::ROUTES, true)) {
-            return;
-        }
-
-        $token = $request->headers->get('token');
+        $token = $request->headers->get(self::REQUEST_TOKEN);
 
         if ($token === null) {
             throw new UnauthorizedHttpException('Token', 'Missing token header');
         }
 
-        $this->tokenParser->validateToken($token);
+        [$userRole, $email] = $this->tokenParser->validateTokenAndGetUserInfo($token);
+
+        $request->attributes->set(self::REQUEST_ATTRIBUTE_USER_ROLE, $userRole);
+        $request->attributes->set(self::REQUEST_ATTRIBUTE_EMAIL, $email);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\MediaRepository;
@@ -37,20 +39,16 @@ class Media
     #[ORM\Column(length: 255)]
     private string $original_filename;
 
-    #[ORM\Column(
-        insertable: false,
-        updatable: false,
-        options: ['default' => 'CURRENT_TIMESTAMP']
-    )]
+    #[ORM\Column(options: ['default' => 0])]
+    private bool $is_downloaded = false;
+
+    #[ORM\Column(insertable: false, updatable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(
-        insertable: false,
-        updatable: false,
-        options: [
-            'default' => 'CURRENT_TIMESTAMP',
-            'on update' => 'CURRENT_TIMESTAMP'
-        ])]
+    #[ORM\Column(insertable: false, updatable: false, options: [
+        'default' => 'CURRENT_TIMESTAMP',
+        'on update' => 'CURRENT_TIMESTAMP'
+    ])]
     private ?\DateTimeImmutable $modified_at = null;
 
     #[ORM\Column(nullable: true)]
@@ -184,5 +182,17 @@ class Media
     public function isDeleted(): bool
     {
         return $this->deleted_at !== null;
+    }
+
+    public function isDownloaded(): bool
+    {
+        return $this->is_downloaded;
+    }
+
+    public function setIsDownloaded(bool $is_downloaded): static
+    {
+        $this->is_downloaded = $is_downloaded;
+
+        return $this;
     }
 }

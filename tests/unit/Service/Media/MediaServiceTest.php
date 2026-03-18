@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Tests\unit\Service\Media;
 
 use App\Entity\Event;
@@ -24,12 +26,12 @@ class MediaServiceTest extends TestCase
         return [
             'simple prefix' => [
                 'prefix' => '123/client/photo.jpg',
-                'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo.jpg',
+                'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo.jpg'
             ],
             'prefix with spaces' => [
                 'prefix' => '123/client/photo with spaces.jpg',
-                'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo with spaces.jpg',
-            ],
+                'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo with spaces.jpg'
+            ]
         ];
     }
 
@@ -41,13 +43,9 @@ class MediaServiceTest extends TestCase
             ->with(['order_id' => 123])
             ->willReturn(null);
 
-        $this->mediaRepository
-            ->expects($this->never())
-            ->method('save');
+        $this->mediaRepository->expects($this->never())->method('save');
 
-        $this->bucketProvider
-            ->expects($this->never())
-            ->method('putObject');
+        $this->bucketProvider->expects($this->never())->method('putObject');
 
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('Event not found for order: 123');
@@ -62,6 +60,7 @@ class MediaServiceTest extends TestCase
         $tempFile = $this->createTempFile('video content');
 
         $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn('video.mp4');
         $uploadedFile->method('getMimeType')->willReturn('video/mp4');
         $uploadedFile->method('getPathname')->willReturn($tempFile);
@@ -75,14 +74,16 @@ class MediaServiceTest extends TestCase
         $this->mediaRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Media $media) use ($event) {
-                return $media->getEvent() === $event
+            ->with($this->callback(
+                static fn(Media $media) => (
+                    $media->getEvent() === $event
                     && $media->getFilePath() === '123/client/video.mp4'
                     && $media->getUploaderHash() === 'client'
                     && $media->getFileType() === 'video/mp4'
                     && $media->getOriginalFilename() === 'video.mp4'
-                    && $media->getThumbnailPath() === null;
-            }));
+                    && $media->getThumbnailPath() === null
+                )
+            ));
 
         $this->bucketProvider
             ->expects($this->once())
@@ -110,6 +111,7 @@ class MediaServiceTest extends TestCase
         $tempFile = $this->createTempFile('file content');
 
         $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn('document.pdf');
         $uploadedFile->method('getMimeType')->willReturn('application/pdf');
         $uploadedFile->method('getPathname')->willReturn($tempFile);
@@ -123,10 +125,12 @@ class MediaServiceTest extends TestCase
         $this->mediaRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Media $media) use ($customHash) {
-                return $media->getFilePath() === '456/guest-hash-123/document.pdf'
-                    && $media->getUploaderHash() === $customHash;
-            }));
+            ->with($this->callback(
+                static fn(Media $media) => (
+                    $media->getFilePath() === '456/guest-hash-123/document.pdf'
+                    && $media->getUploaderHash() === $customHash
+                )
+            ));
 
         $this->bucketProvider
             ->expects($this->once())
@@ -146,11 +150,13 @@ class MediaServiceTest extends TestCase
         $tempFile2 = $this->createTempFile('content2');
 
         $uploadedFile1 = $this->createMock(UploadedFile::class);
+        $uploadedFile1->method('isValid')->willReturn(true);
         $uploadedFile1->method('getClientOriginalName')->willReturn('file1.txt');
         $uploadedFile1->method('getMimeType')->willReturn('text/plain');
         $uploadedFile1->method('getPathname')->willReturn($tempFile1);
 
         $uploadedFile2 = $this->createMock(UploadedFile::class);
+        $uploadedFile2->method('isValid')->willReturn(true);
         $uploadedFile2->method('getClientOriginalName')->willReturn('file2.txt');
         $uploadedFile2->method('getMimeType')->willReturn('text/plain');
         $uploadedFile2->method('getPathname')->willReturn($tempFile2);
@@ -160,13 +166,9 @@ class MediaServiceTest extends TestCase
             ->method('findOneBy')
             ->willReturn($event);
 
-        $this->mediaRepository
-            ->expects($this->exactly(2))
-            ->method('save');
+        $this->mediaRepository->expects($this->exactly(2))->method('save');
 
-        $this->bucketProvider
-            ->expects($this->exactly(2))
-            ->method('putObject');
+        $this->bucketProvider->expects($this->exactly(2))->method('putObject');
 
         $this->mediaService->uploadMultiple($orderId, [$uploadedFile1, $uploadedFile2]);
 
@@ -181,6 +183,7 @@ class MediaServiceTest extends TestCase
         $tempFile = $this->createTempImageFile(400, 300);
 
         $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn('photo.jpg');
         $uploadedFile->method('getMimeType')->willReturn('image/jpeg');
         $uploadedFile->method('getPathname')->willReturn($tempFile);
@@ -193,10 +196,12 @@ class MediaServiceTest extends TestCase
         $this->mediaRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Media $media) {
-                return $media->getFilePath() === '100/client/photo.jpg'
-                    && $media->getThumbnailPath() === '100/client/photo_thumb.jpg';
-            }));
+            ->with($this->callback(
+                static fn(Media $media) => (
+                    $media->getFilePath() === '100/client/photo.jpg'
+                    && $media->getThumbnailPath() === '100/client/photo_thumb.jpg'
+                )
+            ));
 
         $this->bucketProvider
             ->expects($this->exactly(2))
@@ -226,6 +231,7 @@ class MediaServiceTest extends TestCase
 
     /**
      * @dataProvider appleExtensionsDataProvider
+     * @requires extension imagick
      */
     public function testUploadMultipleWithAppleExtensionAppendsJpegToKey(
         string $mimeType,
@@ -237,6 +243,7 @@ class MediaServiceTest extends TestCase
         $tempFile = $this->createTempImageFile(400, 300);
 
         $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn($originalFilename);
         $uploadedFile->method('getMimeType')->willReturn($mimeType);
         $uploadedFile->method('getPathname')->willReturn($tempFile);
@@ -249,14 +256,11 @@ class MediaServiceTest extends TestCase
         $this->mediaRepository
             ->expects($this->once())
             ->method('save')
-            ->with($this->callback(function (Media $media) use ($expectedKey, $mimeType) {
-                return $media->getFilePath() === $expectedKey
-                    && $media->getFileType() === $mimeType;
-            }));
+            ->with($this->callback(
+                static fn(Media $media) => $media->getFilePath() === $expectedKey && $media->getFileType() === $mimeType
+            ));
 
-        $this->bucketProvider
-            ->expects($this->atLeastOnce())
-            ->method('putObject');
+        $this->bucketProvider->expects($this->atLeastOnce())->method('putObject');
 
         $this->mediaService->uploadMultiple($orderId, [$uploadedFile]);
 
@@ -269,13 +273,13 @@ class MediaServiceTest extends TestCase
             'heic file gets jpeg extension' => [
                 'mimeType' => 'image/heic',
                 'originalFilename' => 'photo.heic',
-                'expectedKey' => '200/client/photo.heic.jpeg',
+                'expectedKey' => '200/client/photo.heic.jpeg'
             ],
             'heif file gets jpeg extension' => [
                 'mimeType' => 'image/heif',
                 'originalFilename' => 'photo.heif',
-                'expectedKey' => '200/client/photo.heif.jpeg',
-            ],
+                'expectedKey' => '200/client/photo.heif.jpeg'
+            ]
         ];
     }
 

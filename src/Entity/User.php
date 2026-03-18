@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -23,7 +25,10 @@ class User
     private UserRole $role;
     #[ORM\Column(type: 'datetime_immutable', columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP')]
     private ?DateTimeImmutable $created_at = null;
-    #[ORM\Column(type: 'datetime_immutable', columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')]
+    #[ORM\Column(
+        type: 'datetime_immutable',
+        columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
+    )]
     private ?DateTimeImmutable $modified_at = null;
     /** @var Collection<int, Event> */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Event::class)]

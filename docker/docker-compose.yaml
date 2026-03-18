@@ -2,6 +2,7 @@ name: "be-events-photoshare"
 
 services:
   photoshare-nginx:
+    restart: always
     build:
       context: ./../
       dockerfile: docker/nginx/Dockerfile
@@ -27,6 +28,7 @@ services:
       - photoshare-php
 
   photoshare-php:
+    restart: always
     build:
       context: ./../
       dockerfile: docker/php-fpm/Dockerfile

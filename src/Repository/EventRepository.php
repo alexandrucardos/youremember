@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Repository;
 
+use App\Application\AddMedia\AddMediaCommand;
+use App\Application\DeleteMedia\DeleteMediaCommand;
+use App\Application\ListEventInformation\EventViewModel;
 use App\Domain\Model\Event\EventEntity;
 use App\Domain\Model\Event\EventRepositoryInterface;
 use App\Domain\Model\Event\Exception\EventNotFoundException;
@@ -14,7 +19,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Event>
  */
-class EventRepository extends ServiceEntityRepository implements EventRepositoryInterface
+class EventRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -24,56 +29,6 @@ class EventRepository extends ServiceEntityRepository implements EventRepository
     public function save(Event $event): void
     {
         $this->getEntityManager()->persist($event);
-
-        $this->getEntityManager()->flush();
-    }
-
-    /**
-     * @throws EventNotFoundException()
-     */
-    public function saveFeedbackForEvent(EventEntity $eventEntity): void
-    {
-        $event = $this->getEntityManager()->getRepository(Event::class)
-            ->findOneBy(
-                [
-                    'uuid' => $eventEntity->eventUuidValueObject->value
-                ]
-            );
-
-        if (!$event) {
-            throw new EventNotFoundException();
-        }
-
-        $feedback = (new Feedback())
-            ->setEvent($event)
-            ->setFeedback($eventEntity->getFeedbackValueObject()->value);
-
-        $this->getEntityManager()->persist($feedback);
-
-        $this->getEntityManager()->flush();
-    }
-
-    /**
-     * @throws EventNotFoundException()
-     */
-    public function saveArchiveEmailForEvent(EventEntity $eventEntity): void
-    {
-        $event = $this->getEntityManager()->getRepository(Event::class)
-            ->findOneBy(
-                [
-                    'uuid' => $eventEntity->eventUuidValueObject->value
-                ]
-            );
-
-        if (!$event) {
-            throw new EventNotFoundException();
-        }
-
-        $imageArchive = (new ImageArchive())
-            ->setEvent($event)
-            ->setEmail($eventEntity->getImageArchiveEmail()->value);
-
-        $this->getEntityManager()->persist($imageArchive);
 
         $this->getEntityManager()->flush();
     }

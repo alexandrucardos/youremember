@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Entity;
 
 use App\Repository\EventRepository;
 use App\ValueObject\Status;
-use App\Entity\Feedback;
-use App\Entity\ImageArchive;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -31,11 +31,7 @@ class Event
     #[ORM\Column(length: 50, nullable: true)]
     private string $name_font;
 
-    #[ORM\Column(
-        enumType: Status::class,
-        options: ['default' => Status::VALID]
-
-    )]
+    #[ORM\Column(enumType: Status::class, options: ['default' => Status::VALID])]
     private ?Status $status;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
@@ -51,6 +47,12 @@ class Event
     #[ORM\Column]
     private int $media_count = 0;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $event_start_date = null;
+
+    #[ORM\Column]
+    private bool $needs_manual_processing = false;
+
     /** @var Collection<int, Media> */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Media::class, cascade: ['remove'])]
     private Collection $media;
@@ -63,20 +65,13 @@ class Event
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ImageArchive::class, cascade: ['remove'])]
     private Collection $imageArchives;
 
-    #[ORM\Column(
-        insertable: false,
-        updatable: false,
-        options: ['default' => 'CURRENT_TIMESTAMP']
-    )]
+    #[ORM\Column(insertable: false, updatable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(
-        insertable: false,
-        updatable: false,
-        options: [
-            'default' => 'CURRENT_TIMESTAMP',
-            'on update' => 'CURRENT_TIMESTAMP'
-        ])]
+    #[ORM\Column(insertable: false, updatable: false, options: [
+        'default' => 'CURRENT_TIMESTAMP',
+        'on update' => 'CURRENT_TIMESTAMP'
+    ])]
     private ?\DateTimeImmutable $modified_at = null;
 
     public function __construct()
@@ -208,6 +203,30 @@ class Event
     public function setMediaCount(int $media_count): static
     {
         $this->media_count = $media_count;
+
+        return $this;
+    }
+
+    public function getEventStartDate(): ?\DateTimeImmutable
+    {
+        return $this->event_start_date;
+    }
+
+    public function setEventStartDate(\DateTimeImmutable $event_start_date): static
+    {
+        $this->event_start_date = $event_start_date;
+
+        return $this;
+    }
+
+    public function getNeedsManualProcessing(): bool
+    {
+        return $this->needs_manual_processing;
+    }
+
+    public function setNeedsManualProcessing(bool $needs_manual_processing): static
+    {
+        $this->needs_manual_processing = $needs_manual_processing;
 
         return $this;
     }

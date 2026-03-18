@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Event;
 
 use App\Entity\Event;
@@ -14,9 +16,8 @@ final class EventFetchService
 {
     public function __construct(
         private readonly EventRepository $eventRepository,
-        private readonly MediaService    $mediatorS3Service,
-    )
-    {
+        private readonly MediaService $mediatorS3Service
+    ) {
     }
 
     public function fetchByOrderId(OrderIdValueObject $orderId): EventFetchValueObject
@@ -27,21 +28,19 @@ final class EventFetchService
             throw new NotFoundException('Event not found.');
         }
 
-        $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(
-            sprintf(
-                '%d/%s/%s',
-                $orderId->value,
-                MediaService::FOLDER_CLIENT,
-                MediaService::FILE_BACKGROUND_NAME
-            )
-        );
+        $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(sprintf(
+            '%d/%s/%s',
+            $orderId->value,
+            MediaService::FOLDER_CLIENT,
+            MediaService::FILE_BACKGROUND_NAME
+        ));
 
         return new EventFetchValueObject(
             uuid: $event->getUuid(),
             name: $event->getName(),
             nameFont: $event->getNameFont(),
             orderId: $event->getOrderId(),
-            backgroundImage: $backgroundPictureUrl,
+            backgroundImage: $backgroundPictureUrl
         );
     }
 
@@ -58,8 +57,7 @@ final class EventFetchService
             name: $event->getName(),
             nameFont: $event->getNameFont(),
             orderId: $event->getOrderId(),
-            backgroundImage: null,
+            backgroundImage: null
         );
     }
 }
-

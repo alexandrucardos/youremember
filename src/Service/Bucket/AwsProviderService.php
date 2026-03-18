@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service\Bucket;
 
 use AsyncAws\S3\Input\AbortMultipartUploadRequest;
@@ -15,9 +17,9 @@ class AwsProviderService implements BucketProviderInterface
 {
     public function __construct(
         private readonly S3Client $s3Client,
-        private readonly string   $bucketName,
-    )
-    {
+        private readonly string $bucketName,
+        private readonly string $projectDir
+    ) {
     }
 
     public function putObject(string $key, string $body, string $contentType): void
@@ -26,44 +28,42 @@ class AwsProviderService implements BucketProviderInterface
             'Bucket' => $this->bucketName,
             'Key' => $key,
             'Body' => $body,
-            'ContentType' => $contentType,
+            'ContentType' => $contentType
         ]);
     }
 
     public function getPresignedUrl(string $key, string $contentType, \DateTimeImmutable $expires): string
     {
-        return $this->s3Client->presign(
-            new PutObjectRequest([
-                'Bucket' => $this->bucketName,
-                'Key' => $key,
-                'ContentType' => $contentType,
-            ]),
-            $expires
-        );
+        return $this->s3Client->presign(new PutObjectRequest([
+            'Bucket' => $this->bucketName,
+            'Key' => $key,
+            'ContentType' => $contentType
+        ]), $expires);
     }
 
     public function createMultipartUpload(string $key, string $contentType): string
     {
         $result = $this->s3Client->createMultipartUpload(new CreateMultipartUploadRequest([
-            'Bucket'      => $this->bucketName,
-            'Key'         => $key,
-            'ContentType' => $contentType,
+            'Bucket' => $this->bucketName,
+            'Key' => $key,
+            'ContentType' => $contentType
         ]));
 
         return $result->getUploadId();
     }
 
-    public function getPresignedUrlForPart(string $key, string $uploadId, int $partNumber, \DateTimeImmutable $expires): string
-    {
-        return $this->s3Client->presign(
-            new UploadPartRequest([
-                'Bucket'     => $this->bucketName,
-                'Key'        => $key,
-                'UploadId'   => $uploadId,
-                'PartNumber' => $partNumber,
-            ]),
-            $expires
-        );
+    public function getPresignedUrlForPart(
+        string $key,
+        string $uploadId,
+        int $partNumber,
+        \DateTimeImmutable $expires
+    ): string {
+        return $this->s3Client->presign(new UploadPartRequest([
+            'Bucket' => $this->bucketName,
+            'Key' => $key,
+            'UploadId' => $uploadId,
+            'PartNumber' => $partNumber
+        ]), $expires);
     }
 
     /**
@@ -76,28 +76,32 @@ class AwsProviderService implements BucketProviderInterface
             $parts
         );
 
-        $this->s3Client->completeMultipartUpload(new CompleteMultipartUploadRequest([
-            'Bucket'          => $this->bucketName,
-            'Key'             => $key,
-            'UploadId'        => $uploadId,
-            'MultipartUpload' => new CompletedMultipartUpload(['Parts' => $completedParts]),
-        ]))->resolve();
+        $this->s3Client
+            ->completeMultipartUpload(new CompleteMultipartUploadRequest([
+                'Bucket' => $this->bucketName,
+                'Key' => $key,
+                'UploadId' => $uploadId,
+                'MultipartUpload' => new CompletedMultipartUpload(['Parts' => $completedParts])
+            ]))
+            ->resolve();
     }
 
     public function abortMultipartUpload(string $key, string $uploadId): void
     {
-        $this->s3Client->abortMultipartUpload(new AbortMultipartUploadRequest([
-            'Bucket'   => $this->bucketName,
-            'Key'      => $key,
-            'UploadId' => $uploadId,
-        ]))->resolve();
+        $this->s3Client
+            ->abortMultipartUpload(new AbortMultipartUploadRequest([
+                'Bucket' => $this->bucketName,
+                'Key' => $key,
+                'UploadId' => $uploadId
+            ]))
+            ->resolve();
     }
 
     public function deleteObject(string $key): void
     {
         $this->s3Client->deleteObject([
             'Bucket' => $this->bucketName,
-            'Key' => $key,
+            'Key' => $key
         ]);
     }
 
@@ -106,7 +110,7 @@ class AwsProviderService implements BucketProviderInterface
         try {
             $this->s3Client->headObject([
                 'Bucket' => $this->bucketName,
-                'Key' => $key,
+                'Key' => $key
             ])->resolve();
 
             return true;
@@ -122,7 +126,7 @@ class AwsProviderService implements BucketProviderInterface
     {
         $result = $this->s3Client->listObjectsV2([
             'Bucket' => $this->bucketName,
-            'Prefix' => $prefix,
+            'Prefix' => $prefix
         ]);
 
         $keys = [];
@@ -136,5 +140,52 @@ class AwsProviderService implements BucketProviderInterface
         }
 
         return $keys;
+    }
+
+    public function downloadFilesForPaths(array $fileUrls): void
+    {
+        $firstFileUrl = reset($fileUrls);
+
+        $folderName = pathinfo($firstFileUrl, PATHINFO_DIRNAME);
+
+        $folders = explode('/', $folderName);
+
+        $mainFolderName = reset($folders);
+
+        $folder = sprintf('%s/archive/%s', $this->projectDir, $mainFolderName);
+
+        if (!is_dir($folder)) {
+            if (!mkdir($folder, 0777, true) && !is_dir($folder)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $folder));
+            }
+        }
+
+        foreach ($fileUrls as $fileUrl) {
+            $key = ltrim(parse_url($fileUrl, PHP_URL_PATH), '/');
+
+            $savePath = sprintf('%s/archive/%s/%s', $this->projectDir, $mainFolderName, basename($key));
+
+            try {
+                $this->s3Client->headObject([
+                    'Bucket' => $this->bucketName,
+                    'Key' => $key
+                ]);
+
+                $result = $this->s3Client->getObject([
+                    'Bucket' => $this->bucketName,
+                    'Key' => $key
+                ]);
+
+                file_put_contents($savePath, $result->getBody());
+
+                if (!file_exists($savePath)) {
+                    echo "Warning: File not created at $savePath\n";
+                } else {
+                    echo "Downloaded: $savePath\n";
+                }
+            } catch (\Exception $e) {
+                echo 'S3 Error: ' . $e->getMessage() . "\n";
+            }
+        }
     }
 }

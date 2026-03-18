@@ -1,0 +1,563 @@
+{
+	"info": {
+		"name": "Events Photoshare - V2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string",
+			"description": "JWT token sent as 'token' header on every request. Parsed by SecurityValidationRequestSubscriber to resolve user role and email."
+		}
+	],
+	"item": [
+		{
+			"name": "Event",
+			"item": [
+				{
+					"name": "Create Event",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/event",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "event"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"order_id\": 123,\n\t\"client_email\": \"client@example.com\",\n\t\"event_start_date\": \"2026-06-01\",\n\t\"order_status\": \"completed\",\n\t\"needs_manual_processing\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Create a new event. Requires ROLE_SUPER_ADMIN."
+					}
+				},
+				{
+					"name": "Get Event Information by UUID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/event/information/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "event", "information", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"description": "Get event information by event UUID."
+					}
+				},
+				{
+					"name": "Get Event Information by Order ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/event/information/oderId/:orderId",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "event", "information", "oderId", ":orderId"],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": ""
+								}
+							]
+						},
+						"description": "Get event information by order ID. Requires ROLE_SUPER_ADMIN."
+					}
+				},
+				{
+					"name": "Update Event Name and Font",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/update/name/font/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "update", "name", "font", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"My Event Name\",\n\t\"font\": \"Arial\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Update event name and font. Requires admin role."
+					}
+				},
+				{
+					"name": "Update Event Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/update/event/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "update", "event", "status"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"order_id\": 123,\n\t\"status\": \"completed\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Update event status. Requires admin role."
+					}
+				},
+				{
+					"name": "Update Event Background",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/update/event/background/orderId/:order_id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "update", "event", "background", "orderId", ":order_id"],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"description": "Update the background image for an event. Requires admin role."
+					}
+				}
+			]
+		},
+		{
+			"name": "Media",
+			"item": [
+				{
+					"name": "Add Media",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/media/add/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "media", "add", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": [],
+									"description": "One or more image files"
+								}
+							]
+						},
+						"description": "Upload image files to an event."
+					}
+				},
+				{
+					"name": "Delete Media",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/media/delete/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "media", "delete", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"urls\": [\n\t\t\"path/to/file1.jpg\",\n\t\t\"path/to/file2.jpg\"\n\t]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Delete media files from an event."
+					}
+				},
+				{
+					"name": "Multipart Initiate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "hash",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/media/add/multipart/initiate/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "media", "add", "multipart", "initiate", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"filename\": \"photo.jpg\",\n\t\"mimeType\": \"image/jpeg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Initiate a multipart upload for a guest. Returns uploadId and key."
+					}
+				},
+				{
+					"name": "Multipart Part",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "hash",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/media/add/multipart/part/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "media", "add", "multipart", "part", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\": \"s3/key/photo.jpg\",\n\t\"uploadId\": \"upload-id\",\n\t\"partNumber\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Get a presigned URL for uploading a single part."
+					}
+				},
+				{
+					"name": "Multipart Complete",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "hash",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/media/add/multipart/complete/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "media", "add", "multipart", "complete", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\": \"s3/key/photo.jpg\",\n\t\"uploadId\": \"upload-id\",\n\t\"filename\": \"photo.jpg\",\n\t\"mimeType\": \"image/jpeg\",\n\t\"fileSize\": 1048576,\n\t\"parts\": [\n\t\t{\"PartNumber\": 1, \"ETag\": \"etag-value\"}\n\t]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Complete a multipart upload and register the file."
+					}
+				},
+				{
+					"name": "Multipart Abort",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "hash",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/media/add/multipart/abort/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "media", "add", "multipart", "abort", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\": \"s3/key/photo.jpg\",\n\t\"uploadId\": \"upload-id\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Abort an in-progress multipart upload."
+					}
+				}
+			]
+		},
+		{
+			"name": "Feedback",
+			"item": [
+				{
+					"name": "Add Feedback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/feedback/add/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "feedback", "add", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"feedback\": \"Great event!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Add feedback for an event by UUID."
+					}
+				}
+			]
+		},
+		{
+			"name": "Archive",
+			"item": [
+				{
+					"name": "Create Archive",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/archive/create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "archive", "create"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"order_id\": 123\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Trigger archive creation for an event by order ID. Requires ROLE_SUPER_ADMIN."
+					}
+				},
+				{
+					"name": "Subscribe for Archive",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/request/archive/eventUuid/:uuid",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "request", "archive", "eventUuid", ":uuid"],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"user@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Subscribe to receive the event archive by email."
+					}
+				}
+			]
+		}
+	]
+}
