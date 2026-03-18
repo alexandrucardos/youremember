@@ -35,7 +35,7 @@ class AddImageArchiveEmailHandlerTest extends TestCase
 
         $eventRepositoryInterface
             ->expects($this->once())
-            ->method('getExistingEventUuidAndStatus')
+            ->method('getExistingProfileUuid')
             ->willReturn([$uuid, Status::VALID]);
 
         $eventRepositoryInterface
@@ -44,7 +44,7 @@ class AddImageArchiveEmailHandlerTest extends TestCase
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->getImageArchiveEmail()->value === $email
-                    && $eventEntity->eventUuidValueObject->value === $uuid
+                    && $eventEntity->profileUuidValueObject->value === $uuid
                 )
             ));
 
@@ -62,7 +62,7 @@ class AddImageArchiveEmailHandlerTest extends TestCase
         $eventRepositoryInterface = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepositoryInterface
             ->expects($this->once())
-            ->method('getExistingEventUuidAndStatus')
+            ->method('getExistingProfileUuid')
             ->willReturn(['550e8400-e29b-41d4-a716-446655440000', Status::VALID]);
 
         $eventRepositoryInterface

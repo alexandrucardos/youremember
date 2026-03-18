@@ -37,7 +37,7 @@ class AddFeedbackHandlerTest extends TestCase
         $feedbackRepository = $this->createMock(ProfileRepositoryInterface::class);
         $feedbackRepository
             ->expects($this->once())
-            ->method('getExistingEventUuidAndStatus')
+            ->method('getExistingProfileUuid')
             ->willReturn([$uuid, Status::VALID]);
 
         $feedbackRepository
@@ -45,7 +45,7 @@ class AddFeedbackHandlerTest extends TestCase
             ->method('saveFeedbackForEvent')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity) => (
-                    $eventEntity->eventUuidValueObject->value === $uuid
+                    $eventEntity->profileUuidValueObject->value === $uuid
                     && $eventEntity->getFeedbackValueObject()->value === $feedback
                 )
             ));

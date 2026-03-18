@@ -37,7 +37,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsEventNotFoundExceptionWhenEventUuidIsNull(): void
     {
-        $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([null, null]);
+        $this->eventRepository->method('getExistingProfileUuid')->willReturn([null, null]);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -47,7 +47,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsEventNotValidExceptionWhenStatusIsInvalid(): void
     {
-        $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([self::UUID, Status::INVALID]);
+        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::INVALID]);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
         $this->expectException(ProfileNotValidException::class);
@@ -57,7 +57,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsMediaFileDeletionNotAllowedWhenGuestDeletesOtherUserFiles(): void
     {
-        $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
 
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
@@ -76,14 +76,14 @@ class DeleteMediaHandlerTest extends TestCase
      */
     public function testInvokeCallsDeleteMediaFilesForAdminUser(array $filePaths): void
     {
-        $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
 
         $this->eventRepository
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity): bool => (
-                    $eventEntity->eventUuidValueObject->value === self::UUID
+                    $eventEntity->profileUuidValueObject->value === self::UUID
                     && $eventEntity->getIsAdmin() === true
                 )
             ));
@@ -95,7 +95,7 @@ class DeleteMediaHandlerTest extends TestCase
     {
         $paths = ['123/userId/file.jpg', '123/userId/file2.jpg'];
 
-        $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
 
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
@@ -113,14 +113,14 @@ class DeleteMediaHandlerTest extends TestCase
     {
         $paths = ['123/userId/file.jpg'];
 
-        $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
 
         $this->eventRepository
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity): bool => (
-                    $eventEntity->eventUuidValueObject->value === self::UUID
+                    $eventEntity->profileUuidValueObject->value === self::UUID
                     && $eventEntity->getIsAdmin() === false
                 )
             ));

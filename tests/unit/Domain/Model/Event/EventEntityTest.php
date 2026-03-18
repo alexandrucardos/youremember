@@ -14,8 +14,8 @@ use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\Domain\ValueObject\FeedbackValueObject;
 use App\ValueObject\EmailValueObject;
-use App\ValueObject\EventNameFontValueObject;
-use App\ValueObject\EventNameValueObject;
+use App\ValueObject\ProfileNameFontValueObject;
+use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\OrderStatusValueObject;
@@ -76,16 +76,16 @@ class EventEntityTest extends TestCase
     {
         $uuid = new UuidValueObject(self::UUID);
 
-        $entity = new ProfileEntity(eventUuidValueObject: $uuid, eventStatus: Status::VALID);
+        $entity = new ProfileEntity(profileUuidValueObject: $uuid, eventStatus: Status::VALID);
 
-        $this->assertSame($uuid, $entity->eventUuidValueObject);
+        $this->assertSame($uuid, $entity->profileUuidValueObject);
     }
 
     public function testConstructorThrowsEventNotValidForInvalidStatus(): void
     {
         $this->expectException(ProfileNotValidException::class);
 
-        new ProfileEntity(eventUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::INVALID);
+        new ProfileEntity(profileUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::INVALID);
     }
 
     public function testSetAndGetFeedbackValueObject(): void
@@ -115,9 +115,9 @@ class EventEntityTest extends TestCase
     {
         $uuid = new UuidValueObject(self::UUID);
 
-        $entity = new ProfileEntity(eventUuidValueObject: $uuid, eventStatus: $status);
+        $entity = new ProfileEntity(profileUuidValueObject: $uuid, eventStatus: $status);
 
-        $this->assertSame($uuid, $entity->eventUuidValueObject);
+        $this->assertSame($uuid, $entity->profileUuidValueObject);
     }
 
     public function testSetMediaUserIdentifierStoresValueAndReturnsSelf(): void
@@ -285,23 +285,23 @@ class EventEntityTest extends TestCase
     public function testSetAndGetEventName(): void
     {
         $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
-        $eventName = new EventNameValueObject('Summer Wedding');
+        $eventName = new ProfileNameValueObject('Summer Wedding');
 
-        $result = $entity->setEventName($eventName);
+        $result = $entity->setProfileName($eventName);
 
         $this->assertSame($entity, $result);
-        $this->assertSame($eventName, $entity->getEventName());
+        $this->assertSame($eventName, $entity->getProfileName());
     }
 
     public function testSetAndGetEventNameFont(): void
     {
         $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
-        $font = new EventNameFontValueObject('elegant');
+        $font = new ProfileNameFontValueObject('elegant');
 
-        $result = $entity->setEventNameFont($font);
+        $result = $entity->setProfileNameFont($font);
 
         $this->assertSame($entity, $result);
-        $this->assertSame($font, $entity->getEventNameFont());
+        $this->assertSame($font, $entity->getProfileNameFont());
     }
 
     public function testAddMediaPathsForDeletionThrowsMissingFilesWhenPathsAreEmpty(): void
@@ -324,6 +324,6 @@ class EventEntityTest extends TestCase
 
     private function buildEntity(): ProfileEntity
     {
-        return new ProfileEntity(eventUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::VALID);
+        return new ProfileEntity(profileUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::VALID);
     }
 }

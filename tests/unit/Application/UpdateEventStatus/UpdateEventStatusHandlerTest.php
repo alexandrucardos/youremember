@@ -1,14 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Tests\unit\Application\UpdateEventStatus;
 
 use App\Application\UpdateEventStatus\UpdateEventBackgroundHandler;
 use App\Application\UpdateEventStatus\UpdateEventStatusCommand;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\OrderStatusValueObject;
 use App\ValueObject\Status;
@@ -43,16 +43,17 @@ class UpdateEventStatusHandlerTest extends TestCase
      * @dataProvider validStatusDataProvider
      */
     public function testInvokeUpdatesEventStatus(
-        int $orderId,
+        int    $orderId,
         string $orderStatus,
         Status $expectedStatus
-    ): void {
+    ): void
+    {
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
 
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
-            ->method('getExistingEventUuidForOrderId')
+            ->method('getExistingProfileUuidForOrderIdAndEmail')
             ->with($this->callback(
                 static fn(OrderIdValueObject $orderIdValueObject): bool => $orderIdValueObject->value === $orderId
             ))
@@ -63,7 +64,7 @@ class UpdateEventStatusHandlerTest extends TestCase
             ->method('updateEventStatus')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity): bool => (
-                    $eventEntity->eventUuidValueObject->value === $uuid
+                    $eventEntity->profileUuidValueObject->value === $uuid
                     && $eventEntity->getStatus() === $expectedStatus
                 )
             ));
@@ -83,7 +84,7 @@ class UpdateEventStatusHandlerTest extends TestCase
     public function testInvokeThrowsEventNotFoundExceptionWhenUuidIsNull(int $orderId): void
     {
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $eventRepository->expects($this->once())->method('getExistingEventUuidForOrderId')->willReturn(null);
+        $eventRepository->expects($this->once())->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
 
         $eventRepository->expects($this->never())->method('updateEventStatus');
 

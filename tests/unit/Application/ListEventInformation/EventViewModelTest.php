@@ -6,8 +6,8 @@ namespace App\Tests\unit\Application\ListEventInformation;
 
 use App\Application\ListEventInformation\ProfileViewModel;
 use App\Application\ListEventInformation\MediaViewModel;
-use App\ValueObject\EventNameFontValueObject;
-use App\ValueObject\EventNameValueObject;
+use App\ValueObject\ProfileNameFontValueObject;
+use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\UuidValueObject;
 use PHPUnit\Framework\TestCase;
 
@@ -62,8 +62,8 @@ class EventViewModelTest extends TestCase
     {
         return new ProfileViewModel(
             eventUuid: new UuidValueObject(self::UUID),
-            eventName: new EventNameValueObject(self::EVENT_NAME),
-            eventNameFont: new EventNameFontValueObject(self::EVENT_FONT),
+            eventName: new ProfileNameValueObject(self::EVENT_NAME),
+            eventNameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
             media: new MediaViewModel(backgroundPictureUrl: self::BACKGROUND_URL, picturesUrls: $picturesUrls)
         );
     }

@@ -8,8 +8,8 @@ use App\Entity\Event;
 use App\Exception\Event\NotFoundException;
 use App\Repository\EventRepository;
 use App\Service\Event\EventUpdateService;
-use App\ValueObject\EventNameFontValueObject;
-use App\ValueObject\EventNameValueObject;
+use App\ValueObject\ProfileNameFontValueObject;
+use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
@@ -62,8 +62,8 @@ class EventUpdateServiceTest extends TestCase
 
         $result = $this->eventUpdateService->updateName(
             new OrderIdValueObject($orderId),
-            new EventNameValueObject($newName),
-            new EventNameFontValueObject($font)
+            new ProfileNameValueObject($newName),
+            new ProfileNameFontValueObject($font)
         );
 
         $this->assertSame($event, $result);
@@ -87,8 +87,8 @@ class EventUpdateServiceTest extends TestCase
 
         $this->eventUpdateService->updateName(
             new OrderIdValueObject($orderId),
-            new EventNameValueObject('New Name'),
-            new EventNameFontValueObject('Oswald')
+            new ProfileNameValueObject('New Name'),
+            new ProfileNameFontValueObject('Oswald')
         );
     }
 
