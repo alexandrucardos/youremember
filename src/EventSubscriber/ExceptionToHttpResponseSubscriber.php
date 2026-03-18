@@ -2,7 +2,7 @@
 
 namespace App\EventSubscriber;
 
-use App\Domain\Model\Event\Message\EventBaseMsgException;
+use App\Domain\Model\Profile\Message\ProfileBaseMsgException;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
@@ -51,7 +51,7 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
             $exception instanceof EventInvalidException => new JsonResponse(['error' =>
                 $exception->getMessage()], Response::HTTP_GONE),
             $exception instanceof \InvalidArgumentException,
-            $exception instanceof EventBaseMsgException
+            $exception instanceof ProfileBaseMsgException
                 => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST),
             default => $this->logUnexpected($exception)
         };

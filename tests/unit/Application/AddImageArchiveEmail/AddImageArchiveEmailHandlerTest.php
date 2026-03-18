@@ -6,9 +6,9 @@ namespace App\Tests\unit\Application\AddImageArchiveEmail;
 
 use App\Application\SubscribeForArchiveArchive\SubscribeForArchiveArchiveHandler;
 use App\Application\SubscribeForArchiveArchive\SubscribeForArchiveCommand;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\Status;
 use App\ValueObject\UuidValueObject;
@@ -31,7 +31,7 @@ class AddImageArchiveEmailHandlerTest extends TestCase
      */
     public function testInvokeSavesImageArchiveEntity(string $email, string $uuid): void
     {
-        $eventRepositoryInterface = $this->createMock(EventRepositoryInterface::class);
+        $eventRepositoryInterface = $this->createMock(ProfileRepositoryInterface::class);
 
         $eventRepositoryInterface
             ->expects($this->once())
@@ -42,7 +42,7 @@ class AddImageArchiveEmailHandlerTest extends TestCase
             ->expects($this->once())
             ->method('saveArchiveEmailForEvent')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity) => (
+                static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->getImageArchiveEmail()->value === $email
                     && $eventEntity->eventUuidValueObject->value === $uuid
                 )
@@ -59,7 +59,7 @@ class AddImageArchiveEmailHandlerTest extends TestCase
 
     public function testInvokePropagatesEventNotFoundException(): void
     {
-        $eventRepositoryInterface = $this->createMock(EventRepositoryInterface::class);
+        $eventRepositoryInterface = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepositoryInterface
             ->expects($this->once())
             ->method('getExistingEventUuidAndStatus')
@@ -68,14 +68,14 @@ class AddImageArchiveEmailHandlerTest extends TestCase
         $eventRepositoryInterface
             ->expects($this->once())
             ->method('saveArchiveEmailForEvent')
-            ->willThrowException(new EventNotFoundException());
+            ->willThrowException(new ProfileNotFoundException());
 
         $command = new SubscribeForArchiveCommand(
             uuidValueObject: new UuidValueObject('550e8400-e29b-41d4-a716-446655440000'),
             emailValueObject: new EmailValueObject('user@example.com')
         );
 
-        $this->expectException(EventNotFoundException::class);
+        $this->expectException(ProfileNotFoundException::class);
 
         $handler = new SubscribeForArchiveArchiveHandler($eventRepositoryInterface);
         $handler($command);

@@ -2,8 +2,8 @@
 
 namespace App\Controller\API\V2;
 
-use App\Application\UpdateEventBackground\UpdateEventBackgroundCommand;
-use App\Application\UpdateEventBackground\UpdateEventBackgroundHandler;
+use App\Application\UpdateProfileBackground\UpdateProfileBackgroundCommand;
+use App\Application\UpdateProfileBackground\UpdateProfileBackgroundHandler;
 use App\Application\UpdateEventStatus\UpdateEventStatusCommand;
 use App\Application\UpdateEventStatus\UpdateEventStatusHandler;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
@@ -24,7 +24,7 @@ final class EventUpdateBackgroundController extends AbstractController
     #[Route('/orderId/{order_id}', name: self::NAME_EVENT_BACKGROUND_UPDATE, methods: ['POST'])]
     public function update(
         Request $request,
-        UpdateEventBackgroundHandler $updateEventBackgroundHandler
+        UpdateProfileBackgroundHandler $updateEventBackgroundHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -32,7 +32,7 @@ final class EventUpdateBackgroundController extends AbstractController
             throw new AccessDeniedHttpException('Admins role missing');
         }
 
-        $updateEventStatusCommand = new UpdateEventBackgroundCommand(
+        $updateEventStatusCommand = new UpdateProfileBackgroundCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userRole: $userRole,
             backgroundFile: $request->files->get('file', [])

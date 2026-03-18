@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Controller\API\V2;
 
-use App\Application\AddEvent\AddEventCommand;
-use App\Application\AddEvent\AddEventHandler;
+use App\Application\AddEvent\AddProfileCommand;
+use App\Application\AddEvent\AddProfiletHandler;
 use App\Domain\ValueObject\EventStartDateValueObject;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use App\ValueObject\EmailValueObject;
@@ -27,7 +27,7 @@ final class EventCreateController extends AbstractController
     #[Route('', name: self::NAME_EVENT_CREATE, methods: ['POST'])]
     public function createClient(
         Request $request,
-        AddEventHandler $addEventHandler
+        AddProfiletHandler $addEventHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -37,7 +37,7 @@ final class EventCreateController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $addEventCommand = new AddEventCommand(
+        $addEventCommand = new AddProfileCommand(
             orderIdValueObject: new OrderIdValueObject($data['order_id']),
             emailValueObject: new EmailValueObject($data['client_email']),
             eventStartDateValueObject: new EventStartDateValueObject(( new \DateTimeImmutable('now +90 days') )->format(

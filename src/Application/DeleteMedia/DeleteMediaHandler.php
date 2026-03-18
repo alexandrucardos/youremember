@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Application\DeleteMedia;
 
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\EventServiceInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
-use App\Domain\Model\Event\MediaRepositoryInterface;
-use App\Domain\Model\Event\MediaServiceInterface;
-use App\Domain\Model\Event\Message\EventNotValidException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\EventServiceInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
+use App\Domain\Model\Profile\MediaRepositoryInterface;
+use App\Domain\Model\Profile\MediaServiceInterface;
+use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\ValueObject\Status;
 use App\ValueObject\UserRole;
 use App\ValueObject\UuidValueObject;
@@ -18,7 +18,7 @@ use App\ValueObject\UuidValueObject;
 final class DeleteMediaHandler
 {
     public function __construct(
-        private readonly EventRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $eventRepository
     ) {
     }
 
@@ -28,10 +28,10 @@ final class DeleteMediaHandler
             $this->eventRepository->getExistingEventUuidAndStatus($command->eventUuidValueObject);
 
         if ($eventUuid === null || $eventUuid === '') {
-            throw new EventNotFoundException('Event not found');
+            throw new ProfileNotFoundException('Event not found');
         }
 
-        $eventEntity = new EventEntity(
+        $eventEntity = new ProfileEntity(
             eventUuidValueObject: new UuidValueObject($eventUuid),
             eventStatus: $eventStatus
         );

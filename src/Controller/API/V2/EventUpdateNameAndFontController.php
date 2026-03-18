@@ -2,8 +2,8 @@
 
 namespace App\Controller\API\V2;
 
-use App\Application\UpdateEventName\UpdateEventNameCommand;
-use App\Application\UpdateEventName\UpdateEventNameHandler;
+use App\Application\UpdateEventName\UpdateProfileNameCommand;
+use App\Application\UpdateEventName\UpdateProfileNameHandler;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use App\ValueObject\EventNameFontValueObject;
 use App\ValueObject\EventNameValueObject;
@@ -23,7 +23,7 @@ final class EventUpdateNameAndFontController extends AbstractController
     #[Route('/eventUuid/{uuid}', name: self::NAME_EVENT_NAME_UPDATE, methods: ['PATCH'])]
     public function update(
         Request $request,
-        UpdateEventNameHandler $eventNameHandler
+        UpdateProfileNameHandler $eventNameHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -33,7 +33,7 @@ final class EventUpdateNameAndFontController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $updateEventNameCommand = new UpdateEventNameCommand(
+        $updateEventNameCommand = new UpdateProfileNameCommand(
             eventUuidValueObject: new UuidValueObject($request->attributes->get('uuid')),
             eventNameValueObject: new EventNameValueObject($data['name']),
             eventNameFontValueObject: new EventNameFontValueObject($data['font'])

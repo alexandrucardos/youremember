@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\ListEventInformation;
 
-use App\Application\ListEventInformation\ListEventInformation;
-use App\Application\ListEventInformation\ListEventInformationQuery;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\ListEventInformationQueryNullException;
+use App\Application\ListEventInformation\ListProfileInformation;
+use App\Application\ListEventInformation\ListProfileInformationQuery;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ListProfileInformationQueryNullException;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
 use PHPUnit\Framework\TestCase;
@@ -35,14 +35,14 @@ class ListEventInformationTest extends TestCase
 
     public function testInvokeThrowsWhenBothUuidAndOrderIdAreNull(): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository->expects($this->never())->method('fetchOrderIdForUuid');
         $eventRepository->expects($this->never())->method('fetchEventViewModelForEvent');
 
-        $this->expectException(ListEventInformationQueryNullException::class);
+        $this->expectException(ListProfileInformationQueryNullException::class);
 
-        $handler = new ListEventInformation($eventRepository);
-        $handler(new ListEventInformationQuery());
+        $handler = new ListProfileInformation($eventRepository);
+        $handler(new ListProfileInformationQuery());
     }
 
     /**
@@ -50,7 +50,7 @@ class ListEventInformationTest extends TestCase
      */
     public function testInvokeWithUuidFetchesEventViewModelViaOrderIdLookup(string $uuid, int $orderId): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository->expects($this->once())->method('fetchOrderIdForUuid')->with($uuid)->willReturn($orderId);
 
         $eventRepository
@@ -60,9 +60,9 @@ class ListEventInformationTest extends TestCase
                 static fn(OrderIdValueObject $orderIdValueObject): bool => $orderIdValueObject->value === $orderId
             ));
 
-        $query = new ListEventInformationQuery(uuid: new UuidValueObject($uuid));
+        $query = new ListProfileInformationQuery(uuid: new UuidValueObject($uuid));
 
-        $handler = new ListEventInformation($eventRepository);
+        $handler = new ListProfileInformation($eventRepository);
         $handler($query);
     }
 
@@ -71,7 +71,7 @@ class ListEventInformationTest extends TestCase
      */
     public function testInvokeWithOrderIdFetchesEventViewModelDirectly(int $orderId): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository->expects($this->never())->method('fetchOrderIdForUuid');
 
         $eventRepository
@@ -81,9 +81,9 @@ class ListEventInformationTest extends TestCase
                 static fn(OrderIdValueObject $orderIdValueObject): bool => $orderIdValueObject->value === $orderId
             ));
 
-        $query = new ListEventInformationQuery(orderId: new OrderIdValueObject($orderId));
+        $query = new ListProfileInformationQuery(orderId: new OrderIdValueObject($orderId));
 
-        $handler = new ListEventInformation($eventRepository);
+        $handler = new ListProfileInformation($eventRepository);
         $handler($query);
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\ListEventInformation;
 
-use App\Application\ListEventInformation\EventViewModel;
+use App\Application\ListEventInformation\ProfileViewModel;
 use App\Application\ListEventInformation\MediaViewModel;
 use App\ValueObject\EventNameFontValueObject;
 use App\ValueObject\EventNameValueObject;
@@ -58,9 +58,9 @@ class EventViewModelTest extends TestCase
         $this->assertArrayHasKey('pictures', $result['media']);
     }
 
-    private function buildViewModel(array $picturesUrls): EventViewModel
+    private function buildViewModel(array $picturesUrls): ProfileViewModel
     {
-        return new EventViewModel(
+        return new ProfileViewModel(
             eventUuid: new UuidValueObject(self::UUID),
             eventName: new EventNameValueObject(self::EVENT_NAME),
             eventNameFont: new EventNameFontValueObject(self::EVENT_FONT),

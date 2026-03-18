@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\UpdateEventName;
 
-use App\Application\UpdateEventName\UpdateEventNameCommand;
-use App\Application\UpdateEventName\UpdateEventNameHandler;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
-use App\Domain\Model\Event\Message\EventNotValidException;
+use App\Application\UpdateEventName\UpdateProfileNameCommand;
+use App\Application\UpdateEventName\UpdateProfileNameHandler;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
+use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\ValueObject\EventNameFontValueObject;
 use App\ValueObject\EventNameValueObject;
 use App\ValueObject\Status;
@@ -39,7 +39,7 @@ class UpdateEventNameHandlerTest extends TestCase
      */
     public function testInvokeUpdatesEventNameAndFont(string $eventName, string $eventFont): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
             ->method('getExistingEventUuidAndStatus')
@@ -52,26 +52,26 @@ class UpdateEventNameHandlerTest extends TestCase
             ->expects($this->once())
             ->method('updateEventNameAndFont')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity): bool => (
+                static fn(ProfileEntity $eventEntity): bool => (
                     $eventEntity->eventUuidValueObject->value === self::UUID
                     && $eventEntity->getEventName()->value === $eventName
                     && $eventEntity->getEventNameFont()->value === $eventFont
                 )
             ));
 
-        $command = new UpdateEventNameCommand(
+        $command = new UpdateProfileNameCommand(
             new UuidValueObject(self::UUID),
             new EventNameValueObject($eventName),
             new EventNameFontValueObject($eventFont)
         );
 
-        $handler = new UpdateEventNameHandler($eventRepository);
+        $handler = new UpdateProfileNameHandler($eventRepository);
         $handler($command);
     }
 
     public function testInvokeThrowsEventNotValidExceptionWhenStatusIsInvalid(): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
             ->method('getExistingEventUuidAndStatus')
@@ -79,37 +79,37 @@ class UpdateEventNameHandlerTest extends TestCase
 
         $eventRepository->expects($this->never())->method('updateEventNameAndFont');
 
-        $this->expectException(EventNotValidException::class);
+        $this->expectException(ProfileNotValidException::class);
 
-        $command = new UpdateEventNameCommand(
+        $command = new UpdateProfileNameCommand(
             new UuidValueObject(self::UUID),
             new EventNameValueObject('My Wedding'),
             new EventNameFontValueObject('elegant')
         );
 
-        $handler = new UpdateEventNameHandler($eventRepository);
+        $handler = new UpdateProfileNameHandler($eventRepository);
         $handler($command);
     }
 
     public function testInvokeThrowsEventNotFoundExceptionWhenRepositoryThrowsIt(): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
             ->method('getExistingEventUuidAndStatus')
-            ->willThrowException(new EventNotFoundException('Event not found'));
+            ->willThrowException(new ProfileNotFoundException('Event not found'));
 
         $eventRepository->expects($this->never())->method('updateEventNameAndFont');
 
-        $this->expectException(EventNotFoundException::class);
+        $this->expectException(ProfileNotFoundException::class);
 
-        $command = new UpdateEventNameCommand(
+        $command = new UpdateProfileNameCommand(
             new UuidValueObject(self::UUID),
             new EventNameValueObject('My Wedding'),
             new EventNameFontValueObject('elegant')
         );
 
-        $handler = new UpdateEventNameHandler($eventRepository);
+        $handler = new UpdateProfileNameHandler($eventRepository);
         $handler($command);
     }
 }

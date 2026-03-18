@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
-use App\Domain\Model\Event\EventEntity;
+use App\Domain\Model\Profile\ProfileEntity;
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventDataValueObject;
@@ -49,7 +49,7 @@ class EventMediaFetchService
         $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(sprintf(
             '%d/%s/%s',
             $orderIdValueObject->value,
-            EventEntity::ADMIN_USER_IDENTIFIER,
+            ProfileEntity::ADMIN_USER_IDENTIFIER,
             MediaService::FILE_BACKGROUND_NAME
         ));
 

@@ -4,14 +4,14 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Domain\Model\Event;
 
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\Exception\GuestUsersCannotDeleteMultipleImagesException;
-use App\Domain\Model\Event\Exception\MediaFileDeletionNotAllowedException;
-use App\Domain\Model\Event\Exception\MissingFiles;
-use App\Domain\Model\Event\Message\EventNotValidException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\Exception\GuestUsersCannotDeleteMultipleImagesException;
+use App\Domain\Model\Profile\Exception\MediaFileDeletionNotAllowedException;
+use App\Domain\Model\Profile\Exception\MissingFiles;
+use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\Domain\Model\User\UserEntity;
-use App\Domain\Model\Event\Message\IncorrectMimeTypeException;
-use App\Domain\Model\Event\Message\MaximumEventItemsReachedException;
+use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
+use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\Domain\ValueObject\FeedbackValueObject;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\EventNameFontValueObject;
@@ -76,21 +76,21 @@ class EventEntityTest extends TestCase
     {
         $uuid = new UuidValueObject(self::UUID);
 
-        $entity = new EventEntity(eventUuidValueObject: $uuid, eventStatus: Status::VALID);
+        $entity = new ProfileEntity(eventUuidValueObject: $uuid, eventStatus: Status::VALID);
 
         $this->assertSame($uuid, $entity->eventUuidValueObject);
     }
 
     public function testConstructorThrowsEventNotValidForInvalidStatus(): void
     {
-        $this->expectException(EventNotValidException::class);
+        $this->expectException(ProfileNotValidException::class);
 
-        new EventEntity(eventUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::INVALID);
+        new ProfileEntity(eventUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::INVALID);
     }
 
     public function testSetAndGetFeedbackValueObject(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
         $feedback = new FeedbackValueObject('Great event!');
 
         $entity->setFeedbackValueObject($feedback);
@@ -100,7 +100,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetImageArchiveEmail(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
         $email = new EmailValueObject('user@example.com');
 
         $entity->setImageArchiveEmail($email);
@@ -115,7 +115,7 @@ class EventEntityTest extends TestCase
     {
         $uuid = new UuidValueObject(self::UUID);
 
-        $entity = new EventEntity(eventUuidValueObject: $uuid, eventStatus: $status);
+        $entity = new ProfileEntity(eventUuidValueObject: $uuid, eventStatus: $status);
 
         $this->assertSame($uuid, $entity->eventUuidValueObject);
     }
@@ -146,7 +146,7 @@ class EventEntityTest extends TestCase
         int $existingItems,
         int $newFiles
     ): void {
-        $this->expectException(MaximumEventItemsReachedException::class);
+        $this->expectException(MaximumProfileItemsReachedException::class);
 
         $files = array_fill(0, $newFiles, $this->createMock(UploadedFile::class));
         $this->buildEntity()->setMediaFiles(
@@ -252,7 +252,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetStatus(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
 
         $result = $entity->updateStatusForOrderStatus(new OrderStatusValueObject('completed'));
 
@@ -262,7 +262,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetUser(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
         $user = new UserEntity(new EmailValueObject('user@example.com'));
 
         $result = $entity->setUser($user);
@@ -273,7 +273,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetOrderId(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
         $orderId = new OrderIdValueObject(123);
 
         $result = $entity->setOrderId($orderId);
@@ -284,7 +284,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetEventName(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
         $eventName = new EventNameValueObject('Summer Wedding');
 
         $result = $entity->setEventName($eventName);
@@ -295,7 +295,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetEventNameFont(): void
     {
-        $entity = new EventEntity(new UuidValueObject(self::UUID), Status::VALID);
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID), Status::VALID);
         $font = new EventNameFontValueObject('elegant');
 
         $result = $entity->setEventNameFont($font);
@@ -322,8 +322,8 @@ class EventEntityTest extends TestCase
             ->addMediaPathsForDeletion(paths: ['123/userId/file1.jpg', '123/userId/file2.jpg']);
     }
 
-    private function buildEntity(): EventEntity
+    private function buildEntity(): ProfileEntity
     {
-        return new EventEntity(eventUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::VALID);
+        return new ProfileEntity(eventUuidValueObject: new UuidValueObject(self::UUID), eventStatus: Status::VALID);
     }
 }

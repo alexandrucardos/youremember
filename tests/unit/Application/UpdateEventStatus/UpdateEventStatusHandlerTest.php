@@ -6,9 +6,9 @@ namespace App\Tests\unit\Application\UpdateEventStatus;
 
 use App\Application\UpdateEventStatus\UpdateEventBackgroundHandler;
 use App\Application\UpdateEventStatus\UpdateEventStatusCommand;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\OrderStatusValueObject;
 use App\ValueObject\Status;
@@ -49,7 +49,7 @@ class UpdateEventStatusHandlerTest extends TestCase
     ): void {
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
 
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
             ->method('getExistingEventUuidForOrderId')
@@ -62,7 +62,7 @@ class UpdateEventStatusHandlerTest extends TestCase
             ->expects($this->once())
             ->method('updateEventStatus')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity): bool => (
+                static fn(ProfileEntity $eventEntity): bool => (
                     $eventEntity->eventUuidValueObject->value === $uuid
                     && $eventEntity->getStatus() === $expectedStatus
                 )
@@ -82,12 +82,12 @@ class UpdateEventStatusHandlerTest extends TestCase
      */
     public function testInvokeThrowsEventNotFoundExceptionWhenUuidIsNull(int $orderId): void
     {
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository->expects($this->once())->method('getExistingEventUuidForOrderId')->willReturn(null);
 
         $eventRepository->expects($this->never())->method('updateEventStatus');
 
-        $this->expectException(EventNotFoundException::class);
+        $this->expectException(ProfileNotFoundException::class);
 
         $command = new UpdateEventStatusCommand(
             new OrderIdValueObject($orderId),

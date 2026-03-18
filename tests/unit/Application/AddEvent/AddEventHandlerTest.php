@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\AddEvent;
 
-use App\Application\AddEvent\AddEventCommand;
-use App\Application\AddEvent\AddEventHandler;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
+use App\Application\AddEvent\AddProfileCommand;
+use App\Application\AddEvent\AddProfiletHandler;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\Service\UuidInterface;
 use App\Domain\ValueObject\EventStartDateValueObject;
 use App\ValueObject\EmailValueObject;
@@ -43,12 +43,12 @@ class AddEventHandlerTest extends TestCase
         $uuidService = $this->createMock(UuidInterface::class);
         $uuidService->method('generate')->willReturn(self::UUID);
 
-        $eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
             ->method('saveEvent')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity) => (
+                static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->getOrderId()->value === $orderId
                     && $eventEntity->eventUuidValueObject->value === self::UUID
                     && $eventEntity->needsManualProcessing() === $needsManualProcessing
@@ -58,7 +58,7 @@ class AddEventHandlerTest extends TestCase
                 )
             ));
 
-        $command = new AddEventCommand(
+        $command = new AddProfileCommand(
             orderIdValueObject: new OrderIdValueObject($orderId),
             emailValueObject: new EmailValueObject($email),
             eventStartDateValueObject: new EventStartDateValueObject($eventStartDate->format('Y-m-d H:i:s')),
@@ -66,7 +66,7 @@ class AddEventHandlerTest extends TestCase
             needsManualProcessing: $needsManualProcessing
         );
 
-        $handler = new AddEventHandler($eventRepository, $uuidService);
+        $handler = new AddProfiletHandler($eventRepository, $uuidService);
         $handler($command);
     }
 }

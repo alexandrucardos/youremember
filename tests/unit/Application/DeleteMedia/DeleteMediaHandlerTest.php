@@ -6,12 +6,12 @@ namespace App\Tests\unit\Application\DeleteMedia;
 
 use App\Application\DeleteMedia\DeleteMediaCommand;
 use App\Application\DeleteMedia\DeleteMediaHandler;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
-use App\Domain\Model\Event\Exception\GuestUsersCannotDeleteMultipleImagesException;
-use App\Domain\Model\Event\Exception\MediaFileDeletionNotAllowedException;
-use App\Domain\Model\Event\Message\EventNotValidException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
+use App\Domain\Model\Profile\Exception\GuestUsersCannotDeleteMultipleImagesException;
+use App\Domain\Model\Profile\Exception\MediaFileDeletionNotAllowedException;
+use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\Status;
 use App\ValueObject\UserRole;
@@ -24,7 +24,7 @@ class DeleteMediaHandlerTest extends TestCase
     private const UUID = '550e8400-e29b-41d4-a716-446655440000';
     private const USER_IDENTIFIER = 'userId';
 
-    private EventRepositoryInterface&MockObject $eventRepository;
+    private ProfileRepositoryInterface&MockObject $eventRepository;
     private DeleteMediaHandler $handler;
 
     public static function adminFilePathsDataProvider(): array
@@ -40,7 +40,7 @@ class DeleteMediaHandlerTest extends TestCase
         $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([null, null]);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
-        $this->expectException(EventNotFoundException::class);
+        $this->expectException(ProfileNotFoundException::class);
 
         ( $this->handler )($this->buildAdminCommand());
     }
@@ -50,7 +50,7 @@ class DeleteMediaHandlerTest extends TestCase
         $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([self::UUID, Status::INVALID]);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
-        $this->expectException(EventNotValidException::class);
+        $this->expectException(ProfileNotValidException::class);
 
         ( $this->handler )($this->buildAdminCommand());
     }
@@ -82,7 +82,7 @@ class DeleteMediaHandlerTest extends TestCase
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity): bool => (
+                static fn(ProfileEntity $eventEntity): bool => (
                     $eventEntity->eventUuidValueObject->value === self::UUID
                     && $eventEntity->getIsAdmin() === true
                 )
@@ -119,7 +119,7 @@ class DeleteMediaHandlerTest extends TestCase
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity): bool => (
+                static fn(ProfileEntity $eventEntity): bool => (
                     $eventEntity->eventUuidValueObject->value === self::UUID
                     && $eventEntity->getIsAdmin() === false
                 )
@@ -135,7 +135,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $this->handler = new DeleteMediaHandler($this->eventRepository);
     }
 

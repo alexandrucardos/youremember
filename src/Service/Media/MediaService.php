@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Service\Media;
 
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\MediaServiceInterface;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\MediaServiceInterface;
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
 use App\Repository\EventRepository;
@@ -84,7 +84,7 @@ class MediaService
             throw new NotFoundException('Event not found for order: ' . $orderId);
         }
 
-        $key = sprintf('%d/%s/%s', $orderId, EventEntity::ADMIN_USER_IDENTIFIER, self::FILE_BACKGROUND_NAME);
+        $key = sprintf('%d/%s/%s', $orderId, ProfileEntity::ADMIN_USER_IDENTIFIER, self::FILE_BACKGROUND_NAME);
 
         $scaledContent = $this->processContent($file);
 
@@ -94,7 +94,7 @@ class MediaService
             $mediaBackground = (new Media())
                 ->setEvent($event)
                 ->setFilePath($key)
-                ->setUploaderHash(EventEntity::ADMIN_USER_IDENTIFIER)
+                ->setUploaderHash(ProfileEntity::ADMIN_USER_IDENTIFIER)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))
                 ->setOriginalFilename($file->getClientOriginalName());

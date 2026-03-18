@@ -6,13 +6,13 @@ namespace App\Tests\unit\Application\AddMedia;
 
 use App\Application\AddMedia\AddMediaCommand;
 use App\Application\AddMedia\AddMediaHandler;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
-use App\Domain\Model\Event\Exception\MissingFiles;
-use App\Domain\Model\Event\Message\EventNotValidException;
-use App\Domain\Model\Event\Message\IncorrectMimeTypeException;
-use App\Domain\Model\Event\Message\MaximumEventItemsReachedException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
+use App\Domain\Model\Profile\Exception\MissingFiles;
+use App\Domain\Model\Profile\Message\ProfileNotValidException;
+use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
+use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\Status;
 use App\ValueObject\UserRole;
@@ -26,12 +26,12 @@ class AddMediaHandlerTest extends TestCase
     private const UUID = '550e8400-e29b-41d4-a716-446655440000';
     private const FOLDER = 'client';
 
-    private EventRepositoryInterface&MockObject $eventRepository;
+    private ProfileRepositoryInterface&MockObject $eventRepository;
     private AddMediaHandler $handler;
 
     protected function setUp(): void
     {
-        $this->eventRepository = $this->createMock(EventRepositoryInterface::class);
+        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $this->handler = new AddMediaHandler($this->eventRepository);
     }
 
@@ -60,7 +60,7 @@ class AddMediaHandlerTest extends TestCase
         $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([]);
         $this->eventRepository->expects($this->never())->method('getExistingMediaInfo');
 
-        $this->expectException(EventNotFoundException::class);
+        $this->expectException(ProfileNotFoundException::class);
 
         ( $this->handler )($this->buildCommand([$this->createMock(UploadedFile::class)]));
     }
@@ -70,7 +70,7 @@ class AddMediaHandlerTest extends TestCase
         $this->eventRepository->method('getExistingEventUuidAndStatus')->willReturn([null, null]);
         $this->eventRepository->expects($this->never())->method('getExistingMediaInfo');
 
-        $this->expectException(EventNotFoundException::class);
+        $this->expectException(ProfileNotFoundException::class);
 
         ( $this->handler )($this->buildCommand([$this->createMock(UploadedFile::class)]));
     }
@@ -81,7 +81,7 @@ class AddMediaHandlerTest extends TestCase
         $this->eventRepository->method('getExistingMediaInfo')->willReturn([100, 0]);
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn(['image/jpeg']);
 
-        $this->expectException(EventNotValidException::class);
+        $this->expectException(ProfileNotValidException::class);
 
         ( $this->handler )($this->buildCommand([$this->createMock(UploadedFile::class)]));
     }
@@ -107,7 +107,7 @@ class AddMediaHandlerTest extends TestCase
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn(['image/jpeg']);
         $this->eventRepository->expects($this->never())->method('saveMediaFiles');
 
-        $this->expectException(MaximumEventItemsReachedException::class);
+        $this->expectException(MaximumProfileItemsReachedException::class);
 
         $files = array_fill(0, $newFiles, $this->createMock(UploadedFile::class));
         ( $this->handler )($this->buildCommand($files));
@@ -166,7 +166,7 @@ class AddMediaHandlerTest extends TestCase
             ->method('saveMediaFiles')
             ->with(
                 $this->callback(
-                    static fn(EventEntity $entity): bool => $entity->eventUuidValueObject->value === self::UUID
+                    static fn(ProfileEntity $entity): bool => $entity->eventUuidValueObject->value === self::UUID
                 ),
                 AddMediaHandler::MAX_IMAGE_SIZE_BYTES,
                 AddMediaHandler::MAX_TOTAL_DEMO_SIZE_BYTES

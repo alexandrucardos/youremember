@@ -5,13 +5,13 @@ declare(strict_types = 1);
 namespace App\Application\InitiateMultipartMediaUpload;
 
 use App\Application\DeleteMedia\DeleteMediaCommand;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\EventServiceInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
-use App\Domain\Model\Event\MediaRepositoryInterface;
-use App\Domain\Model\Event\MediaServiceInterface;
-use App\Domain\Model\Event\Message\EventNotValidException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\EventServiceInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
+use App\Domain\Model\Profile\MediaRepositoryInterface;
+use App\Domain\Model\Profile\MediaServiceInterface;
+use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\Status;
 use App\ValueObject\UserRole;
@@ -20,7 +20,7 @@ use App\ValueObject\UuidValueObject;
 final class InitiateMediaUploadHandler
 {
     public function __construct(
-        private readonly EventRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $eventRepository
     ) {
     }
 
@@ -28,7 +28,7 @@ final class InitiateMediaUploadHandler
     {
         [$uuid, $status] = $this->eventRepository->getExistingEventUuidAndStatus($command->eventUuidValueObject);
 
-        $eventEntity = new EventEntity(eventUuidValueObject: new UuidValueObject($uuid), eventStatus: $status);
+        $eventEntity = new ProfileEntity(eventUuidValueObject: new UuidValueObject($uuid), eventStatus: $status);
 
         $orderId = $this->eventRepository->fetchOrderIdForUuid($command->eventUuidValueObject->value);
 

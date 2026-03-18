@@ -6,8 +6,8 @@ namespace App\Tests\unit\Application\AddFeedback;
 
 use App\Application\AddFeedback\AddFeedbackCommand;
 use App\Application\AddFeedback\AddFeedbackHandler;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\ValueObject\FeedbackValueObject;
 use App\ValueObject\Status;
 use App\ValueObject\UuidValueObject;
@@ -34,7 +34,7 @@ class AddFeedbackHandlerTest extends TestCase
      */
     public function testInvokeSavesFeedback(string $uuid, string $feedback): void
     {
-        $feedbackRepository = $this->createMock(EventRepositoryInterface::class);
+        $feedbackRepository = $this->createMock(ProfileRepositoryInterface::class);
         $feedbackRepository
             ->expects($this->once())
             ->method('getExistingEventUuidAndStatus')
@@ -44,7 +44,7 @@ class AddFeedbackHandlerTest extends TestCase
             ->expects($this->once())
             ->method('saveFeedbackForEvent')
             ->with($this->callback(
-                static fn(EventEntity $eventEntity) => (
+                static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->eventUuidValueObject->value === $uuid
                     && $eventEntity->getFeedbackValueObject()->value === $feedback
                 )

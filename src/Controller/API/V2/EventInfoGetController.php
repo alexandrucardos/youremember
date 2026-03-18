@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Controller\API\V2;
 
-use App\Application\ListEventInformation\ListEventInformation;
-use App\Application\ListEventInformation\ListEventInformationQuery;
+use App\Application\ListEventInformation\ListProfileInformation;
+use App\Application\ListEventInformation\ListProfileInformationQuery;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UserRole;
@@ -25,9 +25,9 @@ final class EventInfoGetController extends AbstractController
     #[Route('/eventUuid/{uuid}', name: self::NAME_EVENT_INFORMATION_UUID, methods: ['GET'])]
     public function getEventInformationForUuid(
         Request $request,
-        ListEventInformation $listEventInformation
+        ListProfileInformation $listEventInformation
     ): JsonResponse {
-        $listEventInformationQuery = new ListEventInformationQuery(
+        $listEventInformationQuery = new ListProfileInformationQuery(
             orderId: null,
             uuid: new UuidValueObject($request->attributes->get('uuid'))
         );
@@ -40,7 +40,7 @@ final class EventInfoGetController extends AbstractController
     #[Route('/oderId/{orderId}', name: self::NAME_EVENT_INFORMATION_ORDER_ID, methods: ['GET'])]
     public function getEventInformationForOrderId(
         Request $request,
-        ListEventInformation $listEventInformation
+        ListProfileInformation $listEventInformation
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -48,7 +48,7 @@ final class EventInfoGetController extends AbstractController
             throw new AccessDeniedHttpException();
         }
 
-        $listEventInformationQuery = new ListEventInformationQuery(
+        $listEventInformationQuery = new ListProfileInformationQuery(
             orderId: new OrderIdValueObject($request->attributes->get('orderId')),
             uuid: null
         );

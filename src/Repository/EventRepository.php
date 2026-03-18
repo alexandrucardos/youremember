@@ -6,10 +6,10 @@ namespace App\Repository;
 
 use App\Application\AddMedia\AddMediaCommand;
 use App\Application\DeleteMedia\DeleteMediaCommand;
-use App\Application\ListEventInformation\EventViewModel;
-use App\Domain\Model\Event\EventEntity;
-use App\Domain\Model\Event\EventRepositoryInterface;
-use App\Domain\Model\Event\Exception\EventNotFoundException;
+use App\Application\ListEventInformation\ProfileViewModel;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Entity\Event;
 use App\Entity\Feedback;
 use App\Entity\ImageArchive;
