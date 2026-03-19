@@ -46,3 +46,13 @@ services:
   App\Service\FrontendTokenParserService:
     arguments:
       $frontendApiKey: '%env(FE_AUTH_TOKEN)%'
+
+when@test:
+  services:
+    # Override S3 Provider with mock implementation in test environment
+    App\Service\Bucket\BucketProviderInterface:
+      class: App\Service\Bucket\MockS3ProviderService
+      arguments:
+        $bucketName: '%env(AWS_S3_BUCKET)%'
+        $projectDir: '%kernel.project_dir%'
+        $logger: '@logger'
