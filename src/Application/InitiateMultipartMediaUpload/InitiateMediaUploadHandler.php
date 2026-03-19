@@ -1,44 +1,43 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Application\InitiateMultipartMediaUpload;
 
-use App\Application\DeleteMedia\DeleteMediaCommand;
-use App\Domain\Model\Profile\ProfileEntity;
-use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\Model\Profile\EventServiceInterface;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\MediaRepositoryInterface;
 use App\Domain\Model\Profile\MediaServiceInterface;
-use App\Domain\Model\Profile\Message\ProfileNotValidException;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\Status;
-use App\ValueObject\UserRole;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\ValueObject\UuidValueObject;
 
 final class InitiateMediaUploadHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    ) {
+    )
+    {
     }
 
     public function __invoke(InitiateMediaUploadCommand $command): array
     {
-        [$uuid, $status] = $this->eventRepository->getExistingProfileUuid($command->eventUuidValueObject);
+        $uuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+            $command->orderIdValueObject,
+            $command->userEmail
+        );
 
-        $eventEntity = new ProfileEntity(profileUuidValueObject: new UuidValueObject($uuid), eventStatus: $status);
+        if ($uuid === null || $uuid === '') {
+            throw new ProfileNotFoundException('Profile not found');
+        }
 
-        $orderId = $this->eventRepository->fetchOrderIdForUuid($command->eventUuidValueObject->value);
+        $profileEntity = new ProfileEntity(profileUuidValueObject: new UuidValueObject($uuid));
 
-        $eventEntity
-            ->setIsAdmin($command->userRole)
-            ->setMediaUserIdentifier($command->userIdentifier)
+        $profileEntity
             ->setMultipartFilename($command->filename)
             ->setMultipartMimeType($command->mimeType)
-            ->setOrderId(new OrderIdValueObject($orderId));
+            ->setOrderId($command->orderIdValueObject);
 
-        return $this->eventRepository->fetchMultipartInitData($eventEntity);
+        return $this->eventRepository->fetchMultipartInitData($profileEntity);
     }
 }
