@@ -13,18 +13,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface ProfileRepositoryInterface
 {
-    /**
-     * @throws ProfileNotFoundException()
-     */
-    public function saveFeedbackForEvent(ProfileEntity $eventEntity): void;
-
-    /**
-     * @throws ProfileNotFoundException()
-     */
-    public function saveArchiveEmailForEvent(ProfileEntity $eventEntity): void;
-
-    public function fetchOrderIdForUuid(string $uuid): ?int;
-
     public function updateProfileNameAndFont(ProfileEntity $eventEntity): void;
 
     public function updateProfileDates(ProfileEntity $profileEntity): void;
@@ -32,8 +20,6 @@ interface ProfileRepositoryInterface
     public function updateProfileObituary(ProfileEntity $profileEntity): void;
 
     public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
-
-    public function getExistingProfileUuid(UuidValueObject $uuidValueObject): array;
 
     public function getExistingProfileUuidForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
@@ -55,10 +41,6 @@ interface ProfileRepositoryInterface
     public function getUniqueMimeTypes(array $uploadedFiles): array;
 
     public function deleteMediaFiles(ProfileEntity $eventEntity): void;
-
-    public function updateEventStatus(ProfileEntity $eventEntity): void;
-
-    public function generateArchiveForOrder(OrderIdValueObject $orderIdValueObject): void;
 
     public function updateBackgroundFile(ProfileEntity $eventEntity): void;
 

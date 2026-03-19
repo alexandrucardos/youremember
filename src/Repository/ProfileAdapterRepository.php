@@ -9,13 +9,9 @@ use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Entity\Feedback;
-use App\Entity\ImageArchive;
 use App\Entity\Profile;
 use App\Entity\User;
-use App\Service\Bucket\BucketProviderInterface;
 use App\Service\Event\EventMediaFetchService;
-use App\Service\Event\EventService;
 use App\Service\Event\EventUpdateService;
 use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
@@ -31,53 +27,15 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
     public function __construct(
         private readonly ProfileRepository $profileRepository,
-        private readonly FeedbackRepository $feedbackRepository,
-        private readonly ImageArchiveRepository $imageArchiveRepository,
         private readonly UserRepository $userRepository,
         private readonly MediaService $mediaService,
         private readonly MediaCountService $mediaCountService,
         private readonly MediaDeleteService $mediaDeleteService,
         private readonly EventUpdateService $eventUpdateService,
         private readonly EventMediaFetchService $eventMediaFetchService,
-        private readonly BucketProviderInterface $bucketProvider,
         private readonly MediaRepository $mediaRepository,
         private readonly MediaPresignService $mediaPresignService
     ) {
-    }
-
-    /**
-     * @throws ProfileNotFoundException()
-     */
-    public function saveFeedbackForEvent(ProfileEntity $eventEntity): void
-    {
-        $event = $this->getEvent($eventEntity->profileUuidValueObject);
-
-        $feedback = (new Feedback())
-            ->setEvent($event)
-            ->setFeedback($eventEntity->getFeedbackValueObject()->value);
-
-        $this->feedbackRepository->save($feedback);
-    }
-
-    /**
-     * @throws ProfileNotFoundException()
-     */
-    public function saveArchiveEmailForEvent(ProfileEntity $eventEntity): void
-    {
-        $event = $this->getEvent($eventEntity->profileUuidValueObject);
-
-        $imageArchive = (new ImageArchive())
-            ->setEvent($event)
-            ->setEmail($eventEntity->getImageArchiveEmail()->value);
-
-        $this->imageArchiveRepository->save($imageArchive);
-    }
-
-    public function fetchOrderIdForUuid(string $uuid): ?int
-    {
-        $event = $this->profileRepository->findOneBy(['uuid' => $uuid]);
-
-        return $event ? $event->getOrderId() : null;
     }
 
     public function updateProfileNameAndFont(ProfileEntity $eventEntity): void
@@ -130,17 +88,6 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
                 picturesUrls: $eventDataValueObject->pictures
             )
         );
-    }
-
-    public function getExistingProfileUuid(UuidValueObject $uuidValueObject): array
-    {
-        $event = $this->getEvent($uuidValueObject);
-
-        if (null === $event) {
-            return [null, null];
-        }
-
-        return [$event->getUuid(), $event->getStatus()];
     }
 
     public function getExistingMediaInfo(OrderIdValueObject $orderId): array
@@ -222,32 +169,6 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return $event ? $event->getUuid() : null;
-    }
-
-    public function updateEventStatus(ProfileEntity $eventEntity): void
-    {
-        $event = $this->profileRepository->findOneBy(['uuid' => $eventEntity->profileUuidValueObject->value]);
-
-        if (!$event) {
-            throw new ProfileNotFoundException();
-        }
-
-        $event->setStatus($eventEntity->getStatus());
-
-        $this->profileRepository->save($event);
-    }
-
-    public function generateArchiveForOrder(OrderIdValueObject $orderIdValueObject): void
-    {
-        $paths = $this->mediaRepository->findPathsByOrderIdForDownload($orderIdValueObject->value);
-
-        $paths = array_map(fn($path) => reset($path), $paths);
-
-        if (empty($paths)) {
-            return;
-        }
-
-        $this->bucketProvider->downloadFilesForPaths($paths);
     }
 
     public function updateBackgroundFile(ProfileEntity $eventEntity): void
