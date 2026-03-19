@@ -111,7 +111,6 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         }
 
         $event = (new Profile())
-            ->setStatus($profileEntity->getStatus())
             ->setUuid($profileEntity->profileUuidValueObject->value)
             ->setOrderId($profileEntity->getOrderId()->value)
             ->setNameFont($profileEntity->getProfileNameFont()->value)
