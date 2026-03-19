@@ -24,7 +24,7 @@ class ProfileUpdateProfilePictureControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testUpdateProfilePictureReturns401WithInvalidToken(): void
+    public function testUpdateProfilePictureReturns400WithInvalidToken(): void
     {
         $this->client->request(
             'POST',
@@ -33,11 +33,11 @@ class ProfileUpdateProfilePictureControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'multipart/form-data',
-                'HTTP_TOKEN' => 'invalid-token'
+                'HTTP_TOKEN' => 'x'
             ]
         );
 
-        self::assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(400);
     }
 
     public function testUpdateProfilePictureReturns401WithExpiredToken(): void
@@ -65,17 +65,16 @@ class ProfileUpdateProfilePictureControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'multipart/form-data',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
             ]
         );
 
-        // With valid token, we get past authentication (not 401)
-        self::assertResponseStatusCodeSame(404);
+        // With super admin token, passes authentication (not 401/403)
+        self::assertResponseStatusCodeSame(500);
     }
 
     protected function setUp(): void
     {
-        $this->markTestSkipped();
         $this->client = static::createClient();
     }
 

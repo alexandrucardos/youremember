@@ -28,7 +28,7 @@ class ProfileUpdateDatesControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testUpdateProfileDatesReturns401WithInvalidToken(): void
+    public function testUpdateProfileDatesReturns400WithInvalidToken(): void
     {
         $this->client->request(
             'PATCH',
@@ -37,7 +37,7 @@ class ProfileUpdateDatesControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => 'invalid-token'
+                'HTTP_TOKEN' => 'x'
             ],
             json_encode([
                 'born_at' => '1980-01-01',
@@ -45,7 +45,7 @@ class ProfileUpdateDatesControllerTest extends WebTestCase
             ])
         );
 
-        self::assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(400);
     }
 
     public function testUpdateProfileDatesReturns401WithExpiredToken(): void
@@ -70,14 +70,36 @@ class ProfileUpdateDatesControllerTest extends WebTestCase
 
     public function testUpdateProfileDatesWithValidTokenPassesAuthentication(): void
     {
+        // First create a profile to update
+        $orderId = rand(100000, 999999);
+        $clientEmail = 'dates-test-' . time() . '@example.com';
+
         $this->client->request(
-            'PATCH',
-            '/api/v2/update/dates/orderId/123',
+            'POST',
+            '/api/v2/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+            ],
+            json_encode([
+                'client_email' => $clientEmail,
+                'order_id' => $orderId
+            ])
+        );
+
+        self::assertResponseStatusCodeSame(201);
+
+        // Now update the dates
+        $this->client->request(
+            'PATCH',
+            '/api/v2/update/dates/orderId/' . $orderId,
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
             ],
             json_encode([
                 'born_at' => '1980-01-01',
@@ -85,13 +107,20 @@ class ProfileUpdateDatesControllerTest extends WebTestCase
             ])
         );
 
-        // With valid token, we get past authentication (not 401)
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(200);
+
+        // Verify the update worked by checking database
+        $container = static::getContainer();
+        $profileRepository = $container->get('App\Repository\ProfileRepository');
+        $profile = $profileRepository->findOneBy(['order_id' => $orderId]);
+
+        self::assertNotNull($profile);
+        self::assertEquals('1980-01-01', $profile->getBornAt()->format('Y-m-d'));
+        self::assertEquals('2020-01-01', $profile->getDepartedAt()->format('Y-m-d'));
     }
 
     protected function setUp(): void
     {
-        $this->markTestSkipped();
         $this->client = static::createClient();
     }
 

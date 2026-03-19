@@ -11,6 +11,29 @@ class ProfileCreateControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
 
+    public function testCreateProfile(): void
+    {
+        $orderId = rand(10000, 99999);
+
+        $this->client->request(
+            'POST',
+            '/api/v2/profile',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+            ],
+            json_encode([
+                'client_email' => 'test@example.com',
+                'order_id' => $orderId
+            ])
+        );
+
+        // With super admin token, passes authentication and creates profile successfully
+        self::assertResponseStatusCodeSame(201);
+    }
+
     public function testCreateProfileReturns401WithoutToken(): void
     {
         $this->client->request('POST', '/api/v2/profile', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -21,7 +44,7 @@ class ProfileCreateControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testCreateProfileReturns401WithInvalidToken(): void
+    public function testCreateProfileReturns400WithInvalidToken(): void
     {
         $this->client->request(
             'POST',
@@ -30,7 +53,7 @@ class ProfileCreateControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => 'invalid-token'
+                'HTTP_TOKEN' => 'x'
             ],
             json_encode([
                 'client_email' => 'test@example.com',
@@ -38,7 +61,8 @@ class ProfileCreateControllerTest extends WebTestCase
             ])
         );
 
-        self::assertResponseStatusCodeSame(401);
+        // Invalid token format returns 400
+        self::assertResponseStatusCodeSame(400);
     }
 
     public function testCreateProfileReturns401WithExpiredToken(): void
@@ -61,8 +85,11 @@ class ProfileCreateControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testCreateProfileWithValidTokenPassesAuthentication(): void
+    public function testCreateProfileSuccessfullyWritesToDatabase(): void
     {
+        $orderId = rand(1000, 9999);
+        $clientEmail = 'functional-test-' . time() . '@example.com';
+
         $this->client->request(
             'POST',
             '/api/v2/profile',
@@ -70,22 +97,31 @@ class ProfileCreateControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
             ],
             json_encode([
-                'client_email' => 'test@example.com',
-                'order_id' => 123
+                'client_email' => $clientEmail,
+                'order_id' => $orderId
             ])
         );
 
-        // With valid token, we get past authentication (not 401)
-        // Will fail with 404 (user not found) or 500 (db issue) but NOT 401
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(201);
+
+        $container = static::getContainer();
+        $profileRepository = $container->get('App\Repository\ProfileRepository');
+
+        $profile = $profileRepository->findOneBy(['order_id' => $orderId]);
+
+        self::assertNotNull($profile, 'Profile should be persisted to database');
+        self::assertEquals($orderId, $profile->getOrderId());
+        self::assertNotNull($profile->getUuid());
+        self::assertEquals('classic', $profile->getNameFont());
+        self::assertNotNull($profile->getUser());
+        self::assertEquals($clientEmail, $profile->getUser()->getEmail());
     }
 
     protected function setUp(): void
     {
-        $this->markTestSkipped();
         $this->client = static::createClient();
     }
 

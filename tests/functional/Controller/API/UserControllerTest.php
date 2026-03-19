@@ -119,7 +119,7 @@ class UserControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->markTestSkipped();
+        $this->markTestSkipped('Deprecated API endpoints - replaced with V2 routes');
         $this->client = static::createClient();
     }
 }

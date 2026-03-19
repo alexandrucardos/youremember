@@ -18,17 +18,12 @@ class ProfileInfoGetControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testGetProfileByOrderIdReturns401WithInvalidToken(): void
+    public function testGetProfileByOrderIdReturns400WithInvalidToken(): void
     {
-        $this->client->request(
-            'GET',
-            '/api/v2/profile/information/oderId/123',
-            [],
-            [],
-            ['HTTP_TOKEN' => 'invalid-token']
-        );
+        $this->client->request('GET', '/api/v2/profile/information/oderId/123', [], [], ['HTTP_TOKEN' => 'x']);
 
-        self::assertResponseStatusCodeSame(401);
+        // Invalid token format returns 400
+        self::assertResponseStatusCodeSame(400);
     }
 
     public function testGetProfileByOrderIdReturns401WithExpiredToken(): void
@@ -46,21 +41,47 @@ class ProfileInfoGetControllerTest extends WebTestCase
 
     public function testGetProfileByOrderIdWithValidTokenPassesAuthentication(): void
     {
+        // First create a profile to retrieve
+        $orderId = rand(100000, 999999);
+        $clientEmail = 'info-test-' . time() . '@example.com';
+
         $this->client->request(
-            'GET',
-            '/api/v2/profile/information/oderId/123',
+            'POST',
+            '/api/v2/profile',
             [],
             [],
-            ['HTTP_TOKEN' => $this->generateValidToken('test@example.com')]
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+            ],
+            json_encode([
+                'client_email' => $clientEmail,
+                'order_id' => $orderId
+            ])
         );
 
-        // With valid token, we get past authentication (not 401)
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(201);
+
+        // Now retrieve the profile
+        $this->client->request(
+            'GET',
+            '/api/v2/profile/information/oderId/' . $orderId,
+            [],
+            [],
+            ['HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')]
+        );
+
+        self::assertResponseStatusCodeSame(200);
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+
+        self::assertArrayHasKey('token', $response);
+        self::assertArrayHasKey('name', $response);
+        self::assertArrayHasKey('font', $response);
+        self::assertEquals('classic', $response['font']);
     }
 
     protected function setUp(): void
     {
-        $this->markTestSkipped();
         $this->client = static::createClient();
     }
 

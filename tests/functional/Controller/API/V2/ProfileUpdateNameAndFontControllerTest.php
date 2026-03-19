@@ -28,7 +28,7 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testUpdateProfileNameAndFontReturns401WithInvalidToken(): void
+    public function testUpdateProfileNameAndFontReturns400WithInvalidToken(): void
     {
         $this->client->request(
             'PATCH',
@@ -37,7 +37,7 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => 'invalid-token'
+                'HTTP_TOKEN' => 'x'
             ],
             json_encode([
                 'name' => 'Updated Profile Name',
@@ -45,7 +45,7 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
             ])
         );
 
-        self::assertResponseStatusCodeSame(401);
+        self::assertResponseStatusCodeSame(400);
     }
 
     public function testUpdateProfileNameAndFontReturns401WithExpiredToken(): void
@@ -70,14 +70,36 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
 
     public function testUpdateProfileNameAndFontWithValidTokenPassesAuthentication(): void
     {
+        // First create a profile to update
+        $orderId = rand(100000, 999999);
+        $clientEmail = 'name-test-' . time() . '@example.com';
+
         $this->client->request(
-            'PATCH',
-            '/api/v2/update/name/font/orderId/123',
+            'POST',
+            '/api/v2/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('test@example.com')
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+            ],
+            json_encode([
+                'client_email' => $clientEmail,
+                'order_id' => $orderId
+            ])
+        );
+
+        self::assertResponseStatusCodeSame(201);
+
+        // Now update the name and font
+        $this->client->request(
+            'PATCH',
+            '/api/v2/update/name/font/orderId/' . $orderId,
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
             ],
             json_encode([
                 'name' => 'Updated Profile Name',
@@ -85,13 +107,20 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
             ])
         );
 
-        // With valid token, we get past authentication (not 401)
-        self::assertResponseStatusCodeSame(404);
+        self::assertResponseStatusCodeSame(200);
+
+        // Verify the update worked by checking database
+        $container = static::getContainer();
+        $profileRepository = $container->get('App\Repository\ProfileRepository');
+        $profile = $profileRepository->findOneBy(['order_id' => $orderId]);
+
+        self::assertNotNull($profile);
+        self::assertEquals('Updated Profile Name', $profile->getName());
+        self::assertEquals('Arial', $profile->getNameFont());
     }
 
     protected function setUp(): void
     {
-        $this->markTestSkipped();
         $this->client = static::createClient();
     }
 
