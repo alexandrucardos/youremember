@@ -10,13 +10,10 @@ use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\Exception\MissingFiles;
-use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
-use App\ValueObject\HashValueObject;
-use App\ValueObject\Status;
-use App\ValueObject\UserRole;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\EmailValueObject;
+use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -24,7 +21,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class AddMediaHandlerTest extends TestCase
 {
     private const UUID = '550e8400-e29b-41d4-a716-446655440000';
-    private const FOLDER = 'client';
+    private const ORDER_ID = 123;
+    private const USER_EMAIL = 'user@example.com';
 
     private ProfileRepositoryInterface&MockObject $eventRepository;
     private AddMediaHandler $handler;
@@ -35,17 +33,9 @@ class AddMediaHandlerTest extends TestCase
         $this->handler = new AddMediaHandler($this->eventRepository);
     }
 
-    public static function emptyUserIdentifierDataProvider(): array
-    {
-        return [
-            'empty string' => ['userIdentifier' => ''],
-            'whitespace' => ['userIdentifier' => '   ']
-        ];
-    }
-
     public function testInvokeThrowsMissingFilesWhenFilesAreEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
         $this->eventRepository->method('getExistingMediaInfo')->willReturn([100, 0]);
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn([]);
 
@@ -55,9 +45,9 @@ class AddMediaHandlerTest extends TestCase
         ( $this->handler )($this->buildCommand([]));
     }
 
-    public function testInvokeThrowsEventNotFoundExceptionWhenGetEventUuidAndStatusReturnsEmptyArray(): void
+    public function testInvokeThrowsEventNotFoundExceptionWhenEventUuidIsNull(): void
     {
-        $this->eventRepository->method('getExistingProfileUuid')->willReturn([]);
+        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
         $this->eventRepository->expects($this->never())->method('getExistingMediaInfo');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -65,9 +55,9 @@ class AddMediaHandlerTest extends TestCase
         ( $this->handler )($this->buildCommand([$this->createMock(UploadedFile::class)]));
     }
 
-    public function testInvokeThrowsEventNotFoundExceptionWhenEventUuidIsNull(): void
+    public function testInvokeThrowsEventNotFoundExceptionWhenEventUuidIsEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileUuid')->willReturn([null, null]);
+        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
         $this->eventRepository->expects($this->never())->method('getExistingMediaInfo');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -91,7 +81,7 @@ class AddMediaHandlerTest extends TestCase
         int $existingItems,
         int $newFiles
     ): void {
-        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
         $this->eventRepository->method('getExistingMediaInfo')->willReturn([$maxItems, $existingItems]);
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn(['image/jpeg']);
         $this->eventRepository->expects($this->never())->method('saveMediaFiles');
@@ -116,7 +106,7 @@ class AddMediaHandlerTest extends TestCase
      */
     public function testInvokeThrowsIncorrectMimeTypeExceptionForUnsupportedTypes(array $mimeTypes): void
     {
-        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
         $this->eventRepository->method('getExistingMediaInfo')->willReturn([100, 0]);
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn($mimeTypes);
         $this->eventRepository->expects($this->never())->method('saveMediaFiles');
@@ -146,7 +136,7 @@ class AddMediaHandlerTest extends TestCase
     {
         $files = array_fill(0, count($mimeTypes), $this->createMock(UploadedFile::class));
 
-        $this->eventRepository->method('getExistingProfileUuid')->willReturn([self::UUID, Status::VALID]);
+        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
         $this->eventRepository->method('getExistingMediaInfo')->willReturn([100, 0]);
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn($mimeTypes);
 
@@ -164,8 +154,12 @@ class AddMediaHandlerTest extends TestCase
         ( $this->handler )($this->buildCommand($files));
     }
 
-    private function buildCommand(array $files, ?UuidValueObject $uuid = null): AddMediaCommand
+    private function buildCommand(array $files): AddMediaCommand
     {
-        return new AddMediaCommand(orderIdValueObject: $uuid ?? new UuidValueObject(self::UUID), files: $files);
+        return new AddMediaCommand(
+            orderIdValueObject: new OrderIdValueObject(self::ORDER_ID),
+            files: $files,
+            userEmail: new EmailValueObject(self::USER_EMAIL)
+        );
     }
 }

@@ -33,7 +33,7 @@ interface ProfileRepositoryInterface
 
     public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
 
-    public function getExistingProfileUuid(UuidValueObject $uuidValueObject): ?string;
+    public function getExistingProfileUuid(UuidValueObject $uuidValueObject): array;
 
     public function getExistingProfileUuidForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,

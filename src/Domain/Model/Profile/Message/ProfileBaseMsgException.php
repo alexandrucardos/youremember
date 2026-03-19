@@ -10,4 +10,5 @@ class ProfileBaseMsgException extends \RuntimeException
     protected const INCORRECT_MIME_TYPE = 4001;
     protected const DATE_TOO_SOON = 4002;
     protected const MAXIMUM_MEDIA_ITEMS_REACHED = 4003;
+    protected const DATE_IN_FUTURE = 4004;
 }

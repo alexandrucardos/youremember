@@ -9,6 +9,7 @@ use App\Domain\Model\Profile\Exception\MediaFileDeletionNotAllowedException;
 use App\Domain\Model\Profile\Exception\MissingFiles;
 use App\Domain\Model\Profile\Exception\OnlyAdminsCanSetBackgroundsException;
 use App\Domain\Model\Profile\Exception\OrderStatusInvalidException;
+use App\Domain\Model\Profile\Message\DateInPastException;
 use App\Domain\Model\Profile\Message\DateTooSoonException;
 use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
@@ -163,6 +164,13 @@ class ProfileEntity
 
     public function setBornAt(DateValueObject $bornAtValueObject): self
     {
+        if ($bornAtValueObject->value instanceof \DateTimeImmutable) {
+            $now = new \DateTimeImmutable();
+            if ($bornAtValueObject->value > $now) {
+                throw new DateInPastException('Born date must be in the past');
+            }
+        }
+
         $this->bornAt = $bornAtValueObject;
         return $this;
     }
@@ -174,6 +182,13 @@ class ProfileEntity
 
     public function setDepartedAt(DateValueObject $departedAtValueObject): self
     {
+        if ($departedAtValueObject->value instanceof \DateTimeImmutable) {
+            $now = new \DateTimeImmutable();
+            if ($departedAtValueObject->value > $now) {
+                throw new DateInPastException('Deceased date must be in the past');
+            }
+        }
+
         $this->departedAt = $departedAtValueObject;
         return $this;
     }
