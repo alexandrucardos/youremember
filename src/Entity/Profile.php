@@ -47,6 +47,15 @@ class Profile
     #[ORM\Column]
     private int $media_count = 0;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $born_at = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $departed_at = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $obituary = null;
+
     /** @var Collection<int, Media> */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Media::class, cascade: ['remove'])]
     private Collection $media;
@@ -224,6 +233,42 @@ class Profile
     public function setNameFont(string $name_font): self
     {
         $this->name_font = $name_font;
+
+        return $this;
+    }
+
+    public function getBornAt(): ?\DateTimeImmutable
+    {
+        return $this->born_at;
+    }
+
+    public function setBornAt(?\DateTimeImmutable $born_at): self
+    {
+        $this->born_at = $born_at;
+
+        return $this;
+    }
+
+    public function getDepartedAt(): ?\DateTimeImmutable
+    {
+        return $this->departed_at;
+    }
+
+    public function setDepartedAt(?\DateTimeImmutable $departed_at): self
+    {
+        $this->departed_at = $departed_at;
+
+        return $this;
+    }
+
+    public function getObituary(): ?string
+    {
+        return $this->obituary;
+    }
+
+    public function setObituary(?string $obituary): self
+    {
+        $this->obituary = $obituary;
 
         return $this;
     }

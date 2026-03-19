@@ -16,7 +16,9 @@ use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\Domain\Model\User\UserEntity;
 use App\Domain\ValueObject\EventStartDateValueObject;
 use App\Domain\ValueObject\FeedbackValueObject;
+use App\ValueObject\DateValueObject;
 use App\ValueObject\EmailValueObject;
+use App\ValueObject\ObituaryValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\HashValueObject;
@@ -49,6 +51,9 @@ class ProfileEntity
     private OrderIdValueObject $orderId;
     private ProfileNameValueObject $profileName;
     private ProfileNameFontValueObject $profileNameFont;
+    private DateValueObject $bornAt;
+    private DateValueObject $departedAt;
+    private ObituaryValueObject $obituary;
 
     private string $multipartFilename;
     private string $multipartMimeType;
@@ -154,6 +159,39 @@ class ProfileEntity
     public function getProfileNameFont(): ProfileNameFontValueObject
     {
         return $this->profileNameFont;
+    }
+
+    public function setBornAt(DateValueObject $bornAtValueObject): self
+    {
+        $this->bornAt = $bornAtValueObject;
+        return $this;
+    }
+
+    public function getBornAt(): DateValueObject
+    {
+        return $this->bornAt;
+    }
+
+    public function setDepartedAt(DateValueObject $departedAtValueObject): self
+    {
+        $this->departedAt = $departedAtValueObject;
+        return $this;
+    }
+
+    public function getDepartedAt(): DateValueObject
+    {
+        return $this->departedAt;
+    }
+
+    public function setObituary(ObituaryValueObject $obituaryValueObject): self
+    {
+        $this->obituary = $obituaryValueObject;
+        return $this;
+    }
+
+    public function getObituary(): ObituaryValueObject
+    {
+        return $this->obituary;
     }
 
     public function setBackgroundFile(UploadedFile $background): self

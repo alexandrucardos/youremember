@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Repository;
 
-use App\Application\ListEventInformation\MediaViewModel;
-use App\Application\ListEventInformation\ProfileViewModel;
+use App\Application\ListProfileInformation\MediaViewModel;
+use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
@@ -29,7 +29,7 @@ use App\ValueObject\UuidValueObject;
 class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
     public function __construct(
-        private readonly ProfileRepository $eventRepository,
+        private readonly ProfileRepository $profileRepository,
         private readonly FeedbackRepository $feedbackRepository,
         private readonly ImageArchiveRepository $imageArchiveRepository,
         private readonly UserRepository $userRepository,
@@ -74,7 +74,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function fetchOrderIdForUuid(string $uuid): ?int
     {
-        $event = $this->eventRepository->findOneBy(['uuid' => $uuid]);
+        $event = $this->profileRepository->findOneBy(['uuid' => $uuid]);
 
         return $event ? $event->getOrderId() : null;
     }
@@ -88,11 +88,37 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         );
     }
 
+    public function updateProfileDates(ProfileEntity $profileEntity): void
+    {
+        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileUuidValueObject->value]);
+
+        if (!$profile) {
+            throw new ProfileNotFoundException();
+        }
+
+        $profile->setBornAt($profileEntity->getBornAt()->value)->setDepartedAt($profileEntity->getDepartedAt()->value);
+
+        $this->profileRepository->save($profile);
+    }
+
+    public function updateProfileObituary(ProfileEntity $profileEntity): void
+    {
+        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileUuidValueObject->value]);
+
+        if (!$profile) {
+            throw new ProfileNotFoundException();
+        }
+
+        $profile->setObituary($profileEntity->getObituary()->value);
+
+        $this->profileRepository->save($profile);
+    }
+
     public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel
     {
         $eventDataValueObject = $this->eventMediaFetchService->fetchForOrderId($orderIdValueObject);
 
-        $event = $this->eventRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
+        $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return new ProfileViewModel(
             eventUuid: new UuidValueObject($event ? $event->getUuid() : null),
@@ -143,7 +169,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
             ->setNameFont($profileEntity->getProfileNameFont()->value)
             ->setUser($user);
 
-        $this->eventRepository->save($event);
+        $this->profileRepository->save($event);
     }
 
     public function getUniqueMimeTypes(array $uploadedFiles): array
@@ -176,7 +202,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
         $event->setMediaCount($event->getMediaCount() + count($eventEntity->getMediaFiles()));
 
-        $this->eventRepository->save($event);
+        $this->profileRepository->save($event);
     }
 
     public function deleteMediaFiles(ProfileEntity $eventEntity): void
@@ -191,14 +217,14 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function getExistingProfileUuidForOrderIdAndEmail(OrderIdValueObject $orderIdValueObject): ?string
     {
-        $event = $this->eventRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
+        $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return $event ? $event->getUuid() : null;
     }
 
     public function updateEventStatus(ProfileEntity $eventEntity): void
     {
-        $event = $this->eventRepository->findOneBy(['uuid' => $eventEntity->profileUuidValueObject->value]);
+        $event = $this->profileRepository->findOneBy(['uuid' => $eventEntity->profileUuidValueObject->value]);
 
         if (!$event) {
             throw new ProfileNotFoundException();
@@ -206,7 +232,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
         $event->setStatus($eventEntity->getStatus());
 
-        $this->eventRepository->save($event);
+        $this->profileRepository->save($event);
     }
 
     public function generateArchiveForOrder(OrderIdValueObject $orderIdValueObject): void
@@ -242,7 +268,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     private function getEvent(UuidValueObject $uuidValueObject): Profile
     {
-        $event = $this->eventRepository->findOneBy([
+        $event = $this->profileRepository->findOneBy([
             'uuid' => $uuidValueObject->value
         ]);
 

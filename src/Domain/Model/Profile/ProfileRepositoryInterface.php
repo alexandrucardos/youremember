@@ -27,6 +27,10 @@ interface ProfileRepositoryInterface
 
     public function updateProfileNameAndFont(ProfileEntity $eventEntity): void;
 
+    public function updateProfileDates(ProfileEntity $profileEntity): void;
+
+    public function updateProfileObituary(ProfileEntity $profileEntity): void;
+
     public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
 
     public function getExistingProfileUuid(UuidValueObject $uuidValueObject): ?string;
