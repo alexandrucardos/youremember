@@ -60,6 +60,7 @@ class ProfileEntity
     private string $multipartMimeType;
 
     private UploadedFile $backgroundFile;
+    private UploadedFile $profilePictureFile;
 
     public function __construct(
         public readonly UuidValueObject $profileUuidValueObject
@@ -218,6 +219,17 @@ class ProfileEntity
     public function getBackground(): UploadedFile
     {
         return $this->backgroundFile;
+    }
+
+    public function setProfilePictureFile(UploadedFile $profilePicture): self
+    {
+        $this->profilePictureFile = $profilePicture;
+        return $this;
+    }
+
+    public function getProfilePicture(): UploadedFile
+    {
+        return $this->profilePictureFile;
     }
 
     public function getMultipartFilename(): string

@@ -62,5 +62,7 @@ interface ProfileRepositoryInterface
 
     public function updateBackgroundFile(ProfileEntity $eventEntity): void;
 
+    public function updateProfilePictureFile(ProfileEntity $eventEntity): void;
+
     public function fetchMultipartInitData(ProfileEntity $eventEntity): array;
 }

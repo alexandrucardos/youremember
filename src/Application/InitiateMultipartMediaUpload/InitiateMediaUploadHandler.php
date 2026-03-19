@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Application\InitiateMultipartMediaUpload;
 
@@ -16,8 +16,7 @@ final class InitiateMediaUploadHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    )
-    {
+    ) {
     }
 
     public function __invoke(InitiateMediaUploadCommand $command): array

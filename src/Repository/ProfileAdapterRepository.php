@@ -21,6 +21,7 @@ use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaPresignService;
 use App\Service\Media\MediaService;
+use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\UserRole;
@@ -187,8 +188,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int $maxFileSizeBytes,
-        int $maxTotalDemoSizeBytes
+        int $maxFileSizeBytes
     ): void {
         $event = $this->getEvent($eventEntity->profileUuidValueObject);
 
@@ -215,8 +215,10 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         }
     }
 
-    public function getExistingProfileUuidForOrderIdAndEmail(OrderIdValueObject $orderIdValueObject): ?string
-    {
+    public function getExistingProfileUuidForOrderIdAndEmail(
+        OrderIdValueObject $orderIdValueObject,
+        EmailValueObject $emailValueObject
+    ): ?string {
         $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return $event ? $event->getUuid() : null;
@@ -253,6 +255,14 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $this->mediaService->uploadBackground(
             orderId: $eventEntity->getOrderId()->value,
             file: $eventEntity->getBackground()
+        );
+    }
+
+    public function updateProfilePictureFile(ProfileEntity $eventEntity): void
+    {
+        $this->mediaService->uploadProfilePicture(
+            orderId: $eventEntity->getOrderId()->value,
+            file: $eventEntity->getProfilePicture()
         );
     }
 

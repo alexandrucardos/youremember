@@ -18,6 +18,7 @@ class MediaService
 {
     public const FOLDER_CLIENT = 'client';
     public const FILE_BACKGROUND_NAME = 'background';
+    public const FILE_PROFILE_PICTURE_NAME = 'profile-picture';
 
     public const APPLE_EXTENSIONS = ['image/heic', 'image/heif'];
 
@@ -101,6 +102,35 @@ class MediaService
         }
 
         $this->mediaRepository->save($mediaBackground);
+
+        $this->bucketProvider->putObject($key, $scaledContent, $file->getMimeType());
+    }
+
+    public function uploadProfilePicture(int $orderId, UploadedFile $file): void
+    {
+        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
+
+        if ($event === null) {
+            throw new NotFoundException('Event not found for order: ' . $orderId);
+        }
+
+        $key = sprintf('%d/%s/%s', $orderId, ProfileEntity::ADMIN_USER_IDENTIFIER, self::FILE_PROFILE_PICTURE_NAME);
+
+        $scaledContent = $this->processContent($file);
+
+        $mediaProfilePicture = $this->mediaRepository->findOneBy(['file_path' => $key]);
+
+        if ($mediaProfilePicture === null) {
+            $mediaProfilePicture = (new Media())
+                ->setEvent($event)
+                ->setFilePath($key)
+                ->setUploaderHash(ProfileEntity::ADMIN_USER_IDENTIFIER)
+                ->setFileType($file->getMimeType())
+                ->setFileSize(strlen($scaledContent))
+                ->setOriginalFilename($file->getClientOriginalName());
+        }
+
+        $this->mediaRepository->save($mediaProfilePicture);
 
         $this->bucketProvider->putObject($key, $scaledContent, $file->getMimeType());
     }
