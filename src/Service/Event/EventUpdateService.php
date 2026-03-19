@@ -4,18 +4,18 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
+use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
 
 final class EventUpdateService
 {
     public function __construct(
-        private readonly EventRepository $eventRepository
+        private readonly ProfileRepository $eventRepository
     ) {
     }
 
@@ -23,7 +23,7 @@ final class EventUpdateService
         OrderIdValueObject $orderId,
         ProfileNameValueObject $name,
         ProfileNameFontValueObject $nameFont
-    ): Event {
+    ): Profile {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId->value]);
 
         if (!$event) {
@@ -41,7 +41,7 @@ final class EventUpdateService
         UuidValueObject $eventUuid,
         ProfileNameValueObject $name,
         ProfileNameFontValueObject $nameFont
-    ): Event {
+    ): Profile {
         $event = $this->eventRepository->findOneBy(['uuid' => $eventUuid->value]);
 
         if (!$event) {

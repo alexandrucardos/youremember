@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
@@ -15,7 +15,7 @@ use App\ValueObject\UuidValueObject;
 final class EventFetchService
 {
     public function __construct(
-        private readonly EventRepository $eventRepository,
+        private readonly ProfileRepository $eventRepository,
         private readonly MediaService $mediatorS3Service
     ) {
     }
@@ -24,7 +24,7 @@ final class EventFetchService
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId->value]);
 
-        if (!$event instanceof Event) {
+        if (!$event instanceof Profile) {
             throw new NotFoundException('Event not found.');
         }
 
@@ -48,7 +48,7 @@ final class EventFetchService
     {
         $event = $this->eventRepository->findOneBy(['uuid' => $uuid->value]);
 
-        if (!$event instanceof Event) {
+        if (!$event instanceof Profile) {
             throw new NotFoundException('Event not found.');
         }
 

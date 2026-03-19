@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Application\DeleteMedia;
 
@@ -16,8 +16,7 @@ final class DeleteMediaHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    )
-    {
+    ) {
     }
 
     public function __invoke(DeleteMediaCommand $command): void

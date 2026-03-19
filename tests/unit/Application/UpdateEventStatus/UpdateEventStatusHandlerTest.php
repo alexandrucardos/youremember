@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\UpdateEventStatus;
 
@@ -43,11 +43,10 @@ class UpdateEventStatusHandlerTest extends TestCase
      * @dataProvider validStatusDataProvider
      */
     public function testInvokeUpdatesEventStatus(
-        int    $orderId,
+        int $orderId,
         string $orderStatus,
         Status $expectedStatus
-    ): void
-    {
+    ): void {
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
 
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);

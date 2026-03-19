@@ -23,10 +23,9 @@ final class EventUpdateNameAndFontController extends AbstractController
 
     #[Route('/orderId/{order_id}', name: self::NAME_EVENT_NAME_UPDATE, methods: ['PATCH'])]
     public function update(
-        Request                  $request,
+        Request $request,
         UpdateProfileNameHandler $eventNameHandler
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {

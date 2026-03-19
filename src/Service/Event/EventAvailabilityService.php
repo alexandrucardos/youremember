@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\ValueObject\Status;
 
 class EventAvailabilityService
 {
     public function __construct(
-        private readonly EventRepository $eventRepository
+        private readonly ProfileRepository $eventRepository
     ) {
     }
 

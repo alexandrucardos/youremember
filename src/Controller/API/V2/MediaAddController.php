@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\API\V2;
 
@@ -24,10 +24,9 @@ final class MediaAddController extends AbstractController
 
     #[Route('/orderId/{order_id}', name: self::NAME_MEDIA_ADD, methods: ['POST'])]
     public function mediaAdd(
-        Request         $request,
+        Request $request,
         AddMediaHandler $addMediaHandler
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {

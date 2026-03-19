@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Service\Media;
 
-use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\MediaServiceInterface;
+use App\Domain\Model\Profile\ProfileEntity;
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
-use App\Repository\EventRepository;
 use App\Repository\MediaRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Bucket\BucketProviderInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Uid\Uuid;
@@ -25,7 +25,7 @@ class MediaService
 
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly EventRepository $eventRepository,
+        private readonly ProfileRepository $eventRepository,
         private readonly MediaRepository $mediaRepository,
         private readonly string $bucketName,
         private readonly string $region

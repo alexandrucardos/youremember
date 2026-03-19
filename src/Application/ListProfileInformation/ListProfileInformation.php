@@ -8,8 +8,7 @@ class ListProfileInformation
 {
     public function __construct(
         public readonly ProfileRepositoryInterface $eventRepository
-    )
-    {
+    ) {
     }
 
     public function __invoke(

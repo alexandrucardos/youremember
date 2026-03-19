@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Application\AddMedia;
 
@@ -16,8 +16,7 @@ final class AddMediaHandler
 
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    )
-    {
+    ) {
     }
 
     public function __invoke(AddMediaCommand $command): void

@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaService;
 use App\ValueObject\Event\EventFetchValueObject;
@@ -17,7 +17,7 @@ final class EventFetchServiceTest extends TestCase
 {
     public function testFetchByOrderIdThrowsNotFoundExceptionWhenEventNotFound(): void
     {
-        $repo = $this->createMock(EventRepository::class);
+        $repo = $this->createMock(ProfileRepository::class);
         $s3Service = $this->createMock(MediaService::class);
 
         $orderId = 123;
@@ -34,7 +34,7 @@ final class EventFetchServiceTest extends TestCase
     {
         $orderId = 123;
 
-        $event = (new Event())
+        $event = (new Profile())
             ->setUuid('550e8400-e29b-41d4-a716-446655440000')
             ->setName('Test Event')
             ->setNameFont('Arial')
@@ -42,7 +42,7 @@ final class EventFetchServiceTest extends TestCase
 
         $expectedBackgroundUrl = 'https://s3.example.com/123/client/background.webp';
 
-        $repo = $this->createMock(EventRepository::class);
+        $repo = $this->createMock(ProfileRepository::class);
         $repo->expects(self::once())->method('findOneBy')->with(['order_id' => $orderId])->willReturn($event);
 
         $s3Service = $this->createMock(MediaService::class);

@@ -2,21 +2,21 @@
 
 namespace App\Service\Event;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Exception\User\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
 use App\ValueObject\Event\EventAddValueObject;
 
 final class EventAddService
 {
     public function __construct(
-        private readonly EventRepository $eventRepository,
+        private readonly ProfileRepository $eventRepository,
         private readonly UserRepository $userRepository
     ) {
     }
 
-    public function add(EventAddValueObject $eventAddDto): Event
+    public function add(EventAddValueObject $eventAddDto): Profile
     {
         $user = $this->userRepository->findBy(['email' => $eventAddDto->email->value]);
 
@@ -24,7 +24,7 @@ final class EventAddService
             throw new NotFoundException('User not found');
         }
 
-        $event = (new Event())
+        $event = (new Profile())
             ->setUuid($this->generateUuid())
             ->setOrderId($eventAddDto->orderId->value)
             ->setUser(reset($user));

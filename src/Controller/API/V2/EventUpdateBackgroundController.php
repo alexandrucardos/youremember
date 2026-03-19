@@ -23,10 +23,9 @@ final class EventUpdateBackgroundController extends AbstractController
 
     #[Route('/orderId/{order_id}', name: self::NAME_EVENT_BACKGROUND_UPDATE, methods: ['POST'])]
     public function update(
-        Request                        $request,
+        Request $request,
         UpdateProfileBackgroundHandler $updateEventBackgroundHandler
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {

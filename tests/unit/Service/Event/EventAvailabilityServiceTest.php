@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
-use App\Entity\Event;
-use App\Repository\EventRepository;
+use App\Entity\Profile;
+use App\Repository\ProfileRepository;
 use App\Service\Event\EventAvailabilityService;
 use App\ValueObject\Status;
 use PHPUnit\Framework\TestCase;
@@ -13,19 +13,12 @@ use PHPUnit\Framework\TestCase;
 class EventAvailabilityServiceTest extends TestCase
 {
     private EventAvailabilityService $eventAvailabilityService;
-    private EventRepository $eventRepository;
-
-    protected function setUp(): void
-    {
-        $this->eventRepository = $this->createMock(EventRepository::class);
-
-        $this->eventAvailabilityService = new EventAvailabilityService($this->eventRepository);
-    }
+    private ProfileRepository $eventRepository;
 
     public function testInvokeReturnsTrueWhenEventFoundByOrderId(): void
     {
         $orderId = '123';
-        $event = new Event();
+        $event = new Profile();
 
         $this->eventRepository
             ->expects($this->once())
@@ -62,7 +55,7 @@ class EventAvailabilityServiceTest extends TestCase
     public function testInvokeReturnsTrueWhenEventFoundByUuid(): void
     {
         $uuid = 'abc-123-def';
-        $event = new Event();
+        $event = new Profile();
 
         $this->eventRepository
             ->expects($this->once())
@@ -100,7 +93,7 @@ class EventAvailabilityServiceTest extends TestCase
     {
         $orderId = '123';
         $uuid = 'abc-123-def';
-        $event = new Event();
+        $event = new Profile();
 
         $this->eventRepository
             ->expects($this->once())
@@ -124,5 +117,12 @@ class EventAvailabilityServiceTest extends TestCase
         $this->expectExceptionMessage('Invalid data provided!');
 
         ( $this->eventAvailabilityService )(null, null);
+    }
+
+    protected function setUp(): void
+    {
+        $this->eventRepository = $this->createMock(ProfileRepository::class);
+
+        $this->eventAvailabilityService = new EventAvailabilityService($this->eventRepository);
     }
 }

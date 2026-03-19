@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Service\Media;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Exception\Media\MaximumMediaItemsReachedException;
 use Doctrine\DBAL\LockMode;
@@ -22,9 +22,9 @@ final class MediaCountService
         $this->entityManager->beginTransaction();
 
         try {
-            $event = $this->entityManager->getRepository(Event::class)->findOneBy(['order_id' => $orderId]);
+            $event = $this->entityManager->getRepository(Profile::class)->findOneBy(['order_id' => $orderId]);
 
-            if (!$event instanceof Event) {
+            if (!$event instanceof Profile) {
                 throw new NotFoundException('Event not found');
             }
 
@@ -52,9 +52,9 @@ final class MediaCountService
         $this->entityManager->beginTransaction();
 
         try {
-            $event = $this->entityManager->getRepository(Event::class)->findOneBy(['order_id' => $orderId]);
+            $event = $this->entityManager->getRepository(Profile::class)->findOneBy(['order_id' => $orderId]);
 
-            if (!$event instanceof Event) {
+            if (!$event instanceof Profile) {
                 throw new NotFoundException('Event not found');
             }
 

@@ -4,15 +4,15 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\ValueObject\Status;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event
+#[ORM\Entity(repositoryClass: ProfileRepository::class)]
+class Profile
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -47,23 +47,9 @@ class Event
     #[ORM\Column]
     private int $media_count = 0;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $event_start_date = null;
-
-    #[ORM\Column]
-    private bool $needs_manual_processing = false;
-
     /** @var Collection<int, Media> */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Media::class, cascade: ['remove'])]
     private Collection $media;
-
-    /** @var Collection<int, Feedback> */
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Feedback::class, cascade: ['remove'])]
-    private Collection $feedbacks;
-
-    /** @var Collection<int, ImageArchive> */
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: ImageArchive::class, cascade: ['remove'])]
-    private Collection $imageArchives;
 
     #[ORM\Column(insertable: false, updatable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
@@ -78,8 +64,6 @@ class Event
     {
         $this->status = Status::VALID;
         $this->media = new ArrayCollection();
-        $this->feedbacks = new ArrayCollection();
-        $this->imageArchives = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -207,30 +191,6 @@ class Event
         return $this;
     }
 
-    public function getEventStartDate(): ?\DateTimeImmutable
-    {
-        return $this->event_start_date;
-    }
-
-    public function setEventStartDate(\DateTimeImmutable $event_start_date): static
-    {
-        $this->event_start_date = $event_start_date;
-
-        return $this;
-    }
-
-    public function getNeedsManualProcessing(): bool
-    {
-        return $this->needs_manual_processing;
-    }
-
-    public function setNeedsManualProcessing(bool $needs_manual_processing): static
-    {
-        $this->needs_manual_processing = $needs_manual_processing;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Media>
      */
@@ -254,22 +214,6 @@ class Event
         $this->media->removeElement($media);
 
         return $this;
-    }
-
-    /**
-     * @return Collection<int, Feedback>
-     */
-    public function getFeedbacks(): Collection
-    {
-        return $this->feedbacks;
-    }
-
-    /**
-     * @return Collection<int, ImageArchive>
-     */
-    public function getImageArchives(): Collection
-    {
-        return $this->imageArchives;
     }
 
     public function getNameFont(): string

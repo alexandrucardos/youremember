@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\API\V2;
 
@@ -22,19 +22,17 @@ final class ProfileInfoGetController extends AbstractController
 
     #[Route('/oderId/{orderId}', name: self::NAME_EVENT_INFORMATION_ORDER_ID, methods: ['GET'])]
     public function getEventInformationForOrderId(
-        Request                $request,
+        Request $request,
         ListProfileInformation $listEventInformation
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles())) {
             throw new AccessDeniedHttpException();
         }
 
-        $listEventInformationQuery = new ListProfileInformationQuery(
-            orderId: new OrderIdValueObject($request->attributes->get('orderId')),
-        );
+        $listEventInformationQuery =
+            new ListProfileInformationQuery(orderId: new OrderIdValueObject($request->attributes->get('orderId')));
 
         $eventViewModel = $listEventInformation($listEventInformationQuery);
 

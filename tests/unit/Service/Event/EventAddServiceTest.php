@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Entity\User;
 use App\Exception\User\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
 use App\Service\Event\EventAddService;
 use App\ValueObject\EmailValueObject;
@@ -49,8 +49,8 @@ class EventAddServiceTest extends TestCase
         $userRepository = $this->createMock(UserRepository::class);
         $userRepository->expects($this->once())->method('findBy')->with(['email' => $email])->willReturn([$user]);
 
-        $eventRepository = $this->createMock(EventRepository::class);
-        $eventRepository->expects($this->once())->method('save')->with($this->isInstanceOf(Event::class));
+        $eventRepository = $this->createMock(ProfileRepository::class);
+        $eventRepository->expects($this->once())->method('save')->with($this->isInstanceOf(Profile::class));
 
         $service = new EventAddService($eventRepository, $userRepository);
 
@@ -58,7 +58,7 @@ class EventAddServiceTest extends TestCase
 
         $event = $service->add($valueObject);
 
-        $this->assertInstanceOf(Event::class, $event);
+        $this->assertInstanceOf(Profile::class, $event);
         $this->assertNotNull($event->getUuid());
         $this->assertMatchesRegularExpression(self::UUID_PATTERN, $event->getUuid());
         $this->assertSame($orderId, $event->getOrderId());
@@ -73,7 +73,7 @@ class EventAddServiceTest extends TestCase
         $userRepository = $this->createMock(UserRepository::class);
         $userRepository->expects($this->once())->method('findBy')->with(['email' => $email])->willReturn([]);
 
-        $eventRepository = $this->createMock(EventRepository::class);
+        $eventRepository = $this->createMock(ProfileRepository::class);
         $eventRepository->expects($this->never())->method('save');
 
         $service = new EventAddService($eventRepository, $userRepository);

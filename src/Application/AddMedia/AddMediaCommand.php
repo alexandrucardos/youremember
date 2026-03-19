@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Application\AddMedia;
 
@@ -15,9 +15,8 @@ class AddMediaCommand
      */
     public function __construct(
         public readonly OrderIdValueObject $orderIdValueObject,
-        public readonly array              $files,
-        public readonly EmailValueObject   $userEmail
-    )
-    {
+        public readonly array $files,
+        public readonly EmailValueObject $userEmail
+    ) {
     }
 }

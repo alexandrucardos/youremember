@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Media;
 
-use App\Entity\Event;
 use App\Entity\Media;
+use App\Entity\Profile;
 use App\Exception\Media\NotFoundException;
-use App\Repository\EventRepository;
 use App\Repository\MediaRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Bucket\BucketProviderInterface;
 use App\Service\Media\MediaService;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +18,7 @@ class MediaServiceTest extends TestCase
 {
     private MediaService $mediaService;
     private MediaRepository $mediaRepository;
-    private EventRepository $eventRepository;
+    private ProfileRepository $eventRepository;
     private BucketProviderInterface $bucketProvider;
 
     public static function buildUrlDataProvider(): array
@@ -31,6 +31,22 @@ class MediaServiceTest extends TestCase
             'prefix with spaces' => [
                 'prefix' => '123/client/photo with spaces.jpg',
                 'expectedUrl' => 'https://test-bucket.s3.eu-west-1.amazonaws.com/123/client/photo with spaces.jpg'
+            ]
+        ];
+    }
+
+    public static function appleExtensionsDataProvider(): array
+    {
+        return [
+            'heic file gets jpeg extension' => [
+                'mimeType' => 'image/heic',
+                'originalFilename' => 'photo.heic',
+                'expectedKey' => '200/client/photo.heic.jpeg'
+            ],
+            'heif file gets jpeg extension' => [
+                'mimeType' => 'image/heif',
+                'originalFilename' => 'photo.heif',
+                'expectedKey' => '200/client/photo.heif.jpeg'
             ]
         ];
     }
@@ -55,7 +71,7 @@ class MediaServiceTest extends TestCase
 
     public function testUploadMultipleSucceedsWithSingleVideoFile(): void
     {
-        $event = new Event();
+        $event = new Profile();
         $orderId = 123;
         $tempFile = $this->createTempFile('video content');
 
@@ -95,17 +111,9 @@ class MediaServiceTest extends TestCase
         unlink($tempFile);
     }
 
-    private function createTempFile(string $content): string
-    {
-        $tempFile = tempnam(sys_get_temp_dir(), 'test_');
-        file_put_contents($tempFile, $content);
-
-        return $tempFile;
-    }
-
     public function testUploadMultipleSucceedsWithCustomFolder(): void
     {
-        $event = new Event();
+        $event = new Profile();
         $orderId = 456;
         $customHash = 'guest-hash-123';
         $tempFile = $this->createTempFile('file content');
@@ -144,7 +152,7 @@ class MediaServiceTest extends TestCase
 
     public function testUploadMultipleSucceedsWithMultipleFiles(): void
     {
-        $event = new Event();
+        $event = new Profile();
         $orderId = 789;
         $tempFile1 = $this->createTempFile('content1');
         $tempFile2 = $this->createTempFile('content2');
@@ -178,7 +186,7 @@ class MediaServiceTest extends TestCase
 
     public function testUploadMultipleWithImageCreatesMainAndThumbnail(): void
     {
-        $event = new Event();
+        $event = new Profile();
         $orderId = 100;
         $tempFile = $this->createTempImageFile(400, 300);
 
@@ -216,19 +224,6 @@ class MediaServiceTest extends TestCase
         unlink($tempFile);
     }
 
-    private function createTempImageFile(int $width, int $height): string
-    {
-        $image = imagecreatetruecolor($width, $height);
-        $white = imagecolorallocate($image, 255, 255, 255);
-        imagefill($image, 0, 0, $white);
-
-        $tempFile = tempnam(sys_get_temp_dir(), 'test_image_') . '.jpg';
-        imagejpeg($image, $tempFile, 90);
-        imagedestroy($image);
-
-        return $tempFile;
-    }
-
     /**
      * @dataProvider appleExtensionsDataProvider
      * @requires extension imagick
@@ -238,7 +233,7 @@ class MediaServiceTest extends TestCase
         string $originalFilename,
         string $expectedKey
     ): void {
-        $event = new Event();
+        $event = new Profile();
         $orderId = 200;
         $tempFile = $this->createTempImageFile(400, 300);
 
@@ -267,22 +262,6 @@ class MediaServiceTest extends TestCase
         unlink($tempFile);
     }
 
-    public static function appleExtensionsDataProvider(): array
-    {
-        return [
-            'heic file gets jpeg extension' => [
-                'mimeType' => 'image/heic',
-                'originalFilename' => 'photo.heic',
-                'expectedKey' => '200/client/photo.heic.jpeg'
-            ],
-            'heif file gets jpeg extension' => [
-                'mimeType' => 'image/heif',
-                'originalFilename' => 'photo.heif',
-                'expectedKey' => '200/client/photo.heif.jpeg'
-            ]
-        ];
-    }
-
     public function testAppleExtensionsConstantContainsExpectedMimeTypes(): void
     {
         $this->assertContains('image/heic', MediaService::APPLE_EXTENSIONS);
@@ -303,7 +282,7 @@ class MediaServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->bucketProvider = $this->createMock(BucketProviderInterface::class);
-        $this->eventRepository = $this->createMock(EventRepository::class);
+        $this->eventRepository = $this->createMock(ProfileRepository::class);
         $this->mediaRepository = $this->createMock(MediaRepository::class);
 
         $this->mediaService = new MediaService(
@@ -313,5 +292,26 @@ class MediaServiceTest extends TestCase
             'test-bucket',
             'eu-west-1'
         );
+    }
+
+    private function createTempFile(string $content): string
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_');
+        file_put_contents($tempFile, $content);
+
+        return $tempFile;
+    }
+
+    private function createTempImageFile(int $width, int $height): string
+    {
+        $image = imagecreatetruecolor($width, $height);
+        $white = imagecolorallocate($image, 255, 255, 255);
+        imagefill($image, 0, 0, $white);
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_image_') . '.jpg';
+        imagejpeg($image, $tempFile, 90);
+        imagedestroy($image);
+
+        return $tempFile;
     }
 }

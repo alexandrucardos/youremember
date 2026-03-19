@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\API\V2;
 
@@ -31,10 +31,9 @@ final class MediaMultipartController extends AbstractController
 
     #[Route('/initiate/order_id/{order_id}', name: self::NAME_MEDIA_GUEST_MULTIPART_INITIATE, methods: ['POST'])]
     public function guestMultipartInitiate(
-        Request                    $request,
+        Request $request,
         InitiateMediaUploadHandler $initiateMediaUploadHandler
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
         $filename = $data['filename'] ?? null;
         $mimeType = $data['mimeType'] ?? null;
@@ -57,10 +56,9 @@ final class MediaMultipartController extends AbstractController
 
     #[Route('/part/orderId/{order_id}', name: self::NAME_MEDIA_GUEST_MULTIPART_PART, methods: ['POST'])]
     public function guestMultipartPart(
-        Request             $request,
+        Request $request,
         MediaPresignService $mediaPresignService
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $hashHeader = $request->headers->get('hash');
 
         if (!$hashHeader) {
@@ -76,19 +74,18 @@ final class MediaMultipartController extends AbstractController
             return $this->json(['error' => 'key, uploadId and partNumber are required'], Response::HTTP_BAD_REQUEST);
         }
 
-        $presignedUrl = $mediaPresignService->getPresignedPartUrl($key, $uploadId, (int)$partNumber);
+        $presignedUrl = $mediaPresignService->getPresignedPartUrl($key, $uploadId, (int) $partNumber);
 
         return $this->json(['presignedUrl' => $presignedUrl]);
     }
 
     #[Route('/complete/eventUuid/{uuid}', name: self::NAME_MEDIA_GUEST_MULTIPART_COMPLETE, methods: ['POST'])]
     public function guestMultipartComplete(
-        Request             $request,
+        Request $request,
         MediaConfirmService $mediaConfirmService,
-        MediaCountService   $mediaCountService,
-        EventFetchService   $eventFetchService
-    ): JsonResponse
-    {
+        MediaCountService $mediaCountService,
+        EventFetchService $eventFetchService
+    ): JsonResponse {
         $hashHeader = $request->headers->get('hash');
         if (!$hashHeader) {
             return $this->json(['error' => 'Missing hash header'], Response::HTTP_BAD_REQUEST);
@@ -120,7 +117,7 @@ final class MediaMultipartController extends AbstractController
             $uploadId,
             $filename,
             $mimeType,
-            (int)$fileSize,
+            (int) $fileSize,
             $hash->value,
             $parts
         );
@@ -130,10 +127,9 @@ final class MediaMultipartController extends AbstractController
 
     #[Route('/abort/eventUuid/{uuid}', name: self::NAME_MEDIA_GUEST_MULTIPART_ABORT, methods: ['DELETE'])]
     public function guestMultipartAbort(
-        Request             $request,
+        Request $request,
         MediaPresignService $mediaPresignService
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $hashHeader = $request->headers->get('hash');
         if (!$hashHeader) {
             return $this->json(['error' => 'Missing hash header'], Response::HTTP_BAD_REQUEST);

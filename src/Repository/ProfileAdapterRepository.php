@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -9,9 +9,9 @@ use App\Application\ListEventInformation\ProfileViewModel;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Entity\Event;
 use App\Entity\Feedback;
 use App\Entity\ImageArchive;
+use App\Entity\Profile;
 use App\Entity\User;
 use App\Service\Bucket\BucketProviderInterface;
 use App\Service\Event\EventMediaFetchService;
@@ -29,20 +29,19 @@ use App\ValueObject\UuidValueObject;
 class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
     public function __construct(
-        private readonly EventRepository         $eventRepository,
-        private readonly FeedbackRepository      $feedbackRepository,
-        private readonly ImageArchiveRepository  $imageArchiveRepository,
-        private readonly UserRepository          $userRepository,
-        private readonly MediaService            $mediaService,
-        private readonly MediaCountService       $mediaCountService,
-        private readonly MediaDeleteService      $mediaDeleteService,
-        private readonly EventUpdateService      $eventUpdateService,
-        private readonly EventMediaFetchService  $eventMediaFetchService,
+        private readonly ProfileRepository $eventRepository,
+        private readonly FeedbackRepository $feedbackRepository,
+        private readonly ImageArchiveRepository $imageArchiveRepository,
+        private readonly UserRepository $userRepository,
+        private readonly MediaService $mediaService,
+        private readonly MediaCountService $mediaCountService,
+        private readonly MediaDeleteService $mediaDeleteService,
+        private readonly EventUpdateService $eventUpdateService,
+        private readonly EventMediaFetchService $eventMediaFetchService,
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly MediaRepository         $mediaRepository,
-        private readonly MediaPresignService     $mediaPresignService
-    )
-    {
+        private readonly MediaRepository $mediaRepository,
+        private readonly MediaPresignService $mediaPresignService
+    ) {
     }
 
     /**
@@ -137,7 +136,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
             $this->userRepository->save($user);
         }
 
-        $event = (new Event())
+        $event = (new Profile())
             ->setStatus($profileEntity->getStatus())
             ->setUuid($profileEntity->profileUuidValueObject->value)
             ->setOrderId($profileEntity->getOrderId()->value)
@@ -162,10 +161,9 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int           $maxFileSizeBytes,
-        int           $maxTotalDemoSizeBytes
-    ): void
-    {
+        int $maxFileSizeBytes,
+        int $maxTotalDemoSizeBytes
+    ): void {
         $event = $this->getEvent($eventEntity->profileUuidValueObject);
 
         $this->mediaService->uploadMultiple(
@@ -242,7 +240,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         );
     }
 
-    private function getEvent(UuidValueObject $uuidValueObject): Event
+    private function getEvent(UuidValueObject $uuidValueObject): Profile
     {
         $event = $this->eventRepository->findOneBy([
             'uuid' => $uuidValueObject->value

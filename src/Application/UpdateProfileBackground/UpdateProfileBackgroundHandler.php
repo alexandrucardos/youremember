@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Application\UpdateProfileBackground;
 
@@ -13,8 +13,7 @@ class UpdateProfileBackgroundHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    )
-    {
+    ) {
     }
 
     public function __invoke(UpdateProfileBackgroundCommand $command): void
@@ -30,9 +29,7 @@ class UpdateProfileBackgroundHandler
 
         $eventEntity = new ProfileEntity(new UuidValueObject($uuid));
 
-        $eventEntity
-            ->setOrderId($command->orderIdValueObject)
-            ->setBackgroundFile($command->backgroundFile);
+        $eventEntity->setOrderId($command->orderIdValueObject)->setBackgroundFile($command->backgroundFile);
 
         $this->eventRepository->updateBackgroundFile($eventEntity);
     }

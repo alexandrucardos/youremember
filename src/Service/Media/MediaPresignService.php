@@ -5,14 +5,14 @@ declare(strict_types = 1);
 namespace App\Service\Media;
 
 use App\Exception\Media\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Bucket\BucketProviderInterface;
 
 class MediaPresignService
 {
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly EventRepository $eventRepository
+        private readonly ProfileRepository $eventRepository
     ) {
     }
 

@@ -4,19 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
-use App\Entity\Event;
+use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
-use App\Repository\EventRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Event\EventUpdateService;
+use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventUpdateServiceTest extends TestCase
 {
     private EventUpdateService $eventUpdateService;
-    private EventRepository $eventRepository;
+    private ProfileRepository $eventRepository;
 
     public static function successfulUpdateNameDataProvider(): array
     {
@@ -46,7 +46,7 @@ class EventUpdateServiceTest extends TestCase
         string $newName,
         string $font = null
     ): void {
-        $event = new Event();
+        $event = new Profile();
         $event->setName('Old Name');
 
         $this->eventRepository
@@ -94,7 +94,7 @@ class EventUpdateServiceTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->eventRepository = $this->createMock(EventRepository::class);
+        $this->eventRepository = $this->createMock(ProfileRepository::class);
 
         $this->eventUpdateService = new EventUpdateService($this->eventRepository);
     }

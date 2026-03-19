@@ -6,15 +6,15 @@ namespace App\Service\Media;
 
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
-use App\Repository\EventRepository;
 use App\Repository\MediaRepository;
+use App\Repository\ProfileRepository;
 use App\Service\Bucket\BucketProviderInterface;
 
 class MediaConfirmService
 {
     public function __construct(
         private readonly MediaRepository $mediaRepository,
-        private readonly EventRepository $eventRepository,
+        private readonly ProfileRepository $eventRepository,
         private readonly BucketProviderInterface $bucketProvider
     ) {
     }

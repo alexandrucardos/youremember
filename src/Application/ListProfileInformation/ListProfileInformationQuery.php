@@ -8,7 +8,6 @@ class ListProfileInformationQuery
 {
     public function __construct(
         public readonly OrderIdValueObject $orderId
-    )
-    {
+    ) {
     }
 }

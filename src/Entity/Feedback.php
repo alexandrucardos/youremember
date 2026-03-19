@@ -18,7 +18,7 @@ class Feedback
 
     #[ORM\ManyToOne(inversedBy: 'feedbacks')]
     #[ORM\JoinColumn(nullable: false)]
-    private Event $event;
+    private Profile $event;
 
     #[ORM\Column(type: Types::TEXT)]
     private string $feedback;
@@ -31,12 +31,12 @@ class Feedback
         return $this->id;
     }
 
-    public function getEvent(): Event
+    public function getEvent(): Profile
     {
         return $this->event;
     }
 
-    public function setEvent(Event $event): static
+    public function setEvent(Profile $event): static
     {
         $this->event = $event;
 

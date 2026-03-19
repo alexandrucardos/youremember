@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\API\V2;
 
@@ -24,10 +24,9 @@ final class MediaDeleteController extends AbstractController
 
     #[Route('/orderId/{order_id}', name: self::NAME_MEDIA_DELETE, methods: ['DELETE'])]
     public function guestDelete(
-        Request            $request,
+        Request $request,
         DeleteMediaHandler $deleteMediaHandler
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
@@ -42,7 +41,6 @@ final class MediaDeleteController extends AbstractController
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             filePaths: $urls,
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL))
-
         );
 
         $deleteMediaHandler($deleteMediaCommand);

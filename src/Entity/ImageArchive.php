@@ -17,7 +17,7 @@ class ImageArchive
 
     #[ORM\ManyToOne(inversedBy: 'imageArchives')]
     #[ORM\JoinColumn(nullable: false)]
-    private Event $event;
+    private Profile $event;
 
     #[ORM\Column(length: 255)]
     private string $email;
@@ -30,12 +30,12 @@ class ImageArchive
         return $this->id;
     }
 
-    public function getEvent(): Event
+    public function getEvent(): Profile
     {
         return $this->event;
     }
 
-    public function setEvent(Event $event): static
+    public function setEvent(Profile $event): static
     {
         $this->event = $event;
 

@@ -30,8 +30,8 @@ class User
         columnDefinition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
     )]
     private ?DateTimeImmutable $modified_at = null;
-    /** @var Collection<int, Event> */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Event::class)]
+    /** @var Collection<int, Profile> */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Profile::class)]
     private Collection $events;
 
     public function __construct()
@@ -92,13 +92,13 @@ class User
         return $this;
     }
 
-    /** @return Collection<int, Event> */
+    /** @return Collection<int, Profile> */
     public function getEvents(): Collection
     {
         return $this->events;
     }
 
-    public function addEvent(Event $event): static
+    public function addEvent(Profile $event): static
     {
         if (!$this->events->contains($event)) {
             $this->events->add($event);
@@ -108,7 +108,7 @@ class User
         return $this;
     }
 
-    public function removeEvent(Event $event): static
+    public function removeEvent(Profile $event): static
     {
         $this->events->removeElement($event);
 

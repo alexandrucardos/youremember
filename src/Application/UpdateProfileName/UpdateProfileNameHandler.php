@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Application\UpdateProfileName;
 
@@ -13,8 +13,7 @@ class UpdateProfileNameHandler
 {
     public function __construct(
         private readonly ProfileRepositoryInterface $eventRepository
-    )
-    {
+    ) {
     }
 
     public function __invoke(UpdateProfileNameCommand $command): void
@@ -28,9 +27,7 @@ class UpdateProfileNameHandler
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(
-            profileUuidValueObject: new UuidValueObject($profileUuid),
-        );
+        $eventEntity = new ProfileEntity(profileUuidValueObject: new UuidValueObject($profileUuid));
 
         $eventEntity
             ->setProfileName($command->eventNameValueObject)
