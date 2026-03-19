@@ -1,0 +1,14 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        driver: 'pdo_sqlite'
+        path: '%kernel.project_dir%/var/test.db'
+
+        # SQLite-specific configuration
+        options:
+            userDefinedFunctions:
+                # Add any custom SQL functions if needed
+
+    orm:
+        auto_generate_proxy_classes: true
+        enable_lazy_ghost_objects: true

@@ -14,15 +14,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/update/event/profile-picture')]
-final class EventUpdateProfilePictureController extends AbstractController
+#[Route('/api/v2/update/profile/profile-picture')]
+final class ProfileUpdateProfilePictureController extends AbstractController
 {
-    public const NAME_EVENT_PROFILE_PICTURE_UPDATE = 'api_event_profile_picture_update';
+    public const NAME_PROFILE_PROFILE_PICTURE_UPDATE = 'api_profile_profile_picture_update';
 
-    #[Route('/orderId/{order_id}', name: self::NAME_EVENT_PROFILE_PICTURE_UPDATE, methods: ['POST'])]
+    #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_PROFILE_PICTURE_UPDATE, methods: ['POST'])]
     public function update(
         Request $request,
-        UpdateProfilePictureHandler $updateEventProfilePictureHandler
+        UpdateProfilePictureHandler $updateProfilePictureHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -30,13 +30,13 @@ final class EventUpdateProfilePictureController extends AbstractController
             throw new AccessDeniedHttpException('Admins role missing');
         }
 
-        $updateEventProfilePictureCommand = new UpdateProfilePictureCommand(
+        $updateProfilePictureCommand = new UpdateProfilePictureCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
             profilePictureFile: $request->files->get('file', [])
         );
 
-        $updateEventProfilePictureHandler($updateEventProfilePictureCommand);
+        $updateProfilePictureHandler($updateProfilePictureCommand);
 
         return $this->json([]);
     }

@@ -1,3 +1,7 @@
 services:
     _defaults:
         public: true
+
+    App\EventListener\SQLiteTimestampListener:
+        tags:
+            - { name: doctrine.event_listener, event: postGenerateSchema }
