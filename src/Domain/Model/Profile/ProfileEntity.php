@@ -16,7 +16,6 @@ use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\Domain\Model\User\UserEntity;
 use App\Domain\ValueObject\EventStartDateValueObject;
-use App\Domain\ValueObject\FeedbackValueObject;
 use App\ValueObject\DateValueObject;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\ObituaryValueObject;
