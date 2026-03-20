@@ -47,5 +47,5 @@ interface ProfileRepositoryInterface
 
     public function fetchMultipartInitData(ProfileEntity $eventEntity): array;
 
-    public function verifyExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
+    public function getExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
 }

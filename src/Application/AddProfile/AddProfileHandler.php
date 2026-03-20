@@ -19,7 +19,7 @@ class AddProfileHandler
 
     public function __invoke(AddProfileCommand $command): void
     {
-        $existingProfileId = $this->profileRepository->verifyExistingProfileId($command->profileIdValueObject);
+        $existingProfileId = $this->profileRepository->getExistingProfileId($command->profileIdValueObject);
 
         if ($existingProfileId !== null) {
             throw new ProfileIdExistsException("Profile id :{$existingProfileId} already exists!");

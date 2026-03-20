@@ -111,7 +111,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         }
 
         $event = (new Profile())
-            ->setUuid($profileEntity->profileIdValueObject->value)
+            ->setExternalId($profileEntity->profileIdValueObject->value)
             ->setOrderId($profileEntity->getOrderId()->value)
             ->setNameFont($profileEntity->getProfileNameFont()->value)
             ->setUser($user);
@@ -191,9 +191,13 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         );
     }
 
-    public function verifyExistingProfileId(): ?int
+    public function getExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int
     {
-        // TODO: Implement getLastProfileId() method.
+        $profile = $this->profileRepository->findOneBy([
+            'external_id' => $profileIdValueObject->value
+        ]);
+
+        return $profile ? $profile->getExternalId() : null;
     }
 
     private function getEvent(ProfileIdValueObject $uuidValueObject): Profile
