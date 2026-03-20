@@ -7,9 +7,12 @@ namespace App\Tests\unit\Domain\Model\Event;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\Exception\MissingFiles;
 use App\Domain\Model\User\UserEntity;
+use App\Domain\Model\Profile\Message\DateInPastException;
 use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
+use App\ValueObject\DateValueObject;
 use App\ValueObject\EmailValueObject;
+use App\ValueObject\ObituaryValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
 use App\ValueObject\OrderIdValueObject;
@@ -186,6 +189,105 @@ class EventEntityTest extends TestCase
         $this->expectException(MissingFiles::class);
 
         $this->buildEntity()->addMediaPathsForDeletion(paths: []);
+    }
+
+    public function testSetAndGetBornAt(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $bornDate = new DateValueObject(new \DateTimeImmutable('1990-01-01'));
+
+        $result = $entity->setBornAt($bornDate);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($bornDate, $entity->getBornAt());
+    }
+
+    public function testSetBornAtThrowsExceptionWhenDateInFuture(): void
+    {
+        $this->expectException(DateInPastException::class);
+        $this->expectExceptionMessage('Born date must be in the past');
+
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
+
+        $entity->setBornAt($futureDate);
+    }
+
+    public function testSetAndGetDepartedAt(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $departedDate = new DateValueObject(new \DateTimeImmutable('2020-12-31'));
+
+        $result = $entity->setDepartedAt($departedDate);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($departedDate, $entity->getDepartedAt());
+    }
+
+    public function testSetDepartedAtThrowsExceptionWhenDateInFuture(): void
+    {
+        $this->expectException(DateInPastException::class);
+        $this->expectExceptionMessage('Deceased date must be in the past');
+
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
+
+        $entity->setDepartedAt($futureDate);
+    }
+
+    public function testSetAndGetObituary(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $obituary = new ObituaryValueObject('In loving memory...');
+
+        $result = $entity->setObituary($obituary);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($obituary, $entity->getObituary());
+    }
+
+    public function testSetAndGetBackgroundFile(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $backgroundFile = $this->createMock(UploadedFile::class);
+
+        $result = $entity->setBackgroundFile($backgroundFile);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($backgroundFile, $entity->getBackground());
+    }
+
+    public function testSetAndGetProfilePictureFile(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $profilePicture = $this->createMock(UploadedFile::class);
+
+        $result = $entity->setProfilePictureFile($profilePicture);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($profilePicture, $entity->getProfilePicture());
+    }
+
+    public function testSetAndGetMultipartFilename(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $filename = 'video.mp4';
+
+        $result = $entity->setMultipartFilename($filename);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($filename, $entity->getMultipartFilename());
+    }
+
+    public function testSetAndGetMultipartMimeType(): void
+    {
+        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $mimeType = 'video/mp4';
+
+        $result = $entity->setMultipartMimeType($mimeType);
+
+        $this->assertSame($entity, $result);
+        $this->assertSame($mimeType, $entity->getMultipartMimeType());
     }
 
     private function buildEntity(): ProfileEntity
