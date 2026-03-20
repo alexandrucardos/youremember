@@ -30,3 +30,6 @@ clean:
 	rm -f $(ZIP_NAME)
 
 .PHONY: all install zip clean
+
+test-coverage:
+	XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html var/tests-coverage
