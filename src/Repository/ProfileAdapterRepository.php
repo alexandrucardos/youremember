@@ -84,8 +84,8 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
             eventName: $event->getName(),
             eventNameFont: new ProfileNameFontValueObject($event->getNameFont()),
             media: new MediaViewModel(
-                backgroundPictureUrl: $eventDataValueObject->backgroundPictureUrl,
-                picturesUrls: $eventDataValueObject->pictures
+                backgroundPictureUrl: $eventDataValueObject['backgroundPictureUrl'],
+                picturesUrls: $eventDataValueObject['pictures']
             )
         );
     }
@@ -138,11 +138,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
     ): void {
         $event = $this->getEvent($eventEntity->profileUuidValueObject);
 
-        $this->mediaService->uploadMultiple(
-            orderId: $event->getOrderId(),
-            files: $eventEntity->getMediaFiles(),
-            folder: $eventEntity->getMediaUserIdentifier()->value
-        );
+        $this->mediaService->uploadMultiple(orderId: $event->getOrderId(), files: $eventEntity->getMediaFiles());
 
         //todo maybe add a lock on event
 
@@ -191,8 +187,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         return $this->mediaPresignService->initiateMultipartUpload(
             orderId: $eventEntity->getOrderId()->value,
             filename: $eventEntity->getMultipartFilename(),
-            mimeType: $eventEntity->getMultipartMimeType(),
-            folder: $eventEntity->getMediaUserIdentifier()->value
+            mimeType: $eventEntity->getMultipartMimeType()
         );
     }
 

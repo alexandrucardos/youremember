@@ -110,9 +110,9 @@ final class MediaMultipartController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $mediaCountService->incrementByOrderId($eventFetchVO->orderId, 1);
+        $mediaCountService->incrementByOrderId($eventFetchVO['orderId'], 1);
         $mediaConfirmService->completeMultipartUpload(
-            $eventFetchVO->orderId,
+            $eventFetchVO['orderId'],
             $key,
             $uploadId,
             $filename,

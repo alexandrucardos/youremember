@@ -37,7 +37,7 @@ class MediaPresignService
     /**
      * @return array{key: string, uploadId: string}
      */
-    public function initiateMultipartUpload(int $orderId, string $filename, string $mimeType, string $folder): array
+    public function initiateMultipartUpload(int $orderId, string $filename, string $mimeType): array
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
@@ -45,7 +45,7 @@ class MediaPresignService
             throw new NotFoundException('Event not found for order: ' . $orderId);
         }
 
-        $key = sprintf('%d/%s/%s', $orderId, $folder, $filename);
+        $key = sprintf('%d/%s', $orderId, $filename);
         $uploadId = $this->bucketProvider->createMultipartUpload($key, $mimeType);
 
         return ['key' => $key, 'uploadId' => $uploadId];

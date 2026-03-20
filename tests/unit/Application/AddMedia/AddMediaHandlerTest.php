@@ -147,8 +147,7 @@ class AddMediaHandlerTest extends TestCase
                 $this->callback(
                     static fn(ProfileEntity $entity): bool => $entity->profileUuidValueObject->value === self::UUID
                 ),
-                AddMediaHandler::MAX_IMAGE_SIZE_BYTES,
-                AddMediaHandler::MAX_TOTAL_DEMO_SIZE_BYTES
+                AddMediaHandler::MAX_IMAGE_SIZE_BYTES
             );
 
         ( $this->handler )($this->buildCommand($files));

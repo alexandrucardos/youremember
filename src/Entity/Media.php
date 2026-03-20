@@ -27,9 +27,6 @@ class Media
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $thumbnail_path = null;
 
-    #[ORM\Column(length: 50)]
-    private string $uploader_hash;
-
     #[ORM\Column(length: 20)]
     private string $file_type;
 
@@ -91,18 +88,6 @@ class Media
     public function setThumbnailPath(?string $thumbnail_path): static
     {
         $this->thumbnail_path = $thumbnail_path;
-
-        return $this;
-    }
-
-    public function getUploaderHash(): string
-    {
-        return $this->uploader_hash;
-    }
-
-    public function setUploaderHash(string $uploader_hash): static
-    {
-        $this->uploader_hash = $uploader_hash;
 
         return $this;
     }

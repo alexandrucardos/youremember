@@ -7,7 +7,6 @@ namespace App\Tests\unit\Service\Event;
 use App\Repository\MediaRepository;
 use App\Service\Event\EventMediaFetchService;
 use App\Service\Media\MediaService;
-use App\ValueObject\Event\EventFetchValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventDataServiceTest extends TestCase
@@ -26,13 +25,13 @@ class EventDataServiceTest extends TestCase
             'https://example-bucket.s3.eu-west-1.amazonaws.com/12345/client/photo2.jpg'
         ];
 
-        $eventFetchDto = new EventFetchValueObject(
-            uuid: $eventUuid,
-            name: 'Test Event',
-            nameFont: 'Arial',
-            orderId: $orderId,
-            backgroundImage: $backgroundImage
-        );
+        $eventFetchData = [
+            'uuid' => $eventUuid,
+            'name' => 'Test Event',
+            'nameFont' => 'Arial',
+            'orderId' => $orderId,
+            'backgroundImage' => $backgroundImage
+        ];
 
         $this->mediaRepository
             ->expects($this->once())
@@ -51,10 +50,10 @@ class EventDataServiceTest extends TestCase
                 '123/client/photo2.jpg' => $picturesUrls[1]
             });
 
-        $result = $this->eventDataService->fetch($eventFetchDto);
+        $result = $this->eventDataService->fetch($eventFetchData);
 
-        $this->assertEquals($backgroundImage, $result->backgroundPictureUrl);
-        $this->assertEquals($picturesUrls, $result->pictures);
+        $this->assertEquals($backgroundImage, $result['backgroundPictureUrl']);
+        $this->assertEquals($picturesUrls, $result['pictures']);
     }
 
     public function testFetchWithNullBackgroundImage(): void
@@ -67,13 +66,13 @@ class EventDataServiceTest extends TestCase
             'https://example-bucket.s3.eu-west-1.amazonaws.com/123/client/photo2.jpg'
         ];
 
-        $eventFetchDto = new EventFetchValueObject(
-            uuid: $eventUuid,
-            name: 'Test Event',
-            nameFont: 'Arial',
-            orderId: $orderId,
-            backgroundImage: null
-        );
+        $eventFetchData = [
+            'uuid' => $eventUuid,
+            'name' => 'Test Event',
+            'nameFont' => 'Arial',
+            'orderId' => $orderId,
+            'backgroundImage' => null
+        ];
 
         $this->mediaRepository
             ->expects($this->once())
@@ -94,10 +93,10 @@ class EventDataServiceTest extends TestCase
                 '123/client/photo2.jpg' => $picturesUrls[1]
             });
 
-        $result = $this->eventDataService->fetch($eventFetchDto);
+        $result = $this->eventDataService->fetch($eventFetchData);
 
-        $this->assertEquals($backgroundImageUrl, $result->backgroundPictureUrl);
-        $this->assertEquals($picturesUrls, $result->pictures);
+        $this->assertEquals($backgroundImageUrl, $result['backgroundPictureUrl']);
+        $this->assertEquals($picturesUrls, $result['pictures']);
     }
 
     public function testFetchWithEmptyPicturesArray(): void
@@ -106,13 +105,13 @@ class EventDataServiceTest extends TestCase
         $orderId = 123;
         $backgroundImage = 'https://example.com/background.jpg';
 
-        $eventFetchDto = new EventFetchValueObject(
-            uuid: $eventUuid,
-            name: 'Test Event',
-            nameFont: 'Arial',
-            orderId: $orderId,
-            backgroundImage: $backgroundImage
-        );
+        $eventFetchData = [
+            'uuid' => $eventUuid,
+            'name' => 'Test Event',
+            'nameFont' => 'Arial',
+            'orderId' => $orderId,
+            'backgroundImage' => $backgroundImage
+        ];
 
         $this->mediaRepository
             ->expects($this->once())
@@ -120,10 +119,10 @@ class EventDataServiceTest extends TestCase
             ->with($orderId)
             ->willReturn([]);
 
-        $result = $this->eventDataService->fetch($eventFetchDto);
+        $result = $this->eventDataService->fetch($eventFetchData);
 
-        $this->assertEquals($backgroundImage, $result->backgroundPictureUrl);
-        $this->assertEmpty($result->pictures);
+        $this->assertEquals($backgroundImage, $result['backgroundPictureUrl']);
+        $this->assertEmpty($result['pictures']);
     }
 
     protected function setUp(): void

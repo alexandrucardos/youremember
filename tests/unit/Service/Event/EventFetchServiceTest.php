@@ -9,7 +9,6 @@ use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaService;
-use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
@@ -56,10 +55,10 @@ final class EventFetchServiceTest extends TestCase
 
         $result = $service->fetchByOrderId(new OrderIdValueObject($orderId));
 
-        self::assertInstanceOf(EventFetchValueObject::class, $result);
-        self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result->uuid);
-        self::assertSame('Test Event', $result->name);
-        self::assertSame($orderId, $result->orderId);
-        self::assertSame($expectedBackgroundUrl, $result->backgroundImage);
+        self::assertIsArray($result);
+        self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result['uuid']);
+        self::assertSame('Test Event', $result['name']);
+        self::assertSame($orderId, $result['orderId']);
+        self::assertSame($expectedBackgroundUrl, $result['backgroundImage']);
     }
 }

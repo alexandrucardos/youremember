@@ -38,10 +38,6 @@ final class AddMediaHandler
 
         $eventEntity->setMediaFiles($command->files, $maxItems, $existingItems, $uniqueMimeTypes);
 
-        $this->eventRepository->saveMediaFiles(
-            $eventEntity,
-            self::MAX_IMAGE_SIZE_BYTES,
-            self::MAX_TOTAL_DEMO_SIZE_BYTES
-        );
+        $this->eventRepository->saveMediaFiles($eventEntity, self::MAX_IMAGE_SIZE_BYTES);
     }
 }

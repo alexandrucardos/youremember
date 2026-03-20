@@ -6,7 +6,8 @@ use App\Entity\Profile;
 use App\Exception\User\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
-use App\ValueObject\Event\EventAddValueObject;
+use App\ValueObject\EmailValueObject;
+use App\ValueObject\OrderIdValueObject;
 
 final class EventAddService
 {
@@ -16,9 +17,9 @@ final class EventAddService
     ) {
     }
 
-    public function add(EventAddValueObject $eventAddDto): Profile
+    public function add(EmailValueObject $email, OrderIdValueObject $orderId): Profile
     {
-        $user = $this->userRepository->findBy(['email' => $eventAddDto->email->value]);
+        $user = $this->userRepository->findBy(['email' => $email->value]);
 
         if (empty($user)) {
             throw new NotFoundException('User not found');
@@ -26,7 +27,7 @@ final class EventAddService
 
         $event = (new Profile())
             ->setUuid($this->generateUuid())
-            ->setOrderId($eventAddDto->orderId->value)
+            ->setOrderId($orderId->value)
             ->setUser(reset($user));
 
         $this->eventRepository->save($event);

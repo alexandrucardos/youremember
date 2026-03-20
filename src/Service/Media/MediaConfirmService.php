@@ -19,32 +19,6 @@ class MediaConfirmService
     ) {
     }
 
-    public function confirm(
-        int $orderId,
-        string $key,
-        string $filename,
-        string $mimeType,
-        int $fileSize,
-        string $folder
-    ): void {
-        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
-
-        if ($event === null) {
-            throw new NotFoundException('Event not found for order: ' . $orderId);
-        }
-
-        $media = (new Media())
-            ->setEvent($event)
-            ->setFilePath($key)
-            ->setThumbnailPath(null)
-            ->setUploaderHash($folder)
-            ->setFileType($mimeType)
-            ->setFileSize($fileSize)
-            ->setOriginalFilename($filename);
-
-        $this->mediaRepository->save($media);
-    }
-
     /**
      * @param array<array{PartNumber: int, ETag: string}> $parts
      */
@@ -70,7 +44,6 @@ class MediaConfirmService
             ->setEvent($event)
             ->setFilePath($key)
             ->setThumbnailPath(null)
-            ->setUploaderHash($folder)
             ->setFileType($mimeType)
             ->setFileSize($fileSize)
             ->setOriginalFilename($filename);

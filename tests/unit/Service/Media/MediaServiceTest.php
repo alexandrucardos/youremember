@@ -40,13 +40,11 @@ class MediaServiceTest extends TestCase
         return [
             'heic file gets jpeg extension' => [
                 'mimeType' => 'image/heic',
-                'originalFilename' => 'photo.heic',
-                'expectedKey' => '200/client/photo.heic.jpeg'
+                'originalFilename' => 'photo.heic'
             ],
             'heif file gets jpeg extension' => [
                 'mimeType' => 'image/heif',
-                'originalFilename' => 'photo.heif',
-                'expectedKey' => '200/client/photo.heif.jpeg'
+                'originalFilename' => 'photo.heif'
             ]
         ];
     }
@@ -78,6 +76,7 @@ class MediaServiceTest extends TestCase
         $uploadedFile = $this->createMock(UploadedFile::class);
         $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn('video.mp4');
+        $uploadedFile->method('getClientOriginalExtension')->willReturn('mp4');
         $uploadedFile->method('getMimeType')->willReturn('video/mp4');
         $uploadedFile->method('getPathname')->willReturn($tempFile);
 
@@ -93,8 +92,8 @@ class MediaServiceTest extends TestCase
             ->with($this->callback(
                 static fn(Media $media) => (
                     $media->getEvent() === $event
-                    && $media->getFilePath() === '123/client/video.mp4'
-                    && $media->getUploaderHash() === 'client'
+                    && str_starts_with($media->getFilePath(), '123/')
+                    && str_ends_with($media->getFilePath(), '.mp4')
                     && $media->getFileType() === 'video/mp4'
                     && $media->getOriginalFilename() === 'video.mp4'
                     && $media->getThumbnailPath() === null
@@ -104,7 +103,11 @@ class MediaServiceTest extends TestCase
         $this->bucketProvider
             ->expects($this->once())
             ->method('putObject')
-            ->with('123/client/video.mp4', 'video content', 'video/mp4');
+            ->with(
+                $this->callback(static fn(string $key) => str_starts_with($key, '123/') && str_ends_with($key, '.mp4')),
+                'video content',
+                'video/mp4'
+            );
 
         $this->mediaService->uploadMultiple($orderId, [$uploadedFile]);
 
@@ -115,12 +118,12 @@ class MediaServiceTest extends TestCase
     {
         $event = new Profile();
         $orderId = 456;
-        $customHash = 'guest-hash-123';
         $tempFile = $this->createTempFile('file content');
 
         $uploadedFile = $this->createMock(UploadedFile::class);
         $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn('document.pdf');
+        $uploadedFile->method('getClientOriginalExtension')->willReturn('pdf');
         $uploadedFile->method('getMimeType')->willReturn('application/pdf');
         $uploadedFile->method('getPathname')->willReturn($tempFile);
 
@@ -135,17 +138,20 @@ class MediaServiceTest extends TestCase
             ->method('save')
             ->with($this->callback(
                 static fn(Media $media) => (
-                    $media->getFilePath() === '456/guest-hash-123/document.pdf'
-                    && $media->getUploaderHash() === $customHash
+                    str_starts_with($media->getFilePath(), '456/') && str_ends_with($media->getFilePath(), '.pdf')
                 )
             ));
 
         $this->bucketProvider
             ->expects($this->once())
             ->method('putObject')
-            ->with('456/guest-hash-123/document.pdf', 'file content', 'application/pdf');
+            ->with(
+                $this->callback(static fn(string $key) => str_starts_with($key, '456/') && str_ends_with($key, '.pdf')),
+                'file content',
+                'application/pdf'
+            );
 
-        $this->mediaService->uploadMultiple($orderId, [$uploadedFile], $customHash);
+        $this->mediaService->uploadMultiple($orderId, [$uploadedFile]);
 
         unlink($tempFile);
     }
@@ -160,12 +166,14 @@ class MediaServiceTest extends TestCase
         $uploadedFile1 = $this->createMock(UploadedFile::class);
         $uploadedFile1->method('isValid')->willReturn(true);
         $uploadedFile1->method('getClientOriginalName')->willReturn('file1.txt');
+        $uploadedFile1->method('getClientOriginalExtension')->willReturn('txt');
         $uploadedFile1->method('getMimeType')->willReturn('text/plain');
         $uploadedFile1->method('getPathname')->willReturn($tempFile1);
 
         $uploadedFile2 = $this->createMock(UploadedFile::class);
         $uploadedFile2->method('isValid')->willReturn(true);
         $uploadedFile2->method('getClientOriginalName')->willReturn('file2.txt');
+        $uploadedFile2->method('getClientOriginalExtension')->willReturn('txt');
         $uploadedFile2->method('getMimeType')->willReturn('text/plain');
         $uploadedFile2->method('getPathname')->willReturn($tempFile2);
 
@@ -193,6 +201,7 @@ class MediaServiceTest extends TestCase
         $uploadedFile = $this->createMock(UploadedFile::class);
         $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn('photo.jpg');
+        $uploadedFile->method('getClientOriginalExtension')->willReturn('jpg');
         $uploadedFile->method('getMimeType')->willReturn('image/jpeg');
         $uploadedFile->method('getPathname')->willReturn($tempFile);
 
@@ -206,8 +215,10 @@ class MediaServiceTest extends TestCase
             ->method('save')
             ->with($this->callback(
                 static fn(Media $media) => (
-                    $media->getFilePath() === '100/client/photo.jpg'
-                    && $media->getThumbnailPath() === '100/client/photo_thumb.jpg'
+                    str_starts_with($media->getFilePath(), '100/')
+                    && str_ends_with($media->getFilePath(), '.jpg')
+                    && str_starts_with($media->getThumbnailPath(), '100/')
+                    && str_ends_with($media->getThumbnailPath(), '_thumb.jpg')
                 )
             ));
 
@@ -215,7 +226,8 @@ class MediaServiceTest extends TestCase
             ->expects($this->exactly(2))
             ->method('putObject')
             ->willReturnCallback(function (string $key, string $content, string $mimeType) {
-                $this->assertContains($key, ['100/client/photo.jpg', '100/client/photo_thumb.jpg']);
+                $this->assertTrue(str_starts_with($key, '100/'));
+                $this->assertTrue(str_ends_with($key, '.jpg'));
                 $this->assertSame('image/jpeg', $mimeType);
             });
 
@@ -230,8 +242,7 @@ class MediaServiceTest extends TestCase
      */
     public function testUploadMultipleWithAppleExtensionAppendsJpegToKey(
         string $mimeType,
-        string $originalFilename,
-        string $expectedKey
+        string $originalFilename
     ): void {
         $event = new Profile();
         $orderId = 200;
@@ -240,6 +251,7 @@ class MediaServiceTest extends TestCase
         $uploadedFile = $this->createMock(UploadedFile::class);
         $uploadedFile->method('isValid')->willReturn(true);
         $uploadedFile->method('getClientOriginalName')->willReturn($originalFilename);
+        $uploadedFile->method('getClientOriginalExtension')->willReturn('heic');
         $uploadedFile->method('getMimeType')->willReturn($mimeType);
         $uploadedFile->method('getPathname')->willReturn($tempFile);
 
@@ -252,7 +264,11 @@ class MediaServiceTest extends TestCase
             ->expects($this->once())
             ->method('save')
             ->with($this->callback(
-                static fn(Media $media) => $media->getFilePath() === $expectedKey && $media->getFileType() === $mimeType
+                static fn(Media $media) => (
+                    str_starts_with($media->getFilePath(), '200/')
+                    && str_ends_with($media->getFilePath(), '.jpeg')
+                    && $media->getFileType() === $mimeType
+                )
             ));
 
         $this->bucketProvider->expects($this->atLeastOnce())->method('putObject');

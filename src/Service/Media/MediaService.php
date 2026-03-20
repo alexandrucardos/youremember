@@ -38,8 +38,7 @@ class MediaService
      */
     public function uploadMultiple(
         int $orderId,
-        array $files,
-        string $folder = self::FOLDER_CLIENT
+        array $files
     ): void {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
@@ -50,10 +49,10 @@ class MediaService
             $processedContent = $this->processContent($file);
             $thumbnailContent = $this->createThumbnail($file);
 
-            $key = $this->buildKey($orderId, $folder, $file->getClientOriginalExtension());
+            $key = $this->buildKey($orderId, $file->getClientOriginalExtension());
 
             if (in_array($file->getMimeType(), self::APPLE_EXTENSIONS)) {
-                $key = $this->buildKey($orderId, $folder, self::JPEG_EXTENSION);
+                $key = $this->buildKey($orderId, self::JPEG_EXTENSION);
             }
 
             $thumbnailKey = $thumbnailContent !== null ? $this->buildThumbnailKey($key) : null;
@@ -62,7 +61,6 @@ class MediaService
                 ->setEvent($event)
                 ->setFilePath($key)
                 ->setThumbnailPath($thumbnailKey)
-                ->setUploaderHash($folder)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($processedContent))
                 ->setOriginalFilename($file->getClientOriginalName());
@@ -95,7 +93,6 @@ class MediaService
             $mediaBackground = (new Media())
                 ->setEvent($event)
                 ->setFilePath($key)
-                ->setUploaderHash(ProfileEntity::ADMIN_USER_IDENTIFIER)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))
                 ->setOriginalFilename($file->getClientOriginalName());
@@ -124,7 +121,6 @@ class MediaService
             $mediaProfilePicture = (new Media())
                 ->setEvent($event)
                 ->setFilePath($key)
-                ->setUploaderHash(ProfileEntity::ADMIN_USER_IDENTIFIER)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))
                 ->setOriginalFilename($file->getClientOriginalName());
@@ -311,8 +307,8 @@ class MediaService
         return $rotated === false ? $image : $rotated;
     }
 
-    private function buildKey(int $orderId, string $folder, string $extension): string
+    private function buildKey(int $orderId, string $extension): string
     {
-        return sprintf('%d/%s/%s.%s', $orderId, $folder, Uuid::v4(), $extension);
+        return sprintf('%d/%s.%s', $orderId, Uuid::v4(), $extension);
     }
 }

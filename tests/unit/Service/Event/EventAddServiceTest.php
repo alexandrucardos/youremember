@@ -11,7 +11,6 @@ use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
 use App\Service\Event\EventAddService;
 use App\ValueObject\EmailValueObject;
-use App\ValueObject\Event\EventAddValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
@@ -54,9 +53,7 @@ class EventAddServiceTest extends TestCase
 
         $service = new EventAddService($eventRepository, $userRepository);
 
-        $valueObject = new EventAddValueObject(new EmailValueObject($email), new OrderIdValueObject($orderId));
-
-        $event = $service->add($valueObject);
+        $event = $service->add(new EmailValueObject($email), new OrderIdValueObject($orderId));
 
         $this->assertInstanceOf(Profile::class, $event);
         $this->assertNotNull($event->getUuid());
@@ -78,11 +75,9 @@ class EventAddServiceTest extends TestCase
 
         $service = new EventAddService($eventRepository, $userRepository);
 
-        $valueObject = new EventAddValueObject(new EmailValueObject($email), new OrderIdValueObject($orderId));
-
         $this->expectException(NotFoundException::class);
         $this->expectExceptionMessage('User not found');
 
-        $service->add($valueObject);
+        $service->add(new EmailValueObject($email), new OrderIdValueObject($orderId));
     }
 }

@@ -1,31 +1,19 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\Model\Profile;
 
-use App\Domain\Model\Profile\Exception\GuestUsersCannotDeleteMultipleImagesException;
-use App\Domain\Model\Profile\Exception\MediaFileDeletionNotAllowedException;
 use App\Domain\Model\Profile\Exception\MissingFiles;
-use App\Domain\Model\Profile\Exception\OnlyAdminsCanSetBackgroundsException;
-use App\Domain\Model\Profile\Exception\OrderStatusInvalidException;
 use App\Domain\Model\Profile\Message\DateInPastException;
-use App\Domain\Model\Profile\Message\DateTooSoonException;
-use App\Domain\Model\Profile\Message\ProfileNotValidException;
 use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\Domain\Model\User\UserEntity;
-use App\Domain\ValueObject\EventStartDateValueObject;
 use App\ValueObject\DateValueObject;
-use App\ValueObject\EmailValueObject;
 use App\ValueObject\ObituaryValueObject;
+use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\HashValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\OrderStatusValueObject;
-use App\ValueObject\Status;
-use App\ValueObject\UserRole;
 use App\ValueObject\UuidValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -63,7 +51,8 @@ class ProfileEntity
 
     public function __construct(
         public readonly UuidValueObject $profileUuidValueObject
-    ) {
+    )
+    {
     }
 
     public function addMediaPathsForDeletion(
@@ -91,15 +80,16 @@ class ProfileEntity
 
     public function setMediaFiles(
         array $files,
-        int $maxItems,
-        int $existingItems,
+        int   $maxItems,
+        int   $existingItems,
         array $uniqueMimeTypes
-    ): self {
+    ): self
+    {
         if (empty($files)) {
             throw new MissingFiles('Missing files from request');
         }
 
-        if ($maxItems < ( $existingItems + count($files) )) {
+        if ($maxItems < ($existingItems + count($files))) {
             throw new MaximumProfileItemsReachedException('Maximum number of files reached!');
         }
 
@@ -151,15 +141,20 @@ class ProfileEntity
         return $this;
     }
 
+    public function getProfileNameFont(): ProfileNameFontValueObject
+    {
+        return $this->profileNameFont;
+    }
+
     public function setProfileNameFont(ProfileNameFontValueObject $eventNameFontValueObject): self
     {
         $this->profileNameFont = $eventNameFontValueObject;
         return $this;
     }
 
-    public function getProfileNameFont(): ProfileNameFontValueObject
+    public function getBornAt(): DateValueObject
     {
-        return $this->profileNameFont;
+        return $this->bornAt;
     }
 
     public function setBornAt(DateValueObject $bornAtValueObject): self
@@ -175,9 +170,9 @@ class ProfileEntity
         return $this;
     }
 
-    public function getBornAt(): DateValueObject
+    public function getDepartedAt(): DateValueObject
     {
-        return $this->bornAt;
+        return $this->departedAt;
     }
 
     public function setDepartedAt(DateValueObject $departedAtValueObject): self
@@ -193,20 +188,15 @@ class ProfileEntity
         return $this;
     }
 
-    public function getDepartedAt(): DateValueObject
+    public function getObituary(): ObituaryValueObject
     {
-        return $this->departedAt;
+        return $this->obituary;
     }
 
     public function setObituary(ObituaryValueObject $obituaryValueObject): self
     {
         $this->obituary = $obituaryValueObject;
         return $this;
-    }
-
-    public function getObituary(): ObituaryValueObject
-    {
-        return $this->obituary;
     }
 
     public function setBackgroundFile(UploadedFile $background): self

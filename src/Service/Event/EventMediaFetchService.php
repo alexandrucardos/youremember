@@ -7,8 +7,6 @@ namespace App\Service\Event;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;
-use App\ValueObject\Event\EventDataValueObject;
-use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 
 class EventMediaFetchService
@@ -19,11 +17,11 @@ class EventMediaFetchService
     ) {
     }
 
-    public function fetch(EventFetchValueObject $eventFetchDto): EventDataValueObject
+    public function fetch(array $eventFetchData): array
     {
-        $orderId = $eventFetchDto->orderId;
+        $orderId = $eventFetchData['orderId'];
 
-        $backgroundPictureUrl = $eventFetchDto->backgroundImage;
+        $backgroundPictureUrl = $eventFetchData['backgroundImage'];
 
         if (null === $backgroundPictureUrl) {
             $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(sprintf(
@@ -36,13 +34,16 @@ class EventMediaFetchService
 
         $urls = $this->fetchContentUrlsByOrderId($orderId);
 
-        return new EventDataValueObject(backgroundPictureUrl: $backgroundPictureUrl, pictures: array_filter(
-            $urls,
-            static fn(string $url) => !str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)
-        ));
+        return [
+            'backgroundPictureUrl' => $backgroundPictureUrl,
+            'pictures' => array_filter(
+                $urls,
+                static fn(string $url) => !str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)
+            )
+        ];
     }
 
-    public function fetchForOrderId(OrderIdValueObject $orderIdValueObject): EventDataValueObject
+    public function fetchForOrderId(OrderIdValueObject $orderIdValueObject): array
     {
         $urls = $this->fetchContentUrlsByOrderId($orderIdValueObject->value);
 
@@ -53,10 +54,13 @@ class EventMediaFetchService
             MediaService::FILE_BACKGROUND_NAME
         ));
 
-        return new EventDataValueObject(backgroundPictureUrl: $backgroundPictureUrl, pictures: array_filter(
-            $urls,
-            static fn(string $url) => !str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)
-        ));
+        return [
+            'backgroundPictureUrl' => $backgroundPictureUrl,
+            'pictures' => array_filter(
+                $urls,
+                static fn(string $url) => !str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)
+            )
+        ];
     }
 
     public function fetchContentUrlsByOrderId(int $orderId): array

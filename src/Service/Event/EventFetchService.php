@@ -8,7 +8,6 @@ use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Service\Media\MediaService;
-use App\ValueObject\Event\EventFetchValueObject;
 use App\ValueObject\OrderIdValueObject;
 use App\ValueObject\UuidValueObject;
 
@@ -20,7 +19,7 @@ final class EventFetchService
     ) {
     }
 
-    public function fetchByOrderId(OrderIdValueObject $orderId): EventFetchValueObject
+    public function fetchByOrderId(OrderIdValueObject $orderId): array
     {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId->value]);
 
@@ -35,16 +34,16 @@ final class EventFetchService
             MediaService::FILE_BACKGROUND_NAME
         ));
 
-        return new EventFetchValueObject(
-            uuid: $event->getUuid(),
-            name: $event->getName(),
-            nameFont: $event->getNameFont(),
-            orderId: $event->getOrderId(),
-            backgroundImage: $backgroundPictureUrl
-        );
+        return [
+            'uuid' => $event->getUuid(),
+            'name' => $event->getName(),
+            'nameFont' => $event->getNameFont(),
+            'orderId' => $event->getOrderId(),
+            'backgroundImage' => $backgroundPictureUrl
+        ];
     }
 
-    public function fetchByUuid(UuidValueObject $uuid): EventFetchValueObject
+    public function fetchByUuid(UuidValueObject $uuid): array
     {
         $event = $this->eventRepository->findOneBy(['uuid' => $uuid->value]);
 
@@ -52,12 +51,12 @@ final class EventFetchService
             throw new NotFoundException('Event not found.');
         }
 
-        return new EventFetchValueObject(
-            uuid: $event->getUuid(),
-            name: $event->getName(),
-            nameFont: $event->getNameFont(),
-            orderId: $event->getOrderId(),
-            backgroundImage: null
-        );
+        return [
+            'uuid' => $event->getUuid(),
+            'name' => $event->getName(),
+            'nameFont' => $event->getNameFont(),
+            'orderId' => $event->getOrderId(),
+            'backgroundImage' => null
+        ];
     }
 }
