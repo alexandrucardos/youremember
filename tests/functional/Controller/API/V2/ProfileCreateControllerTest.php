@@ -114,7 +114,7 @@ class ProfileCreateControllerTest extends WebTestCase
 
         self::assertNotNull($profile, 'Profile should be persisted to database');
         self::assertEquals($orderId, $profile->getOrderId());
-        self::assertNotNull($profile->getUuid());
+        self::assertNotNull($profile->getExternalId());
         self::assertEquals('classic', $profile->getNameFont());
         self::assertNotNull($profile->getUser());
         self::assertEquals($clientEmail, $profile->getUser()->getEmail());

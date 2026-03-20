@@ -250,7 +250,7 @@ class MediaMultipartControllerTest extends FunctionalTestBase
 
         $this->client->request(
             'POST',
-            "/api/v2/media/add/multipart/complete/eventUuid/{$profile->getUuid()}",
+            "/api/v2/media/add/multipart/complete/eventUuid/{$profile->getExternalId()}",
             [],
             [],
             [
@@ -279,7 +279,7 @@ class MediaMultipartControllerTest extends FunctionalTestBase
 
         $this->client->request(
             'POST',
-            "/api/v2/media/add/multipart/complete/eventUuid/{$profile->getUuid()}",
+            "/api/v2/media/add/multipart/complete/eventUuid/{$profile->getExternalId()}",
             [],
             [],
             [
@@ -449,7 +449,7 @@ class MediaMultipartControllerTest extends FunctionalTestBase
         // Step 3: Complete multipart upload
         $this->client->request(
             'POST',
-            "/api/v2/media/add/multipart/complete/eventUuid/{$profile->getUuid()}",
+            "/api/v2/media/add/multipart/complete/eventUuid/{$profile->getExternalId()}",
             [],
             [],
             [

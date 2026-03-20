@@ -33,7 +33,6 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         private readonly MediaDeleteService $mediaDeleteService,
         private readonly EventUpdateService $eventUpdateService,
         private readonly EventMediaFetchService $eventMediaFetchService,
-        private readonly MediaRepository $mediaRepository,
         private readonly MediaPresignService $mediaPresignService
     ) {
     }
@@ -49,7 +48,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateProfileDates(ProfileEntity $profileEntity): void
     {
-        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileIdValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['order_id' => $profileEntity->getOrderId()->value]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -62,7 +61,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void
     {
-        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileIdValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['order_id' => $profileEntity->getOrderId()->value]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -77,12 +76,12 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
     {
         $eventDataValueObject = $this->eventMediaFetchService->fetchForOrderId($orderIdValueObject);
 
-        $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return new ProfileViewModel(
-            eventUuid: new ProfileIdValueObject($event ? $event->getUuid() : null),
-            eventName: $event->getName(),
-            eventNameFont: new ProfileNameFontValueObject($event->getNameFont()),
+            eventUuid: new ProfileIdValueObject($profile ? $profile->getExternalId() : null),
+            eventName: $profile->getName(),
+            eventNameFont: new ProfileNameFontValueObject($profile->getNameFont()),
             media: new MediaViewModel(
                 backgroundPictureUrl: $eventDataValueObject['backgroundPictureUrl'],
                 picturesUrls: $eventDataValueObject['pictures']
@@ -92,7 +91,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function getExistingMediaInfo(OrderIdValueObject $orderId): array
     {
-        $event = $this->getEvent($orderId);
+        $event = $this->getProfile($orderId);
 
         return [$event->getMaxMediaCount(), $event->getMediaCount()];
     }
@@ -110,13 +109,13 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
             $this->userRepository->save($user);
         }
 
-        $event = (new Profile())
+        $profile = (new Profile())
             ->setExternalId($profileEntity->profileIdValueObject->value)
             ->setOrderId($profileEntity->getOrderId()->value)
             ->setNameFont($profileEntity->getProfileNameFont()->value)
             ->setUser($user);
 
-        $this->profileRepository->save($event);
+        $this->profileRepository->save($profile);
     }
 
     public function getUniqueMimeTypes(array $uploadedFiles): array
@@ -136,15 +135,15 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         ProfileEntity $eventEntity,
         int $maxFileSizeBytes
     ): void {
-        $event = $this->getEvent($eventEntity->profileIdValueObject);
+        $profile = $this->getProfile($eventEntity->profileIdValueObject);
 
-        $this->mediaService->uploadMultiple(orderId: $event->getOrderId(), files: $eventEntity->getMediaFiles());
+        $this->mediaService->uploadMultiple(orderId: $profile->getOrderId(), files: $eventEntity->getMediaFiles());
 
         //todo maybe add a lock on event
 
-        $event->setMediaCount($event->getMediaCount() + count($eventEntity->getMediaFiles()));
+        $profile->setMediaCount($profile->getMediaCount() + count($eventEntity->getMediaFiles()));
 
-        $this->profileRepository->save($event);
+        $this->profileRepository->save($profile);
     }
 
     public function deleteMediaFiles(ProfileEntity $eventEntity): void
@@ -161,9 +160,9 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         OrderIdValueObject $orderIdValueObject,
         EmailValueObject $emailValueObject
     ): ?string {
-        $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
-        return $event ? $event->getUuid() : null;
+        return $profile ? $profile->getUuid() : null;
     }
 
     public function updateBackgroundFile(ProfileEntity $eventEntity): void
@@ -200,16 +199,16 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         return $profile ? $profile->getExternalId() : null;
     }
 
-    private function getEvent(ProfileIdValueObject $uuidValueObject): Profile
+    private function getProfile(OrderIdValueObject $orderIdValueObject): Profile
     {
-        $event = $this->profileRepository->findOneBy([
-            'uuid' => $uuidValueObject->value
+        $profile = $this->profileRepository->findOneBy([
+            'order_id' => $orderIdValueObject->value
         ]);
 
-        if (!$event) {
+        if (!$profile) {
             throw new ProfileNotFoundException();
         }
 
-        return $event;
+        return $profile;
     }
 }

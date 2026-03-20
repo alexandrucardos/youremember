@@ -36,7 +36,7 @@ class DatabaseTest extends FunctionalTestBase
 
         $profile = new Profile();
         $profile
-            ->setUuid('550e8400-e29b-41d4-a716-446655440000')
+            ->setExternalId(123)
             ->setOrderId(123)
             ->setName('Test Profile')
             ->setNameFont('classic')
@@ -53,7 +53,7 @@ class DatabaseTest extends FunctionalTestBase
 
         self::assertNotNull($retrievedProfile);
         self::assertEquals('Test Profile', $retrievedProfile->getName());
-        self::assertEquals('550e8400-e29b-41d4-a716-446655440000', $retrievedProfile->getUuid());
+        self::assertEquals(123, $retrievedProfile->getExternalId());
         self::assertEquals(Status::VALID, $retrievedProfile->getStatus());
         self::assertEquals('client@example.com', $retrievedProfile->getUser()->getEmail());
     }
@@ -115,7 +115,7 @@ class DatabaseTest extends FunctionalTestBase
 
         $profile1 = new Profile();
         $profile1
-            ->setUuid('550e8400-e29b-41d4-a716-446655440001')
+            ->setExternalId(101)
             ->setOrderId(101)
             ->setName('Profile 1')
             ->setNameFont('classic')
@@ -124,7 +124,7 @@ class DatabaseTest extends FunctionalTestBase
 
         $profile2 = new Profile();
         $profile2
-            ->setUuid('550e8400-e29b-41d4-a716-446655440002')
+            ->setExternalId(102)
             ->setOrderId(102)
             ->setName('Profile 2')
             ->setNameFont('modern')

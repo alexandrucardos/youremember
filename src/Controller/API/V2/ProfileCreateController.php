@@ -9,6 +9,7 @@ use App\Application\AddProfile\AddProfileHandler;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,7 +38,8 @@ final class ProfileCreateController extends AbstractController
 
         $addProfileCommand = new AddProfileCommand(
             orderIdValueObject: new OrderIdValueObject($data['order_id']),
-            emailValueObject: new EmailValueObject($data['client_email'])
+            emailValueObject: new EmailValueObject($data['client_email']),
+            profileIdValueObject: new ProfileIdValueObject($data['order_id'])
         );
 
         $addProfileHandler($addProfileCommand);

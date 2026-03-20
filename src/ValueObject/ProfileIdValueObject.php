@@ -13,7 +13,7 @@ final class ProfileIdValueObject
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Positive]
-    public readonly string $value;
+    public readonly int $value;
 
     public function __construct(mixed $value)
     {

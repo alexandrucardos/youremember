@@ -35,7 +35,7 @@ final class EventFetchService
         ));
 
         return [
-            'uuid' => $event->getUuid(),
+            'uuid' => $event->getExternalId(),
             'name' => $event->getName(),
             'nameFont' => $event->getNameFont(),
             'orderId' => $event->getOrderId(),
@@ -45,7 +45,7 @@ final class EventFetchService
 
     public function fetchByUuid(ProfileIdValueObject $uuid): array
     {
-        $event = $this->eventRepository->findOneBy(['uuid' => $uuid->value]);
+        $event = $this->eventRepository->findOneBy(['external_id' => $uuid->value]);
 
         if (!$event instanceof Profile) {
             throw new NotFoundException('Event not found.');

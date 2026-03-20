@@ -102,17 +102,7 @@ class MediaDeleteControllerTest extends WebTestCase
         $orderId = rand(10000, 99999);
         $profile = new Profile();
         $profile
-            ->setUuid(sprintf(
-                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff)
-            ))
+            ->setExternalId($orderId)
             ->setOrderId($orderId)
             ->setName('Test Profile')
             ->setNameFont('classic')
@@ -207,17 +197,7 @@ class MediaDeleteControllerTest extends WebTestCase
         $orderId = rand(10000, 99999);
         $profile = new Profile();
         $profile
-            ->setUuid(sprintf(
-                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff)
-            ))
+            ->setExternalId($orderId)
             ->setOrderId($orderId)
             ->setName('Test Profile 2')
             ->setNameFont('classic')
@@ -295,17 +275,7 @@ class MediaDeleteControllerTest extends WebTestCase
         $orderId = rand(10000, 99999);
         $profile = new Profile();
         $profile
-            ->setUuid(sprintf(
-                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff)
-            ))
+            ->setExternalId($orderId)
             ->setOrderId($orderId)
             ->setName('Test Profile 3')
             ->setNameFont('classic')
