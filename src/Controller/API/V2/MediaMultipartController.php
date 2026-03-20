@@ -14,7 +14,7 @@ use App\Service\Media\MediaPresignService;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\HashValueObject;
 use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -92,7 +92,7 @@ final class MediaMultipartController extends AbstractController
         }
 
         $hash = new HashValueObject($hashHeader);
-        $uuid = new UuidValueObject($request->attributes->get('uuid'));
+        $uuid = new ProfileIdValueObject($request->attributes->get('uuid'));
 
         $eventFetchVO = $eventFetchService->fetchByUuid($uuid);
 

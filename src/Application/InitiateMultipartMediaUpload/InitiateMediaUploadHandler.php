@@ -10,7 +10,7 @@ use App\Domain\Model\Profile\MediaRepositoryInterface;
 use App\Domain\Model\Profile\MediaServiceInterface;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 
 final class InitiateMediaUploadHandler
 {
@@ -21,16 +21,16 @@ final class InitiateMediaUploadHandler
 
     public function __invoke(InitiateMediaUploadCommand $command): array
     {
-        $uuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
 
-        if ($uuid === null || $uuid === '') {
+        if ($profileId === null || $profileId === '') {
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $profileEntity = new ProfileEntity(profileUuidValueObject: new UuidValueObject($uuid));
+        $profileEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
 
         $profileEntity
             ->setMultipartFilename($command->filename)

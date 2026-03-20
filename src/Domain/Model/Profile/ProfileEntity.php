@@ -12,9 +12,9 @@ use App\Domain\Model\User\UserEntity;
 use App\ValueObject\DateValueObject;
 use App\ValueObject\ObituaryValueObject;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\UuidValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProfileEntity
@@ -50,7 +50,7 @@ class ProfileEntity
     private UploadedFile $profilePictureFile;
 
     public function __construct(
-        public readonly UuidValueObject $profileUuidValueObject
+        public readonly ProfileIdValueObject $profileIdValueObject
     ) {
     }
 

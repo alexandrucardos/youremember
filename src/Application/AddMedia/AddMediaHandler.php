@@ -7,7 +7,7 @@ namespace App\Application\AddMedia;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 
 final class AddMediaHandler
 {
@@ -21,12 +21,12 @@ final class AddMediaHandler
 
     public function __invoke(AddMediaCommand $command): void
     {
-        $uuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
 
-        if ($uuid === null || $uuid === '') {
+        if ($profileId === null || $profileId === '') {
             throw new ProfileNotFoundException('Profile not found');
         }
 
@@ -34,7 +34,7 @@ final class AddMediaHandler
 
         $uniqueMimeTypes = $this->eventRepository->getUniqueMimeTypes($command->files);
 
-        $eventEntity = new ProfileEntity(new UuidValueObject($uuid));
+        $eventEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
         $eventEntity->setMediaFiles($command->files, $maxItems, $existingItems, $uniqueMimeTypes);
 

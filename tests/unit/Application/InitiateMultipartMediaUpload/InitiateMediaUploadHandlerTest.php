@@ -24,15 +24,9 @@ class InitiateMediaUploadHandlerTest extends TestCase
     private ProfileRepositoryInterface&MockObject $eventRepository;
     private InitiateMediaUploadHandler $handler;
 
-    protected function setUp(): void
-    {
-        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $this->handler = new InitiateMediaUploadHandler($this->eventRepository);
-    }
-
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsNull(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(null);
         $this->eventRepository->expects($this->never())->method('fetchMultipartInitData');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -43,7 +37,7 @@ class InitiateMediaUploadHandlerTest extends TestCase
 
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn('');
         $this->eventRepository->expects($this->never())->method('fetchMultipartInitData');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -59,7 +53,7 @@ class InitiateMediaUploadHandlerTest extends TestCase
             'key' => 'profiles/' . self::UUID . '/test-video.mp4'
         ];
 
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
 
         $this->eventRepository
             ->expects($this->once())
@@ -69,6 +63,12 @@ class InitiateMediaUploadHandlerTest extends TestCase
         $result = ( $this->handler )($this->buildCommand());
 
         $this->assertSame($expectedInitData, $result);
+    }
+
+    protected function setUp(): void
+    {
+        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
+        $this->handler = new InitiateMediaUploadHandler($this->eventRepository);
     }
 
     private function buildCommand(): InitiateMediaUploadCommand

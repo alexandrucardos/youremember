@@ -19,9 +19,9 @@ use App\Service\Media\MediaPresignService;
 use App\Service\Media\MediaService;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\UserRole;
-use App\ValueObject\UuidValueObject;
 
 class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
@@ -41,7 +41,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
     public function updateProfileNameAndFont(ProfileEntity $eventEntity): void
     {
         $this->eventUpdateService->updateNameForEventUuid(
-            eventUuid: $eventEntity->profileUuidValueObject,
+            eventUuid: $eventEntity->profileIdValueObject,
             name: $eventEntity->getProfileName(),
             nameFont: $eventEntity->getProfileNameFont()
         );
@@ -49,7 +49,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateProfileDates(ProfileEntity $profileEntity): void
     {
-        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileUuidValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileIdValueObject->value]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -62,7 +62,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void
     {
-        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileUuidValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['uuid' => $profileEntity->profileIdValueObject->value]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -80,7 +80,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $event = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return new ProfileViewModel(
-            eventUuid: new UuidValueObject($event ? $event->getUuid() : null),
+            eventUuid: new ProfileIdValueObject($event ? $event->getUuid() : null),
             eventName: $event->getName(),
             eventNameFont: new ProfileNameFontValueObject($event->getNameFont()),
             media: new MediaViewModel(
@@ -111,7 +111,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         }
 
         $event = (new Profile())
-            ->setUuid($profileEntity->profileUuidValueObject->value)
+            ->setUuid($profileEntity->profileIdValueObject->value)
             ->setOrderId($profileEntity->getOrderId()->value)
             ->setNameFont($profileEntity->getProfileNameFont()->value)
             ->setUser($user);
@@ -136,7 +136,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         ProfileEntity $eventEntity,
         int $maxFileSizeBytes
     ): void {
-        $event = $this->getEvent($eventEntity->profileUuidValueObject);
+        $event = $this->getEvent($eventEntity->profileIdValueObject);
 
         $this->mediaService->uploadMultiple(orderId: $event->getOrderId(), files: $eventEntity->getMediaFiles());
 
@@ -157,7 +157,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         }
     }
 
-    public function getExistingProfileUuidForOrderIdAndEmail(
+    public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
         EmailValueObject $emailValueObject
     ): ?string {
@@ -191,7 +191,12 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         );
     }
 
-    private function getEvent(UuidValueObject $uuidValueObject): Profile
+    public function verifyExistingProfileId(): ?int
+    {
+        // TODO: Implement getLastProfileId() method.
+    }
+
+    private function getEvent(ProfileIdValueObject $uuidValueObject): Profile
     {
         $event = $this->profileRepository->findOneBy([
             'uuid' => $uuidValueObject->value

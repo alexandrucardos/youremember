@@ -43,7 +43,7 @@ class UpdateEventNameHandlerTest extends TestCase
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
-            ->method('getExistingProfileUuidForOrderIdAndEmail')
+            ->method('getExistingProfileIdForOrderIdAndEmail')
             ->willReturn(self::UUID);
 
         $eventRepository
@@ -51,7 +51,7 @@ class UpdateEventNameHandlerTest extends TestCase
             ->method('updateProfileNameAndFont')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity): bool => (
-                    $eventEntity->profileUuidValueObject->value === self::UUID
+                    $eventEntity->profileIdValueObject->value === self::UUID
                     && $eventEntity->getProfileName()->value === $eventName
                     && $eventEntity->getProfileNameFont()->value === $eventFont
                 )
@@ -71,7 +71,7 @@ class UpdateEventNameHandlerTest extends TestCase
     public function testInvokeThrowsEventNotFoundExceptionWhenUuidIsNull(): void
     {
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $eventRepository->expects($this->once())->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
+        $eventRepository->expects($this->once())->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(null);
 
         $eventRepository->expects($this->never())->method('updateProfileNameAndFont');
 
@@ -91,7 +91,7 @@ class UpdateEventNameHandlerTest extends TestCase
     public function testInvokeThrowsEventNotFoundExceptionWhenUuidIsEmpty(): void
     {
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $eventRepository->expects($this->once())->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
+        $eventRepository->expects($this->once())->method('getExistingProfileIdForOrderIdAndEmail')->willReturn('');
 
         $eventRepository->expects($this->never())->method('updateProfileNameAndFont');
 

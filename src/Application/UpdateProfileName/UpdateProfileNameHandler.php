@@ -7,7 +7,7 @@ namespace App\Application\UpdateProfileName;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 
 class UpdateProfileNameHandler
 {
@@ -18,16 +18,16 @@ class UpdateProfileNameHandler
 
     public function __invoke(UpdateProfileNameCommand $command): void
     {
-        $profileUuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
 
-        if ($profileUuid === null || $profileUuid === '') {
+        if ($profileId === null || $profileId === '') {
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(profileUuidValueObject: new UuidValueObject($profileUuid));
+        $eventEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
 
         $eventEntity
             ->setProfileName($command->eventNameValueObject)

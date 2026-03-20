@@ -19,11 +19,11 @@ class Profile
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::GUID)]
-    private ?string $uuid = null;
+    #[ORM\Column]
+    private int $external_id;
 
     #[ORM\Column(unique: true)]
-    private ?int $order_id = null;
+    private int $order_id;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
@@ -32,7 +32,7 @@ class Profile
     private string $name_font;
 
     #[ORM\Column(enumType: Status::class, options: ['default' => Status::VALID])]
-    private ?Status $status;
+    private Status $status;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
@@ -80,19 +80,19 @@ class Profile
         return $this->id;
     }
 
-    public function getUuid(): ?string
+    public function getExternalId(): int
     {
-        return $this->uuid;
+        return $this->external_id;
     }
 
-    public function setUuid(string $uuid): static
+    public function setExternalId(int $external_id): static
     {
-        $this->uuid = $uuid;
+        $this->external_id = $external_id;
 
         return $this;
     }
 
-    public function getOrderId(): ?int
+    public function getOrderId(): int
     {
         return $this->order_id;
     }
@@ -116,7 +116,7 @@ class Profile
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getStatus(): Status
     {
         return $this->status;
     }

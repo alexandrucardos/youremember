@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\ListEventInformation;
 
-use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Application\ListProfileInformation\MediaViewModel;
+use App\Application\ListProfileInformation\ProfileViewModel;
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\UuidValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventViewModelTest extends TestCase
@@ -60,7 +60,7 @@ class EventViewModelTest extends TestCase
     private function buildViewModel(array $picturesUrls): ProfileViewModel
     {
         return new ProfileViewModel(
-            eventUuid: new UuidValueObject(self::UUID),
+            eventUuid: new ProfileIdValueObject(self::UUID),
             eventName: self::EVENT_NAME,
             eventNameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
             media: new MediaViewModel(backgroundPictureUrl: self::BACKGROUND_URL, picturesUrls: $picturesUrls)

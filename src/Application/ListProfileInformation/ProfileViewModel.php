@@ -2,13 +2,13 @@
 
 namespace App\Application\ListProfileInformation;
 
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\UuidValueObject;
 
 class ProfileViewModel
 {
     public function __construct(
-        public readonly UuidValueObject $eventUuid,
+        public readonly ProfileIdValueObject $eventUuid,
         public readonly ?string $eventName,
         public readonly ProfileNameFontValueObject $eventNameFont,
         public readonly MediaViewModel $media

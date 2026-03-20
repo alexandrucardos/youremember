@@ -26,15 +26,9 @@ class UpdateProfileDatesHandlerTest extends TestCase
     private ProfileRepositoryInterface&MockObject $profileRepository;
     private UpdateProfileDatesHandler $handler;
 
-    protected function setUp(): void
-    {
-        $this->profileRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $this->handler = new UpdateProfileDatesHandler($this->profileRepository);
-    }
-
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsNull(): void
     {
-        $this->profileRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(null);
         $this->profileRepository->expects($this->never())->method('updateProfileDates');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -45,7 +39,7 @@ class UpdateProfileDatesHandlerTest extends TestCase
 
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsEmpty(): void
     {
-        $this->profileRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn('');
         $this->profileRepository->expects($this->never())->method('updateProfileDates');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -56,16 +50,22 @@ class UpdateProfileDatesHandlerTest extends TestCase
 
     public function testInvokeUpdatesProfileDatesWhenProfileExists(): void
     {
-        $this->profileRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
 
         $this->profileRepository
             ->expects($this->once())
             ->method('updateProfileDates')
             ->with($this->callback(
-                static fn(ProfileEntity $entity): bool => $entity->profileUuidValueObject->value === self::UUID
+                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::UUID
             ));
 
         ( $this->handler )($this->buildCommand());
+    }
+
+    protected function setUp(): void
+    {
+        $this->profileRepository = $this->createMock(ProfileRepositoryInterface::class);
+        $this->handler = new UpdateProfileDatesHandler($this->profileRepository);
     }
 
     private function buildCommand(): UpdateProfileDatesCommand

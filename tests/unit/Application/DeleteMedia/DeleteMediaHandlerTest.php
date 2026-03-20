@@ -6,10 +6,10 @@ namespace App\Tests\unit\Application\DeleteMedia;
 
 use App\Application\DeleteMedia\DeleteMediaCommand;
 use App\Application\DeleteMedia\DeleteMediaHandler;
+use App\Domain\Model\Profile\Exception\MissingFiles;
+use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
-use App\Domain\Model\Profile\Exception\MissingFiles;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,12 +24,6 @@ class DeleteMediaHandlerTest extends TestCase
     private ProfileRepositoryInterface&MockObject $eventRepository;
     private DeleteMediaHandler $handler;
 
-    protected function setUp(): void
-    {
-        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $this->handler = new DeleteMediaHandler($this->eventRepository);
-    }
-
     public static function filePathsDataProvider(): array
     {
         return [
@@ -40,7 +34,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsEventNotFoundExceptionWhenEventUuidIsNull(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(null);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -50,7 +44,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsEventNotFoundExceptionWhenEventUuidIsEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn('');
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -60,7 +54,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsMissingFilesWhenFilePathsAreEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
         $this->expectException(MissingFiles::class);
@@ -73,18 +67,22 @@ class DeleteMediaHandlerTest extends TestCase
      */
     public function testInvokeCallsDeleteMediaFiles(array $filePaths): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
 
         $this->eventRepository
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
-                static fn(ProfileEntity $eventEntity): bool => (
-                    $eventEntity->profileUuidValueObject->value === self::UUID
-                )
+                static fn(ProfileEntity $eventEntity): bool => $eventEntity->profileIdValueObject->value === self::UUID
             ));
 
         ( $this->handler )($this->buildCommand($filePaths));
+    }
+
+    protected function setUp(): void
+    {
+        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
+        $this->handler = new DeleteMediaHandler($this->eventRepository);
     }
 
     private function buildCommand(array $filePaths = ['some/path/file.jpg']): DeleteMediaCommand

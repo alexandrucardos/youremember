@@ -44,7 +44,7 @@ class AddProfileHandlerTest extends TestCase
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->getOrderId()->value === $orderId
-                    && $eventEntity->profileUuidValueObject->value === self::UUID
+                    && $eventEntity->profileIdValueObject->value === self::UUID
                 )
             ));
 

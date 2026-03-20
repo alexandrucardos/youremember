@@ -8,9 +8,9 @@ use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\UuidValueObject;
 
 final class EventUpdateService
 {
@@ -38,7 +38,7 @@ final class EventUpdateService
     }
 
     public function updateNameForEventUuid(
-        UuidValueObject $eventUuid,
+        ProfileIdValueObject $eventUuid,
         ProfileNameValueObject $name,
         ProfileNameFontValueObject $nameFont
     ): Profile {

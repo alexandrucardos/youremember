@@ -24,15 +24,9 @@ class UpdateProfileBackgroundHandlerTest extends TestCase
     private ProfileRepositoryInterface&MockObject $eventRepository;
     private UpdateProfileBackgroundHandler $handler;
 
-    protected function setUp(): void
-    {
-        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $this->handler = new UpdateProfileBackgroundHandler($this->eventRepository);
-    }
-
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsNull(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(null);
         $this->eventRepository->expects($this->never())->method('updateBackgroundFile');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -43,7 +37,7 @@ class UpdateProfileBackgroundHandlerTest extends TestCase
 
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn('');
         $this->eventRepository->expects($this->never())->method('updateBackgroundFile');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -54,16 +48,22 @@ class UpdateProfileBackgroundHandlerTest extends TestCase
 
     public function testInvokeUpdatesBackgroundFileWhenProfileExists(): void
     {
-        $this->eventRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
 
         $this->eventRepository
             ->expects($this->once())
             ->method('updateBackgroundFile')
             ->with($this->callback(
-                static fn(ProfileEntity $entity): bool => $entity->profileUuidValueObject->value === self::UUID
+                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::UUID
             ));
 
         ( $this->handler )($this->buildCommand());
+    }
+
+    protected function setUp(): void
+    {
+        $this->eventRepository = $this->createMock(ProfileRepositoryInterface::class);
+        $this->handler = new UpdateProfileBackgroundHandler($this->eventRepository);
     }
 
     private function buildCommand(): UpdateProfileBackgroundCommand

@@ -4,19 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Domain\Model\Event;
 
-use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\Exception\MissingFiles;
-use App\Domain\Model\User\UserEntity;
 use App\Domain\Model\Profile\Message\DateInPastException;
 use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
+use App\Domain\Model\Profile\ProfileEntity;
+use App\Domain\Model\User\UserEntity;
 use App\ValueObject\DateValueObject;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\ObituaryValueObject;
+use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\UuidValueObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -63,11 +63,11 @@ class EventEntityTest extends TestCase
 
     public function testConstructorStoresUuid(): void
     {
-        $uuid = new UuidValueObject(self::UUID);
+        $uuid = new ProfileIdValueObject(self::UUID);
 
-        $entity = new ProfileEntity(profileUuidValueObject: $uuid);
+        $entity = new ProfileEntity(profileIdValueObject: $uuid);
 
-        $this->assertSame($uuid, $entity->profileUuidValueObject);
+        $this->assertSame($uuid, $entity->profileIdValueObject);
     }
 
     public function testSetMediaFilesThrowsMissingFilesWhenFilesIsEmpty(): void
@@ -142,7 +142,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetUser(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $user = new UserEntity(new EmailValueObject('user@example.com'));
 
         $result = $entity->setUser($user);
@@ -153,7 +153,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetOrderId(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $orderId = new OrderIdValueObject(123);
 
         $result = $entity->setOrderId($orderId);
@@ -164,7 +164,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetEventName(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $eventName = new ProfileNameValueObject('Summer Wedding');
 
         $result = $entity->setProfileName($eventName);
@@ -175,7 +175,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetEventNameFont(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $font = new ProfileNameFontValueObject('elegant');
 
         $result = $entity->setProfileNameFont($font);
@@ -193,7 +193,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetBornAt(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $bornDate = new DateValueObject(new \DateTimeImmutable('1990-01-01'));
 
         $result = $entity->setBornAt($bornDate);
@@ -207,7 +207,7 @@ class EventEntityTest extends TestCase
         $this->expectException(DateInPastException::class);
         $this->expectExceptionMessage('Born date must be in the past');
 
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
 
         $entity->setBornAt($futureDate);
@@ -215,7 +215,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetDepartedAt(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $departedDate = new DateValueObject(new \DateTimeImmutable('2020-12-31'));
 
         $result = $entity->setDepartedAt($departedDate);
@@ -229,7 +229,7 @@ class EventEntityTest extends TestCase
         $this->expectException(DateInPastException::class);
         $this->expectExceptionMessage('Deceased date must be in the past');
 
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
 
         $entity->setDepartedAt($futureDate);
@@ -237,7 +237,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetObituary(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $obituary = new ObituaryValueObject('In loving memory...');
 
         $result = $entity->setObituary($obituary);
@@ -248,7 +248,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetBackgroundFile(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $backgroundFile = $this->createMock(UploadedFile::class);
 
         $result = $entity->setBackgroundFile($backgroundFile);
@@ -259,7 +259,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetProfilePictureFile(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $profilePicture = $this->createMock(UploadedFile::class);
 
         $result = $entity->setProfilePictureFile($profilePicture);
@@ -270,7 +270,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetMultipartFilename(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $filename = 'video.mp4';
 
         $result = $entity->setMultipartFilename($filename);
@@ -281,7 +281,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetMultipartMimeType(): void
     {
-        $entity = new ProfileEntity(new UuidValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
         $mimeType = 'video/mp4';
 
         $result = $entity->setMultipartMimeType($mimeType);
@@ -292,6 +292,6 @@ class EventEntityTest extends TestCase
 
     private function buildEntity(): ProfileEntity
     {
-        return new ProfileEntity(profileUuidValueObject: new UuidValueObject(self::UUID));
+        return new ProfileEntity(profileIdValueObject: new ProfileIdValueObject(self::UUID));
     }
 }

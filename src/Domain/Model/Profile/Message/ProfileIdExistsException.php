@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model\Profile\Message;
 
-class ProfileNotValidException extends ProfileBaseMsgException
+class ProfileIdExistsException extends ProfileBaseMsgException
 {
     public function __construct(string $message)
     {
-        parent::__construct($message, self::PROFILE_NOT_VALID);
+        parent::__construct($message, self::PROFILE_ID_EXISTS);
     }
 }

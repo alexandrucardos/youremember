@@ -4,25 +4,28 @@ declare(strict_types = 1);
 
 namespace App\Application\AddProfile;
 
+use App\Domain\Model\Profile\Message\ProfileIdExistsException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\Model\User\UserEntity;
-use App\Domain\Service\UuidInterface;
 use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\Status;
-use App\ValueObject\UuidValueObject;
 
 class AddProfileHandler
 {
     public function __construct(
-        private readonly ProfileRepositoryInterface $profileRepository,
-        private readonly UuidInterface $uuid
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(AddProfileCommand $command): void
     {
-        $profileEntity = new ProfileEntity(new UuidValueObject($this->uuid->generate()));
+        $existingProfileId = $this->profileRepository->verifyExistingProfileId($command->profileIdValueObject);
+
+        if ($existingProfileId !== null) {
+            throw new ProfileIdExistsException("Profile id :{$existingProfileId} already exists!");
+        }
+
+        $profileEntity = new ProfileEntity($command->profileIdValueObject);
 
         $userEntity = new UserEntity($command->emailValueObject);
 

@@ -25,15 +25,9 @@ class UpdateProfileObituaryHandlerTest extends TestCase
     private ProfileRepositoryInterface&MockObject $profileRepository;
     private UpdateProfileObituaryHandler $handler;
 
-    protected function setUp(): void
-    {
-        $this->profileRepository = $this->createMock(ProfileRepositoryInterface::class);
-        $this->handler = new UpdateProfileObituaryHandler($this->profileRepository);
-    }
-
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsNull(): void
     {
-        $this->profileRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(null);
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(null);
         $this->profileRepository->expects($this->never())->method('updateProfileObituary');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -44,7 +38,7 @@ class UpdateProfileObituaryHandlerTest extends TestCase
 
     public function testInvokeThrowsProfileNotFoundExceptionWhenProfileUuidIsEmpty(): void
     {
-        $this->profileRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn('');
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn('');
         $this->profileRepository->expects($this->never())->method('updateProfileObituary');
 
         $this->expectException(ProfileNotFoundException::class);
@@ -55,16 +49,22 @@ class UpdateProfileObituaryHandlerTest extends TestCase
 
     public function testInvokeUpdatesProfileObituaryWhenProfileExists(): void
     {
-        $this->profileRepository->method('getExistingProfileUuidForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
 
         $this->profileRepository
             ->expects($this->once())
             ->method('updateProfileObituary')
             ->with($this->callback(
-                static fn(ProfileEntity $entity): bool => $entity->profileUuidValueObject->value === self::UUID
+                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::UUID
             ));
 
         ( $this->handler )($this->buildCommand());
+    }
+
+    protected function setUp(): void
+    {
+        $this->profileRepository = $this->createMock(ProfileRepositoryInterface::class);
+        $this->handler = new UpdateProfileObituaryHandler($this->profileRepository);
     }
 
     private function buildCommand(): UpdateProfileObituaryCommand

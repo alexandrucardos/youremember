@@ -5,10 +5,9 @@ declare(strict_types = 1);
 namespace App\Domain\Model\Profile;
 
 use App\Application\ListProfileInformation\ProfileViewModel;
-use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface ProfileRepositoryInterface
@@ -21,7 +20,7 @@ interface ProfileRepositoryInterface
 
     public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
 
-    public function getExistingProfileUuidForOrderIdAndEmail(
+    public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
         EmailValueObject $emailValueObject
     ): ?string;
@@ -47,4 +46,6 @@ interface ProfileRepositoryInterface
     public function updateProfilePictureFile(ProfileEntity $eventEntity): void;
 
     public function fetchMultipartInitData(ProfileEntity $eventEntity): array;
+
+    public function verifyExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
 }

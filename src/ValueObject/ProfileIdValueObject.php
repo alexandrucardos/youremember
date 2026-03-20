@@ -4,19 +4,26 @@ declare(strict_types = 1);
 
 namespace App\ValueObject;
 
+use App\Exception\Event\InvalidProfileIdException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class UuidValueObject
+final class ProfileIdValueObject
 {
     #[Assert\NotBlank]
     #[Assert\NotNull]
-    #[Assert\Uuid]
+    #[Assert\Positive]
     public readonly string $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = (string) $value;
+        $intValue = filter_var($value, FILTER_VALIDATE_INT);
+
+        if ($intValue === false) {
+            throw new InvalidProfileIdException('Invalid profile id.');
+        }
+
+        $this->value = $intValue;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
@@ -27,7 +34,7 @@ final class UuidValueObject
             foreach ($violations as $violation) {
                 $messages[] = $violation->getMessage();
             }
-            throw new \InvalidArgumentException(implode(' ', $messages));
+            throw new InvalidProfileIdException(implode(' ', $messages));
         }
     }
 }

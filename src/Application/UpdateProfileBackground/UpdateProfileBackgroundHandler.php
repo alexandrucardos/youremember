@@ -7,7 +7,7 @@ namespace App\Application\UpdateProfileBackground;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 
 class UpdateProfileBackgroundHandler
 {
@@ -18,16 +18,16 @@ class UpdateProfileBackgroundHandler
 
     public function __invoke(UpdateProfileBackgroundCommand $command): void
     {
-        $uuid = $this->eventRepository->getExistingProfileUuidForOrderIdAndEmail(
+        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
 
-        if ($uuid === null || $uuid === '') {
+        if ($profileId === null || $profileId === '') {
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(new UuidValueObject($uuid));
+        $eventEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
         $eventEntity->setOrderId($command->orderIdValueObject)->setBackgroundFile($command->backgroundFile);
 

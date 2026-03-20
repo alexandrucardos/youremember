@@ -9,7 +9,7 @@ use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Service\Media\MediaService;
 use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\UuidValueObject;
+use App\ValueObject\ProfileIdValueObject;
 
 final class EventFetchService
 {
@@ -43,7 +43,7 @@ final class EventFetchService
         ];
     }
 
-    public function fetchByUuid(UuidValueObject $uuid): array
+    public function fetchByUuid(ProfileIdValueObject $uuid): array
     {
         $event = $this->eventRepository->findOneBy(['uuid' => $uuid->value]);
 
