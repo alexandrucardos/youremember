@@ -8,9 +8,9 @@ use App\ValueObject\ProfileNameFontValueObject;
 class ProfileViewModel
 {
     public function __construct(
-        public readonly ProfileIdValueObject $eventUuid,
-        public readonly ?string $eventName,
-        public readonly ProfileNameFontValueObject $eventNameFont,
+        public readonly ProfileIdValueObject $profileId,
+        public readonly ?string $profileName,
+        public readonly ProfileNameFontValueObject $profileNameFont,
         public readonly MediaViewModel $media
     ) {
     }
@@ -18,9 +18,9 @@ class ProfileViewModel
     public function toArray(): array
     {
         return [
-            'token' => $this->eventUuid->value,
-            'name' => $this->eventName,
-            'font' => $this->eventNameFont->value,
+            'profileId' => $this->profileId->value,
+            'name' => $this->profileName,
+            'font' => $this->profileNameFont->value,
             'media' => [
                 'backgroundPictureUrl' => $this->media->backgroundPictureUrl,
                 'pictures' => $this->media->picturesUrls

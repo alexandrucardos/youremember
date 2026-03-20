@@ -15,6 +15,6 @@ class ListProfileInformation
         ListProfileInformationQuery $query
     ): ProfileViewModel
     {
-        return $this->eventRepository->fetchEventViewModelForEvent($query->orderId);
+        return $this->eventRepository->fetchProfileViewModelForOrderId($query->orderId);
     }
 }

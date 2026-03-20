@@ -31,7 +31,7 @@ class ListEventInformationTest extends TestCase
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
-            ->method('fetchEventViewModelForEvent')
+            ->method('fetchProfileViewModelForOrderId')
             ->with($this->callback(
                 static fn(OrderIdValueObject $orderIdValueObject): bool => $orderIdValueObject->value === $orderId
             ))

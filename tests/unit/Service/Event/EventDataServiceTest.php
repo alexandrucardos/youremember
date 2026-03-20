@@ -5,13 +5,13 @@ declare(strict_types = 1);
 namespace App\Tests\unit\Service\Event;
 
 use App\Repository\MediaRepository;
-use App\Service\Event\EventMediaFetchService;
+use App\Service\Event\ProfileMediaFetchService;
 use App\Service\Media\MediaService;
 use PHPUnit\Framework\TestCase;
 
 class EventDataServiceTest extends TestCase
 {
-    private EventMediaFetchService $eventDataService;
+    private ProfileMediaFetchService $eventDataService;
     private MediaRepository $mediaRepository;
     private MediaService $mediatorS3Service;
 
@@ -130,6 +130,6 @@ class EventDataServiceTest extends TestCase
         $this->mediatorS3Service = $this->createMock(MediaService::class);
         $this->mediaRepository = $this->createMock(MediaRepository::class);
 
-        $this->eventDataService = new EventMediaFetchService($this->mediatorS3Service, $this->mediaRepository);
+        $this->eventDataService = new ProfileMediaFetchService($this->mediatorS3Service, $this->mediaRepository);
     }
 }

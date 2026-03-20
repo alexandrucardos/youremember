@@ -12,7 +12,7 @@ use App\ValueObject\ProfileIdValueObject;
 use App\ValueObject\ProfileNameFontValueObject;
 use App\ValueObject\ProfileNameValueObject;
 
-final class EventUpdateService
+final class ProfileUpdateService
 {
     public function __construct(
         private readonly ProfileRepository $eventRepository

@@ -60,9 +60,9 @@ class EventViewModelTest extends TestCase
     private function buildViewModel(array $picturesUrls): ProfileViewModel
     {
         return new ProfileViewModel(
-            eventUuid: new ProfileIdValueObject(self::UUID),
-            eventName: self::EVENT_NAME,
-            eventNameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
+            profileId: new ProfileIdValueObject(self::UUID),
+            profileName: self::EVENT_NAME,
+            profileNameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
             media: new MediaViewModel(backgroundPictureUrl: self::BACKGROUND_URL, picturesUrls: $picturesUrls)
         );
     }

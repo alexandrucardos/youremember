@@ -9,6 +9,7 @@ class MediaViewModel
      */
     public function __construct(
         public readonly string $backgroundPictureUrl,
+        public readonly string $profilePictureUrl,
         public readonly array $picturesUrls
     ) {
     }

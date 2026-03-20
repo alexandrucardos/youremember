@@ -11,8 +11,8 @@ use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Entity\Profile;
 use App\Entity\User;
-use App\Service\Event\EventMediaFetchService;
-use App\Service\Event\EventUpdateService;
+use App\Service\Event\ProfileMediaFetchService;
+use App\Service\Event\ProfileUpdateService;
 use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaPresignService;
@@ -31,8 +31,8 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         private readonly MediaService $mediaService,
         private readonly MediaCountService $mediaCountService,
         private readonly MediaDeleteService $mediaDeleteService,
-        private readonly EventUpdateService $eventUpdateService,
-        private readonly EventMediaFetchService $eventMediaFetchService,
+        private readonly ProfileUpdateService $eventUpdateService,
+        private readonly ProfileMediaFetchService $profileMediaFetchService,
         private readonly MediaPresignService $mediaPresignService
     ) {
     }
@@ -72,19 +72,20 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $this->profileRepository->save($profile);
     }
 
-    public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel
+    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ProfileViewModel
     {
-        $eventDataValueObject = $this->eventMediaFetchService->fetchForOrderId($orderIdValueObject);
+        $profileDataValueObject = $this->profileMediaFetchService->fetchForOrderId($orderIdValueObject);
 
         $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
         return new ProfileViewModel(
-            eventUuid: new ProfileIdValueObject($profile ? $profile->getExternalId() : null),
-            eventName: $profile->getName(),
-            eventNameFont: new ProfileNameFontValueObject($profile->getNameFont()),
+            profileId: new ProfileIdValueObject($profile ? $profile->getExternalId() : null),
+            profileName: $profile->getName(),
+            profileNameFont: new ProfileNameFontValueObject($profile->getNameFont()),
             media: new MediaViewModel(
-                backgroundPictureUrl: $eventDataValueObject['backgroundPictureUrl'],
-                picturesUrls: $eventDataValueObject['pictures']
+                backgroundPictureUrl: $profileDataValueObject['backgroundPictureUrl'],
+                profilePictureUrl: $profileDataValueObject['profilePictureUrl'],
+                picturesUrls: $profileDataValueObject['pictures']
             )
         );
     }
@@ -135,7 +136,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         ProfileEntity $eventEntity,
         int $maxFileSizeBytes
     ): void {
-        $profile = $this->getProfile($eventEntity->profileIdValueObject);
+        $profile = $this->getProfile($eventEntity->getOrderId());
 
         $this->mediaService->uploadMultiple(orderId: $profile->getOrderId(), files: $eventEntity->getMediaFiles());
 

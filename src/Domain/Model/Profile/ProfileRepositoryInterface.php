@@ -18,7 +18,7 @@ interface ProfileRepositoryInterface
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void;
 
-    public function fetchEventViewModelForEvent(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
+    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
 
     public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,

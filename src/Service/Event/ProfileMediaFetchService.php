@@ -4,12 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
-use App\Domain\Model\Profile\ProfileEntity;
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;
 use App\ValueObject\OrderIdValueObject;
 
-class EventMediaFetchService
+class ProfileMediaFetchService
 {
     public function __construct(
         private readonly MediaService $mediatorS3Service,
@@ -47,19 +46,25 @@ class EventMediaFetchService
     {
         $urls = $this->fetchContentUrlsByOrderId($orderIdValueObject->value);
 
-        $backgroundPictureUrl = $this->mediatorS3Service->buildUrl(sprintf(
-            '%d/%s/%s',
-            $orderIdValueObject->value,
-            ProfileEntity::ADMIN_USER_IDENTIFIER,
-            MediaService::FILE_BACKGROUND_NAME
-        ));
+        $backgroundPictureUrl = '';
+        $profilePictureUrl = '';
+
+        foreach ($urls as $key => $url) {
+            if (str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)) {
+                $backgroundPictureUrl = $url;
+                unset($urls[$key]);
+            }
+
+            if (str_ends_with($url, '/' . MediaService::FILE_PROFILE_PICTURE_NAME)) {
+                $profilePictureUrl = $url;
+                unset($urls[$key]);
+            }
+        }
 
         return [
             'backgroundPictureUrl' => $backgroundPictureUrl,
-            'pictures' => array_filter(
-                $urls,
-                static fn(string $url) => !str_ends_with($url, '/' . MediaService::FILE_BACKGROUND_NAME)
-            )
+            'profilePictureUrl' => $profilePictureUrl,
+            'pictures' => $urls
         ];
     }
 
