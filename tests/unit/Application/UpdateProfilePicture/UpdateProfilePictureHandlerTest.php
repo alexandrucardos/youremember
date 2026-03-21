@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UpdateProfilePictureHandlerTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
     private const ORDER_ID = 123;
     private const USER_EMAIL = 'user@example.com';
 
@@ -48,13 +48,13 @@ class UpdateProfilePictureHandlerTest extends TestCase
 
     public function testInvokeUpdatesProfilePictureFileWhenProfileExists(): void
     {
-        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
 
         $this->eventRepository
             ->expects($this->once())
             ->method('updateProfilePictureFile')
             ->with($this->callback(
-                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::UUID
+                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::PROFILE_ID
             ));
 
         ( $this->handler )($this->buildCommand());

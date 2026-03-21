@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class DeleteMediaHandlerTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
     private const ORDER_ID = 123;
     private const USER_EMAIL = 'user@example.com';
 
@@ -54,7 +54,7 @@ class DeleteMediaHandlerTest extends TestCase
 
     public function testInvokeThrowsMissingFilesWhenFilePathsAreEmpty(): void
     {
-        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
         $this->eventRepository->expects($this->never())->method('deleteMediaFiles');
 
         $this->expectException(MissingFiles::class);
@@ -67,13 +67,13 @@ class DeleteMediaHandlerTest extends TestCase
      */
     public function testInvokeCallsDeleteMediaFiles(array $filePaths): void
     {
-        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
 
         $this->eventRepository
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
-                static fn(ProfileEntity $eventEntity): bool => $eventEntity->profileIdValueObject->value === self::UUID
+                static fn(ProfileEntity $eventEntity): bool => $eventEntity->profileIdValueObject->value === self::PROFILE_ID
             ));
 
         ( $this->handler )($this->buildCommand($filePaths));

@@ -12,10 +12,11 @@ use PHPUnit\Framework\TestCase;
 
 class EventViewModelTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
     private const EVENT_NAME = 'Summer Wedding';
     private const EVENT_FONT = 'elegant';
     private const BACKGROUND_URL = 'https://bucket.s3.region.amazonaws.com/123/client/background';
+    private const PROFILE_PICTURE_URL = 'https://bucket.s3.region.amazonaws.com/123/client/profile';
 
     public static function toArrayDataProvider(): array
     {
@@ -38,7 +39,7 @@ class EventViewModelTest extends TestCase
 
         $result = $viewModel->toArray();
 
-        $this->assertSame(self::UUID, $result['token']);
+        $this->assertSame(self::PROFILE_ID, $result['profileId']);
         $this->assertSame(self::EVENT_NAME, $result['name']);
         $this->assertSame(self::EVENT_FONT, $result['font']);
         $this->assertSame(self::BACKGROUND_URL, $result['media']['backgroundPictureUrl']);
@@ -49,7 +50,7 @@ class EventViewModelTest extends TestCase
     {
         $result = $this->buildViewModel([])->toArray();
 
-        $this->assertArrayHasKey('token', $result);
+        $this->assertArrayHasKey('profileId', $result);
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('font', $result);
         $this->assertArrayHasKey('media', $result);
@@ -60,10 +61,10 @@ class EventViewModelTest extends TestCase
     private function buildViewModel(array $picturesUrls): ProfileViewModel
     {
         return new ProfileViewModel(
-            profileId: new ProfileIdValueObject(self::UUID),
+            profileId: new ProfileIdValueObject(self::PROFILE_ID),
             profileName: self::EVENT_NAME,
             profileNameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
-            media: new MediaViewModel(backgroundPictureUrl: self::BACKGROUND_URL, picturesUrls: $picturesUrls)
+            media: new MediaViewModel(backgroundPictureUrl: self::BACKGROUND_URL, profilePictureUrl: self::PROFILE_PICTURE_URL, picturesUrls: $picturesUrls)
         );
     }
 }

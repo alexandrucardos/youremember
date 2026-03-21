@@ -48,7 +48,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateProfileDates(ProfileEntity $profileEntity): void
     {
-        $profile = $this->profileRepository->findOneBy(['order_id' => $profileEntity->getOrderId()->value]);
+        $profile = $this->profileRepository->findOneBy(['external_id' => $profileEntity->profileIdValueObject->value]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -61,7 +61,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void
     {
-        $profile = $this->profileRepository->findOneBy(['order_id' => $profileEntity->getOrderId()->value]);
+        $profile = $this->profileRepository->findOneBy(['external_id' => $profileEntity->profileIdValueObject->value]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -163,7 +163,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
     ): ?string {
         $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
-        return $profile ? $profile->getUuid() : null;
+        return $profile ? (string) $profile->getExternalId() : null;
     }
 
     public function updateBackgroundFile(ProfileEntity $eventEntity): void

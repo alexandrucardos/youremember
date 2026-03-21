@@ -52,7 +52,7 @@ final class EventFetchService
         }
 
         return [
-            'uuid' => $event->getUuid(),
+            'uuid' => $event->getExternalId(),
             'name' => $event->getName(),
             'nameFont' => $event->getNameFont(),
             'orderId' => $event->getOrderId(),

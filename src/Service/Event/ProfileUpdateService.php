@@ -42,7 +42,7 @@ final class ProfileUpdateService
         ProfileNameValueObject $name,
         ProfileNameFontValueObject $nameFont
     ): Profile {
-        $event = $this->eventRepository->findOneBy(['uuid' => $eventUuid->value]);
+        $event = $this->eventRepository->findOneBy(['external_id' => $eventUuid->value]);
 
         if (!$event) {
             throw new NotFoundException('Event not found');

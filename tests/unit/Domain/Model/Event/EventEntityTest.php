@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class EventEntityTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
 
     public static function maximumItemsDataProvider(): array
     {
@@ -63,7 +63,7 @@ class EventEntityTest extends TestCase
 
     public function testConstructorStoresUuid(): void
     {
-        $uuid = new ProfileIdValueObject(self::UUID);
+        $uuid = new ProfileIdValueObject(self::PROFILE_ID);
 
         $entity = new ProfileEntity(profileIdValueObject: $uuid);
 
@@ -142,7 +142,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetUser(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $user = new UserEntity(new EmailValueObject('user@example.com'));
 
         $result = $entity->setUser($user);
@@ -153,7 +153,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetOrderId(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $orderId = new OrderIdValueObject(123);
 
         $result = $entity->setOrderId($orderId);
@@ -164,7 +164,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetEventName(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $eventName = new ProfileNameValueObject('Summer Wedding');
 
         $result = $entity->setProfileName($eventName);
@@ -175,7 +175,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetEventNameFont(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $font = new ProfileNameFontValueObject('elegant');
 
         $result = $entity->setProfileNameFont($font);
@@ -193,7 +193,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetBornAt(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $bornDate = new DateValueObject(new \DateTimeImmutable('1990-01-01'));
 
         $result = $entity->setBornAt($bornDate);
@@ -207,7 +207,7 @@ class EventEntityTest extends TestCase
         $this->expectException(DateInPastException::class);
         $this->expectExceptionMessage('Born date must be in the past');
 
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
 
         $entity->setBornAt($futureDate);
@@ -215,7 +215,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetDepartedAt(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $departedDate = new DateValueObject(new \DateTimeImmutable('2020-12-31'));
 
         $result = $entity->setDepartedAt($departedDate);
@@ -229,7 +229,7 @@ class EventEntityTest extends TestCase
         $this->expectException(DateInPastException::class);
         $this->expectExceptionMessage('Deceased date must be in the past');
 
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
 
         $entity->setDepartedAt($futureDate);
@@ -237,7 +237,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetObituary(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $obituary = new ObituaryValueObject('In loving memory...');
 
         $result = $entity->setObituary($obituary);
@@ -248,7 +248,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetBackgroundFile(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $backgroundFile = $this->createMock(UploadedFile::class);
 
         $result = $entity->setBackgroundFile($backgroundFile);
@@ -259,7 +259,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetProfilePictureFile(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $profilePicture = $this->createMock(UploadedFile::class);
 
         $result = $entity->setProfilePictureFile($profilePicture);
@@ -270,7 +270,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetMultipartFilename(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $filename = 'video.mp4';
 
         $result = $entity->setMultipartFilename($filename);
@@ -281,7 +281,7 @@ class EventEntityTest extends TestCase
 
     public function testSetAndGetMultipartMimeType(): void
     {
-        $entity = new ProfileEntity(new ProfileIdValueObject(self::UUID));
+        $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $mimeType = 'video/mp4';
 
         $result = $entity->setMultipartMimeType($mimeType);
@@ -292,6 +292,6 @@ class EventEntityTest extends TestCase
 
     private function buildEntity(): ProfileEntity
     {
-        return new ProfileEntity(profileIdValueObject: new ProfileIdValueObject(self::UUID));
+        return new ProfileEntity(profileIdValueObject: new ProfileIdValueObject(self::PROFILE_ID));
     }
 }

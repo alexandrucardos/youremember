@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateEventNameHandlerTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
     private const ORDER_ID = 123;
     private const USER_EMAIL = 'user@example.com';
 
@@ -44,14 +44,14 @@ class UpdateEventNameHandlerTest extends TestCase
         $eventRepository
             ->expects($this->once())
             ->method('getExistingProfileIdForOrderIdAndEmail')
-            ->willReturn(self::UUID);
+            ->willReturn((string) self::PROFILE_ID);
 
         $eventRepository
             ->expects($this->once())
             ->method('updateProfileNameAndFont')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity): bool => (
-                    $eventEntity->profileIdValueObject->value === self::UUID
+                    $eventEntity->profileIdValueObject->value === self::PROFILE_ID
                     && $eventEntity->getProfileName()->value === $eventName
                     && $eventEntity->getProfileNameFont()->value === $eventFont
                 )

@@ -32,9 +32,10 @@ final class EventFetchServiceTest extends TestCase
     public function testFetchByOrderIdReturnsEventFetchDtoWhenFound(): void
     {
         $orderId = 123;
+        $externalId = 100001;
 
         $event = (new Profile())
-            ->setUuid('550e8400-e29b-41d4-a716-446655440000')
+            ->setExternalId($externalId)
             ->setName('Test Event')
             ->setNameFont('Arial')
             ->setOrderId($orderId);
@@ -56,7 +57,7 @@ final class EventFetchServiceTest extends TestCase
         $result = $service->fetchByOrderId(new OrderIdValueObject($orderId));
 
         self::assertIsArray($result);
-        self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result['uuid']);
+        self::assertSame($externalId, $result['uuid']);
         self::assertSame('Test Event', $result['name']);
         self::assertSame($orderId, $result['orderId']);
         self::assertSame($expectedBackgroundUrl, $result['backgroundImage']);

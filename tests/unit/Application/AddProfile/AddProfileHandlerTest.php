@@ -8,14 +8,14 @@ use App\Application\AddProfile\AddProfileCommand;
 use App\Application\AddProfile\AddProfileHandler;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\Domain\Service\UuidInterface;
 use App\ValueObject\EmailValueObject;
 use App\ValueObject\OrderIdValueObject;
+use App\ValueObject\ProfileIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 class AddProfileHandlerTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
 
     public static function validProfileDataProvider(): array
     {
@@ -34,26 +34,25 @@ class AddProfileHandlerTest extends TestCase
         int $orderId,
         string $email
     ): void {
-        $uuidService = $this->createMock(UuidInterface::class);
-        $uuidService->method('generate')->willReturn(self::UUID);
-
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
+        $eventRepository->method('getExistingProfileId')->willReturn(null);
         $eventRepository
             ->expects($this->once())
             ->method('saveProfile')
             ->with($this->callback(
                 static fn(ProfileEntity $eventEntity) => (
                     $eventEntity->getOrderId()->value === $orderId
-                    && $eventEntity->profileIdValueObject->value === self::UUID
+                    && $eventEntity->profileIdValueObject->value === self::PROFILE_ID
                 )
             ));
 
         $command = new AddProfileCommand(
             orderIdValueObject: new OrderIdValueObject($orderId),
-            emailValueObject: new EmailValueObject($email)
+            emailValueObject: new EmailValueObject($email),
+            profileIdValueObject: new ProfileIdValueObject(self::PROFILE_ID)
         );
 
-        $handler = new AddProfileHandler($eventRepository, $uuidService);
+        $handler = new AddProfileHandler($eventRepository);
         $handler($command);
     }
 }

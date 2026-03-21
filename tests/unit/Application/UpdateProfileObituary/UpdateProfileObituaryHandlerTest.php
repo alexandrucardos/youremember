@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 class UpdateProfileObituaryHandlerTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
     private const ORDER_ID = 123;
     private const USER_EMAIL = 'user@example.com';
     private const OBITUARY = 'A loving memory of a wonderful person who touched many lives.';
@@ -49,13 +49,13 @@ class UpdateProfileObituaryHandlerTest extends TestCase
 
     public function testInvokeUpdatesProfileObituaryWhenProfileExists(): void
     {
-        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
 
         $this->profileRepository
             ->expects($this->once())
             ->method('updateProfileObituary')
             ->with($this->callback(
-                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::UUID
+                static fn(ProfileEntity $entity): bool => $entity->profileIdValueObject->value === self::PROFILE_ID
             ));
 
         ( $this->handler )($this->buildCommand());

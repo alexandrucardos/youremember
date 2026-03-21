@@ -74,7 +74,7 @@ class ProfileInfoGetControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(200);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        self::assertArrayHasKey('token', $response);
+        self::assertArrayHasKey('profileId', $response);
         self::assertArrayHasKey('name', $response);
         self::assertArrayHasKey('font', $response);
         self::assertEquals('classic', $response['font']);

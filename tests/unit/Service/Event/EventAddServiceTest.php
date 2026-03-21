@@ -16,8 +16,6 @@ use PHPUnit\Framework\TestCase;
 
 class EventAddServiceTest extends TestCase
 {
-    private const UUID_PATTERN = '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/';
-
     public static function successfulAddDataProvider(): array
     {
         return [
@@ -56,8 +54,10 @@ class EventAddServiceTest extends TestCase
         $event = $service->add(new EmailValueObject($email), new OrderIdValueObject($orderId));
 
         $this->assertInstanceOf(Profile::class, $event);
-        $this->assertNotNull($event->getUuid());
-        $this->assertMatchesRegularExpression(self::UUID_PATTERN, $event->getUuid());
+        $this->assertNotNull($event->getExternalId());
+        $this->assertIsInt($event->getExternalId());
+        $this->assertGreaterThanOrEqual(100000, $event->getExternalId());
+        $this->assertLessThanOrEqual(999999, $event->getExternalId());
         $this->assertSame($orderId, $event->getOrderId());
         $this->assertSame($user, $event->getUser());
     }

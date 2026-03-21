@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 
 class InitiateMediaUploadHandlerTest extends TestCase
 {
-    private const UUID = '550e8400-e29b-41d4-a716-446655440000';
+    private const PROFILE_ID = 1;
     private const ORDER_ID = 123;
     private const USER_EMAIL = 'user@example.com';
     private const FILENAME = 'test-video.mp4';
@@ -50,10 +50,10 @@ class InitiateMediaUploadHandlerTest extends TestCase
     {
         $expectedInitData = [
             'uploadId' => 'test-upload-id-123',
-            'key' => 'profiles/' . self::UUID . '/test-video.mp4'
+            'key' => 'profiles/' . self::PROFILE_ID . '/test-video.mp4'
         ];
 
-        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn(self::UUID);
+        $this->eventRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
 
         $this->eventRepository
             ->expects($this->once())

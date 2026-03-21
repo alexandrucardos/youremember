@@ -26,7 +26,7 @@ final class EventAddService
         }
 
         $event = (new Profile())
-            ->setUuid($this->generateUuid())
+            ->setExternalId($this->generateExternalId())
             ->setOrderId($orderId->value)
             ->setUser(reset($user));
 
@@ -35,12 +35,8 @@ final class EventAddService
         return $event;
     }
 
-    private function generateUuid(): string
+    private function generateExternalId(): int
     {
-        $data = random_bytes(16);
-        $data[6] = chr(( ord($data[6]) & 0x0f ) | 0x40);
-        $data[8] = chr(( ord($data[8]) & 0x3f ) | 0x80);
-
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+        return random_int(100000, 999999);
     }
 }
