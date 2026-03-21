@@ -8,8 +8,8 @@ use App\Application\InitiateMultipartMediaUpload\InitiateMediaUploadCommand;
 use App\Application\InitiateMultipartMediaUpload\InitiateMediaUploadHandler;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

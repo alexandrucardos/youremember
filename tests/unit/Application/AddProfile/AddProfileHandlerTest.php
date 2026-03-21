@@ -8,9 +8,9 @@ use App\Application\AddProfile\AddProfileCommand;
 use App\Application\AddProfile\AddProfileHandler;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 class AddProfileHandlerTest extends TestCase

@@ -2,27 +2,21 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class DateValueObject
+final class HashValueObject
 {
-    #[Assert\Type(\DateTimeImmutable::class)]
+    #[Assert\Length(min: 2)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        if (is_string($value) && $value !== '') {
-            try {
-                $value = new \DateTimeImmutable($value);
-            } catch (\Exception $exception) {
-                throw new \InvalidArgumentException('Invalid date format: ' . $exception->getMessage());
-            }
-        }
-
-        $this->value = $value;
+        $this->value = trim($value);
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 

@@ -5,9 +5,9 @@ declare(strict_types = 1);
 namespace App\Domain\Model\Profile;
 
 use App\Application\ListProfileInformation\ProfileViewModel;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface ProfileRepositoryInterface

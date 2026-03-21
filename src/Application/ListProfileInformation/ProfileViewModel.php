@@ -2,8 +2,8 @@
 
 namespace App\Application\ListProfileInformation;
 
-use App\ValueObject\ProfileIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
 
 class ProfileViewModel
 {

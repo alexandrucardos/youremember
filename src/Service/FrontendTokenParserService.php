@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Service;
 
+use App\Domain\ValueObject\HashValueObject;
+use App\Domain\ValueObject\UserRole;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
-use App\ValueObject\HashValueObject;
-use App\ValueObject\UserRole;
 
 class FrontendTokenParserService
 {

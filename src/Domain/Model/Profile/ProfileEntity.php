@@ -9,12 +9,12 @@ use App\Domain\Model\Profile\Message\DateInPastException;
 use App\Domain\Model\Profile\Message\IncorrectMimeTypeException;
 use App\Domain\Model\Profile\Message\MaximumProfileItemsReachedException;
 use App\Domain\Model\User\UserEntity;
-use App\ValueObject\DateValueObject;
-use App\ValueObject\ObituaryValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\ProfileNameValueObject;
+use App\Domain\ValueObject\DateValueObject;
+use App\Domain\ValueObject\ObituaryValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileNameValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProfileEntity

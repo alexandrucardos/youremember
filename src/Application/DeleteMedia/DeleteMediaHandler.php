@@ -10,7 +10,7 @@ use App\Domain\Model\Profile\MediaRepositoryInterface;
 use App\Domain\Model\Profile\MediaServiceInterface;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 
 final class DeleteMediaHandler
 {

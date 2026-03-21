@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Service\Media\MediaService;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
 
 final class EventFetchService
 {

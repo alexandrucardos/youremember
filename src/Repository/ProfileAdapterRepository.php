@@ -9,6 +9,11 @@ use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\UserRole;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Service\Event\ProfileMediaFetchService;
@@ -17,11 +22,6 @@ use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaPresignService;
 use App\Service\Media\MediaService;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\UserRole;
 
 class ProfileAdapterRepository implements ProfileRepositoryInterface
 {

@@ -2,17 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class EmailValueObject
+final class ProfileNameValueObject
 {
     #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Email]
-    #[Assert\Length(max: 180)]
+    #[Assert\Length(max: 255, min: 2)]
     public readonly mixed $value;
 
     public function __construct(mixed $value)

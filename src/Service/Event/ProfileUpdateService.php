@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileNameValueObject;
 use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\ProfileNameValueObject;
 
 final class ProfileUpdateService
 {

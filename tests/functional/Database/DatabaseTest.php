@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Tests\functional\Database;
 
+use App\Domain\ValueObject\Status;
+use App\Domain\ValueObject\UserRole;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Tests\functional\FunctionalTestBase;
-use App\ValueObject\Status;
-use App\ValueObject\UserRole;
 
 class DatabaseTest extends FunctionalTestBase
 {

@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileNameValueObject;
 use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Service\Event\ProfileUpdateService;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\ProfileNameValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventUpdateServiceTest extends TestCase

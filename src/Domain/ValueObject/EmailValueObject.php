@@ -2,21 +2,22 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class OrderStatusValueObject
+final class EmailValueObject
 {
-    #[Assert\NotNull]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 50, min: 2)]
+    #[Assert\NotNull]
+    #[Assert\Email]
+    #[Assert\Length(max: 180)]
     public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = trim($value);
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 

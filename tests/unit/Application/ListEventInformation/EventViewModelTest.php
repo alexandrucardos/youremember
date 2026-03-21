@@ -6,8 +6,8 @@ namespace App\Tests\unit\Application\ListEventInformation;
 
 use App\Application\ListProfileInformation\MediaViewModel;
 use App\Application\ListProfileInformation\ProfileViewModel;
-use App\ValueObject\ProfileIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventViewModelTest extends TestCase
@@ -64,7 +64,11 @@ class EventViewModelTest extends TestCase
             profileId: new ProfileIdValueObject(self::PROFILE_ID),
             profileName: self::EVENT_NAME,
             profileNameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
-            media: new MediaViewModel(backgroundPictureUrl: self::BACKGROUND_URL, profilePictureUrl: self::PROFILE_PICTURE_URL, picturesUrls: $picturesUrls)
+            media: new MediaViewModel(
+                backgroundPictureUrl: self::BACKGROUND_URL,
+                profilePictureUrl: self::PROFILE_PICTURE_URL,
+                picturesUrls: $picturesUrls
+            )
         );
     }
 }

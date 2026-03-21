@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Application\UpdateProfileDates;
 
-use App\ValueObject\DateValueObject;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\DateValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 
 class UpdateProfileDatesCommand
 {

@@ -8,7 +8,7 @@ use App\Application\ListProfileInformation\ListProfileInformation;
 use App\Application\ListProfileInformation\ListProfileInformationQuery;
 use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 class ListEventInformationTest extends TestCase

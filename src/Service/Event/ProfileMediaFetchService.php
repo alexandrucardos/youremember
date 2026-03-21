@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
+use App\Domain\ValueObject\OrderIdValueObject;
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;
-use App\ValueObject\OrderIdValueObject;
 
 class ProfileMediaFetchService
 {

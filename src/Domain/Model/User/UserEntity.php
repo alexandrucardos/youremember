@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model\User;
 
-use App\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\EmailValueObject;
 
 class UserEntity
 {

@@ -2,12 +2,12 @@
 
 namespace App\Service\Event;
 
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use App\Entity\Profile;
 use App\Exception\User\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
 
 final class EventAddService
 {

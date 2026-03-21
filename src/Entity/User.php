@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Entity;
 
+use App\Domain\ValueObject\UserRole;
 use App\Repository\UserRepository;
-use App\ValueObject\UserRole;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

@@ -5,6 +5,7 @@ This directory contains the functional tests infrastructure using SQLite for fas
 ## Overview
 
 The functional test infrastructure provides:
+
 - SQLite-based in-memory database for fast test execution
 - Automatic database schema creation and cleanup
 - Base test class with common utilities
@@ -15,15 +16,18 @@ The functional test infrastructure provides:
 All functional tests should extend `FunctionalTestBase` which provides:
 
 ### Automatic Setup
+
 - Creates a fresh database schema before each test
 - Provides a configured `KernelBrowser` client
 - Provides `EntityManager` for database operations
 
 ### Automatic Teardown
+
 - Cleans all database tables after each test
 - Closes entity manager properly
 
 ### Helper Methods
+
 - `generateValidToken(string $email): string` - Generates a valid authentication token
 - `generateExpiredToken(string $email): string` - Generates an expired authentication token
 
@@ -36,9 +40,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\functional\Controller\API;
 
-use App\Entity\User;
-use App\Tests\functional\FunctionalTestBase;
-use App\ValueObject\UserRole;
+use App\Domain\ValueObject\UserRole;use App\Entity\User;use App\Tests\functional\FunctionalTestBase;
 
 class MyControllerTest extends FunctionalTestBase
 {
@@ -70,22 +72,26 @@ class MyControllerTest extends FunctionalTestBase
 ## Database Configuration
 
 The test environment uses SQLite as configured in:
+
 - `.env.test` - Contains `DATABASE_URL` pointing to SQLite
 - `config/packages/test/doctrine.yaml` - Doctrine configuration for test environment
 
 ## Running Tests
 
 Run all functional tests:
+
 ```bash
 vendor/bin/phpunit tests/functional
 ```
 
 Run specific test class:
+
 ```bash
 vendor/bin/phpunit tests/functional/Controller/API/EventControllerTest.php
 ```
 
 Run specific test method:
+
 ```bash
 vendor/bin/phpunit --filter testCreateEventWithValidTokenAndExistingUser
 ```
@@ -101,6 +107,7 @@ vendor/bin/phpunit --filter testCreateEventWithValidTokenAndExistingUser
 ## SQLite Specifics
 
 SQLite has some limitations compared to MySQL/PostgreSQL:
+
 - No `ON UPDATE CURRENT_TIMESTAMP` support (handled in application code)
 - Foreign key constraints must be explicitly enabled
 - Some data types are emulated

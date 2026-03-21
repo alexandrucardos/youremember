@@ -4,12 +4,12 @@ namespace App\Controller\API\V2;
 
 use App\Application\UpdateProfileName\UpdateProfileNameCommand;
 use App\Application\UpdateProfileName\UpdateProfileNameHandler;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileNameValueObject;
+use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\ProfileNameValueObject;
-use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

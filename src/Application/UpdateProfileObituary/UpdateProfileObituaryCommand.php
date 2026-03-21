@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Application\UpdateProfileObituary;
 
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\ObituaryValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\ObituaryValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 
 class UpdateProfileObituaryCommand
 {

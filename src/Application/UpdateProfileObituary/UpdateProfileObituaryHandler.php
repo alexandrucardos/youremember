@@ -7,7 +7,7 @@ namespace App\Application\UpdateProfileObituary;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 
 class UpdateProfileObituaryHandler
 {

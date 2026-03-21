@@ -2,7 +2,7 @@
 
 namespace App\Application\ListProfileInformation;
 
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 
 class ListProfileInformationQuery
 {

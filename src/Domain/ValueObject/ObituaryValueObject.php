@@ -2,28 +2,20 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
-use App\Exception\Event\InvalidOrderIdException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class OrderIdValueObject
+final class ObituaryValueObject
 {
-    #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Positive]
-    public readonly int $value;
+    #[Assert\Type('string')]
+    #[Assert\Length(max: 5000)]
+    public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $intValue = filter_var($value, FILTER_VALIDATE_INT);
-
-        if ($intValue === false) {
-            throw new InvalidOrderIdException('Invalid order id.');
-        }
-
-        $this->value = $intValue;
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
@@ -34,7 +26,7 @@ final class OrderIdValueObject
             foreach ($violations as $violation) {
                 $messages[] = $violation->getMessage();
             }
-            throw new InvalidOrderIdException(implode(' ', $messages));
+            throw new \InvalidArgumentException(implode(', ', $messages));
         }
     }
 }

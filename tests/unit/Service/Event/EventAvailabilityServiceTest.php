@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
+use App\Domain\ValueObject\Status;
 use App\Entity\Profile;
 use App\Repository\ProfileRepository;
 use App\Service\Event\EventAvailabilityService;
-use App\ValueObject\Status;
 use PHPUnit\Framework\TestCase;
 
 class EventAvailabilityServiceTest extends TestCase

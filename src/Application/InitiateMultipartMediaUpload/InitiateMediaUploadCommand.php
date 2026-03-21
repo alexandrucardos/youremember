@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Application\InitiateMultipartMediaUpload;
 
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 
 class InitiateMediaUploadCommand
 {

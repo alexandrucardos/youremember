@@ -2,22 +2,28 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
+use App\Exception\Event\InvalidProfileIdException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class ProfileNameFontValueObject
+final class ProfileIdValueObject
 {
-    private const DEFAULT_FONT = 'elegant';
-
     #[Assert\NotBlank]
-    #[Assert\Length(max: 50, min: 2)]
-    public readonly mixed $value;
+    #[Assert\NotNull]
+    #[Assert\Positive]
+    public readonly int $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = $value ?? self::DEFAULT_FONT;
+        $intValue = filter_var($value, FILTER_VALIDATE_INT);
+
+        if ($intValue === false) {
+            throw new InvalidProfileIdException('Invalid profile id.');
+        }
+
+        $this->value = $intValue;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
@@ -28,7 +34,7 @@ final class ProfileNameFontValueObject
             foreach ($violations as $violation) {
                 $messages[] = $violation->getMessage();
             }
-            throw new \InvalidArgumentException(implode(' ', $messages));
+            throw new InvalidProfileIdException(implode(' ', $messages));
         }
     }
 }

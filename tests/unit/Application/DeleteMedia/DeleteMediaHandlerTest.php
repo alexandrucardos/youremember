@@ -10,8 +10,8 @@ use App\Domain\Model\Profile\Exception\MissingFiles;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -73,7 +73,9 @@ class DeleteMediaHandlerTest extends TestCase
             ->expects($this->once())
             ->method('deleteMediaFiles')
             ->with($this->callback(
-                static fn(ProfileEntity $eventEntity): bool => $eventEntity->profileIdValueObject->value === self::PROFILE_ID
+                static fn(ProfileEntity $eventEntity): bool => (
+                    $eventEntity->profileIdValueObject->value === self::PROFILE_ID
+                )
             ));
 
         ( $this->handler )($this->buildCommand($filePaths));

@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Application\UpdateProfileBackground;
 
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UpdateProfileBackgroundCommand

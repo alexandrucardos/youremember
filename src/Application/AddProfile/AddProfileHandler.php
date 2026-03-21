@@ -8,7 +8,7 @@ use App\Domain\Model\Profile\Message\ProfileIdExistsException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\Model\User\UserEntity;
-use App\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
 
 class AddProfileHandler
 {

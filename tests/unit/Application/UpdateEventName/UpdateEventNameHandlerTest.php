@@ -9,10 +9,10 @@ use App\Application\UpdateProfileName\UpdateProfileNameHandler;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileNameFontValueObject;
-use App\ValueObject\ProfileNameValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileNameFontValueObject;
+use App\Domain\ValueObject\ProfileNameValueObject;
 use PHPUnit\Framework\TestCase;
 
 class UpdateEventNameHandlerTest extends TestCase

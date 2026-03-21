@@ -4,11 +4,11 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service;
 
+use App\Domain\ValueObject\UserRole;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
 use App\Exception\Auth\InvalidStructureException;
 use App\Service\FrontendTokenParserService;
-use App\ValueObject\UserRole;
 use PHPUnit\Framework\TestCase;
 
 class FrontendTokenParserServiceTest extends TestCase

@@ -9,9 +9,9 @@ use App\Application\UpdateProfileDates\UpdateProfileDatesHandler;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\DateValueObject;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\DateValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -50,7 +50,9 @@ class UpdateProfileDatesHandlerTest extends TestCase
 
     public function testInvokeUpdatesProfileDatesWhenProfileExists(): void
     {
-        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
+        $this->profileRepository
+            ->method('getExistingProfileIdForOrderIdAndEmail')
+            ->willReturn((string) self::PROFILE_ID);
 
         $this->profileRepository
             ->expects($this->once())

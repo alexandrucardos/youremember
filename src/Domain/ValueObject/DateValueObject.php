@@ -2,28 +2,27 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
-use App\Exception\Event\InvalidProfileIdException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class ProfileIdValueObject
+final class DateValueObject
 {
-    #[Assert\NotBlank]
-    #[Assert\NotNull]
-    #[Assert\Positive]
-    public readonly int $value;
+    #[Assert\Type(\DateTimeImmutable::class)]
+    public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $intValue = filter_var($value, FILTER_VALIDATE_INT);
-
-        if ($intValue === false) {
-            throw new InvalidProfileIdException('Invalid profile id.');
+        if (is_string($value) && $value !== '') {
+            try {
+                $value = new \DateTimeImmutable($value);
+            } catch (\Exception $exception) {
+                throw new \InvalidArgumentException('Invalid date format: ' . $exception->getMessage());
+            }
         }
 
-        $this->value = $intValue;
+        $this->value = $value;
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
@@ -34,7 +33,7 @@ final class ProfileIdValueObject
             foreach ($violations as $violation) {
                 $messages[] = $violation->getMessage();
             }
-            throw new InvalidProfileIdException(implode(' ', $messages));
+            throw new \InvalidArgumentException(implode(' ', $messages));
         }
     }
 }

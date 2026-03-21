@@ -4,12 +4,12 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
+use App\Domain\ValueObject\OrderIdValueObject;
 use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaService;
-use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 final class EventFetchServiceTest extends TestCase

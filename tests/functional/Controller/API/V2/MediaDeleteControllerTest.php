@@ -4,13 +4,13 @@ declare(strict_types = 1);
 
 namespace App\Tests\functional\Controller\API\V2;
 
+use App\Domain\ValueObject\Status;
+use App\Domain\ValueObject\UserRole;
 use App\Entity\Media;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Service\Bucket\BucketProviderInterface;
 use App\Service\Bucket\MockS3ProviderService;
-use App\ValueObject\Status;
-use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

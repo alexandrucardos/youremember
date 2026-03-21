@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\EventSubscriber;
 
+use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use App\Service\FrontendTokenParserService;
-use App\ValueObject\UserRole;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;

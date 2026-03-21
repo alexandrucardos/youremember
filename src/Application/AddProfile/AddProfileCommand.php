@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Application\AddProfile;
 
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 
 class AddProfileCommand
 {

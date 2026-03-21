@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\ValueObject;
 
+use App\Domain\ValueObject\OrderIdValueObject;
 use App\Exception\Event\InvalidOrderIdException;
-use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 final class OrderIdValueObjectTest extends TestCase

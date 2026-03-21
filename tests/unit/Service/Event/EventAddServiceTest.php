@@ -4,14 +4,14 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Service\Event;
 
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use App\Entity\Profile;
 use App\Entity\User;
 use App\Exception\User\NotFoundException;
 use App\Repository\ProfileRepository;
 use App\Repository\UserRepository;
 use App\Service\Event\EventAddService;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventAddServiceTest extends TestCase

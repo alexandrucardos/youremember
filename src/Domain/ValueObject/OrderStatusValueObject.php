@@ -2,20 +2,21 @@
 
 declare(strict_types = 1);
 
-namespace App\ValueObject;
+namespace App\Domain\ValueObject;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
-final class ObituaryValueObject
+final class OrderStatusValueObject
 {
-    #[Assert\Type('string')]
-    #[Assert\Length(max: 5000)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 50, min: 2)]
     public readonly mixed $value;
 
     public function __construct(mixed $value)
     {
-        $this->value = $value;
+        $this->value = trim($value);
 
         $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
 
@@ -26,7 +27,7 @@ final class ObituaryValueObject
             foreach ($violations as $violation) {
                 $messages[] = $violation->getMessage();
             }
-            throw new \InvalidArgumentException(implode(', ', $messages));
+            throw new \InvalidArgumentException(implode(' ', $messages));
         }
     }
 }

@@ -9,9 +9,9 @@ use App\Application\UpdateProfileObituary\UpdateProfileObituaryHandler;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\ObituaryValueObject;
-use App\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\ObituaryValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -49,7 +49,9 @@ class UpdateProfileObituaryHandlerTest extends TestCase
 
     public function testInvokeUpdatesProfileObituaryWhenProfileExists(): void
     {
-        $this->profileRepository->method('getExistingProfileIdForOrderIdAndEmail')->willReturn((string) self::PROFILE_ID);
+        $this->profileRepository
+            ->method('getExistingProfileIdForOrderIdAndEmail')
+            ->willReturn((string) self::PROFILE_ID);
 
         $this->profileRepository
             ->expects($this->once())

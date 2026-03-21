@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
+use App\Domain\ValueObject\Status;
 use App\Repository\ProfileRepository;
-use App\ValueObject\Status;
 
 class EventAvailabilityService
 {

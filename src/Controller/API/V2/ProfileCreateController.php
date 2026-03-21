@@ -6,11 +6,11 @@ namespace App\Controller\API\V2;
 
 use App\Application\AddProfile\AddProfileCommand;
 use App\Application\AddProfile\AddProfileHandler;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\ProfileIdValueObject;
-use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

@@ -4,10 +4,10 @@ namespace App\Controller\API\V2;
 
 use App\Application\UpdateProfileBackground\UpdateProfileBackgroundCommand;
 use App\Application\UpdateProfileBackground\UpdateProfileBackgroundHandler;
+use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
-use App\ValueObject\EmailValueObject;
-use App\ValueObject\OrderIdValueObject;
-use App\ValueObject\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
