@@ -1,6 +1,6 @@
 {
 	"info": {
-		"name": "Events Photoshare - V2",
+		"name": "Profile Photoshare - V2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -18,10 +18,10 @@
 	],
 	"item": [
 		{
-			"name": "Event",
+			"name": "Profile",
 			"item": [
 				{
-					"name": "Create Event",
+					"name": "Create Profile",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -35,24 +35,24 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/event",
+							"raw": "{{base_url}}/api/v2/profile",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "event"]
+							"path": ["api", "v2", "profile"]
 						},
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"order_id\": 123,\n\t\"client_email\": \"client@example.com\",\n\t\"event_start_date\": \"2026-06-01\",\n\t\"order_status\": \"completed\",\n\t\"needs_manual_processing\": false\n}",
+							"raw": "{\n\t\"order_id\": 123,\n\t\"client_email\": \"client@example.com\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"description": "Create a new event. Requires ROLE_SUPER_ADMIN."
+						"description": "Create a new profile. Requires admin role."
 					}
 				},
 				{
-					"name": "Get Event Information by UUID",
+					"name": "Get Profile Information by Order ID",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -62,33 +62,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/event/information/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v2/profile/information/oderId/:orderId",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "event", "information", "eventUuid", ":uuid"],
-							"variable": [
-								{
-									"key": "uuid",
-									"value": ""
-								}
-							]
-						},
-						"description": "Get event information by event UUID."
-					}
-				},
-				{
-					"name": "Get Event Information by Order ID",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/v2/event/information/oderId/:orderId",
-							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "event", "information", "oderId", ":orderId"],
+							"path": ["api", "v2", "profile", "information", "oderId", ":orderId"],
 							"variable": [
 								{
 									"key": "orderId",
@@ -96,11 +72,11 @@
 								}
 							]
 						},
-						"description": "Get event information by order ID. Requires ROLE_SUPER_ADMIN."
+						"description": "Get profile information by order ID. Requires admin role."
 					}
 				},
 				{
-					"name": "Update Event Name and Font",
+					"name": "Update Profile Name and Font",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -114,30 +90,30 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/update/name/font/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v2/update/name/font/orderId/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "update", "name", "font", "eventUuid", ":uuid"],
+							"path": ["api", "v2", "update", "name", "font", "orderId", ":order_id"],
 							"variable": [
 								{
-									"key": "uuid",
+									"key": "order_id",
 									"value": ""
 								}
 							]
 						},
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"My Event Name\",\n\t\"font\": \"Arial\"\n}",
+							"raw": "{\n\t\"name\": \"John Doe\",\n\t\"font\": \"Arial\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"description": "Update event name and font. Requires admin role."
+						"description": "Update profile name and font. Requires admin role."
 					}
 				},
 				{
-					"name": "Update Event Status",
+					"name": "Update Profile Obituary",
 					"request": {
 						"method": "PATCH",
 						"header": [
@@ -151,24 +127,67 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/update/event/status",
+							"raw": "{{base_url}}/api/v2/update/obituary/orderId/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "update", "event", "status"]
+							"path": ["api", "v2", "update", "obituary", "orderId", ":order_id"],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": ""
+								}
+							]
 						},
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"order_id\": 123,\n\t\"status\": \"completed\"\n}",
+							"raw": "{\n\t\"obituary\": \"A loving person who will be remembered.\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"description": "Update event status. Requires admin role."
+						"description": "Update profile obituary. Requires admin role."
 					}
 				},
 				{
-					"name": "Update Event Background",
+					"name": "Update Profile Dates",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/update/dates/orderId/:order_id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "update", "dates", "orderId", ":order_id"],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"born_at\": \"1950-01-15\",\n\t\"departed_at\": \"2026-03-10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"description": "Update profile birth and death dates. Requires admin role."
+					}
+				},
+				{
+					"name": "Update Profile Picture",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -178,9 +197,9 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/update/event/background/orderId/:order_id",
+							"raw": "{{base_url}}/api/v2/update/profile/profile-picture/orderId/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "update", "event", "background", "orderId", ":order_id"],
+							"path": ["api", "v2", "update", "profile", "profile-picture", "orderId", ":order_id"],
 							"variable": [
 								{
 									"key": "order_id",
@@ -198,7 +217,41 @@
 								}
 							]
 						},
-						"description": "Update the background image for an event. Requires admin role."
+						"description": "Update the profile picture. Requires admin role."
+					}
+				},
+				{
+					"name": "Update Profile Background",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "{{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v2/update/profile/background/orderId/:order_id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v2", "update", "profile", "background", "orderId", ":order_id"],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": ""
+								}
+							]
+						},
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"description": "Update the background image for a profile. Requires admin role."
 					}
 				}
 			]
@@ -217,12 +270,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/media/add/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v2/media/add/orderId/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "media", "add", "eventUuid", ":uuid"],
+							"path": ["api", "v2", "media", "add", "orderId", ":order_id"],
 							"variable": [
 								{
-									"key": "uuid",
+									"key": "order_id",
 									"value": ""
 								}
 							]
@@ -238,7 +291,7 @@
 								}
 							]
 						},
-						"description": "Upload image files to an event."
+						"description": "Upload image files to a profile. Requires admin role."
 					}
 				},
 				{
@@ -256,12 +309,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/media/delete/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v2/media/delete/orderId/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "media", "delete", "eventUuid", ":uuid"],
+							"path": ["api", "v2", "media", "delete", "orderId", ":order_id"],
 							"variable": [
 								{
-									"key": "uuid",
+									"key": "order_id",
 									"value": ""
 								}
 							]
@@ -275,7 +328,7 @@
 								}
 							}
 						},
-						"description": "Delete media files from an event."
+						"description": "Delete media files from a profile. Requires admin role."
 					}
 				},
 				{
@@ -288,21 +341,17 @@
 								"value": "{{token}}"
 							},
 							{
-								"key": "hash",
-								"value": ""
-							},
-							{
 								"key": "Content-Type",
 								"value": "application/json"
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/media/add/multipart/initiate/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v2/media/add/multipart/initiate/order_id/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "media", "add", "multipart", "initiate", "eventUuid", ":uuid"],
+							"path": ["api", "v2", "media", "add", "multipart", "initiate", "order_id", ":order_id"],
 							"variable": [
 								{
-									"key": "uuid",
+									"key": "order_id",
 									"value": ""
 								}
 							]
@@ -316,7 +365,7 @@
 								}
 							}
 						},
-						"description": "Initiate a multipart upload for a guest. Returns uploadId and key."
+						"description": "Initiate a multipart upload. Returns uploadId and key."
 					}
 				},
 				{
@@ -338,12 +387,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{base_url}}/api/v2/media/add/multipart/part/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v2/media/add/multipart/part/orderId/:order_id",
 							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "media", "add", "multipart", "part", "eventUuid", ":uuid"],
+							"path": ["api", "v2", "media", "add", "multipart", "part", "orderId", ":order_id"],
 							"variable": [
 								{
-									"key": "uuid",
+									"key": "order_id",
 									"value": ""
 								}
 							]
@@ -440,121 +489,6 @@
 							}
 						},
 						"description": "Abort an in-progress multipart upload."
-					}
-				}
-			]
-		},
-		{
-			"name": "Feedback",
-			"item": [
-				{
-					"name": "Add Feedback",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/v2/feedback/add/eventUuid/:uuid",
-							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "feedback", "add", "eventUuid", ":uuid"],
-							"variable": [
-								{
-									"key": "uuid",
-									"value": ""
-								}
-							]
-						},
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"feedback\": \"Great event!\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"description": "Add feedback for an event by UUID."
-					}
-				}
-			]
-		},
-		{
-			"name": "Archive",
-			"item": [
-				{
-					"name": "Create Archive",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/v2/archive/create",
-							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "archive", "create"]
-						},
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"order_id\": 123\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"description": "Trigger archive creation for an event by order ID. Requires ROLE_SUPER_ADMIN."
-					}
-				},
-				{
-					"name": "Subscribe for Archive",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "token",
-								"value": "{{token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/v2/request/archive/eventUuid/:uuid",
-							"host": ["{{base_url}}"],
-							"path": ["api", "v2", "request", "archive", "eventUuid", ":uuid"],
-							"variable": [
-								{
-									"key": "uuid",
-									"value": ""
-								}
-							]
-						},
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"email\": \"user@example.com\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"description": "Subscribe to receive the event archive by email."
 					}
 				}
 			]
