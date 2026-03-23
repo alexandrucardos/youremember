@@ -36,7 +36,9 @@ final class AddMediaHandler
 
         $eventEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
-        $eventEntity->setMediaFiles($command->files, $maxItems, $existingItems, $uniqueMimeTypes);
+        $eventEntity
+            ->setMediaFiles($command->files, $maxItems, $existingItems, $uniqueMimeTypes)
+            ->setOrderId($command->orderIdValueObject);
 
         $this->eventRepository->saveMediaFiles($eventEntity, self::MAX_IMAGE_SIZE_BYTES);
     }
