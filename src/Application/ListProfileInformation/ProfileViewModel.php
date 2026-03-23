@@ -2,7 +2,6 @@
 
 namespace App\Application\ListProfileInformation;
 
-use App\Domain\ValueObject\DateValueObject;
 use App\Entity\Profile;
 
 class ProfileViewModel
@@ -11,8 +10,8 @@ class ProfileViewModel
         public readonly int $id,
         public readonly ?string $name,
         public readonly string $nameFont,
-        public readonly ?DateValueObject $bornAt,
-        public readonly ?DateValueObject $departedAt,
+        public readonly ?string $bornAt,
+        public readonly ?string $departedAt,
         public readonly ?string $obituary
     ) {
     }
@@ -23,8 +22,8 @@ class ProfileViewModel
             id: $profile->getId(),
             name: $profile->getName(),
             nameFont: $profile->getNameFont(),
-            bornAt: $profile->getBornAt(),
-            departedAt: $profile->getDepartedAt(),
+            bornAt: $profile->getBornAt()?->format('Y-m-d'),
+            departedAt: $profile->getDepartedAt()?->format('Y-m-d'),
             obituary: $profile->getObituary()
         );
     }
