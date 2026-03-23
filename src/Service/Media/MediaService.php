@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Service\Media;
 
 use App\Domain\Model\Profile\MediaServiceInterface;
-use App\Domain\Model\Profile\ProfileEntity;
 use App\Entity\Media;
 use App\Exception\Media\NotFoundException;
 use App\Repository\MediaRepository;
@@ -75,15 +74,18 @@ class MediaService
         }
     }
 
-    public function uploadBackground(int $orderId, UploadedFile $file): void
-    {
+    public function uploadProfileFile(
+        int $orderId,
+        UploadedFile $file,
+        string $fileName
+    ): void {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
 
         if ($event === null) {
             throw new NotFoundException('Event not found for order: ' . $orderId);
         }
 
-        $key = sprintf('%d/%s/%s', $orderId, ProfileEntity::ADMIN_USER_IDENTIFIER, self::FILE_BACKGROUND_NAME);
+        $key = sprintf('%d/%s', $orderId, $fileName);
 
         $scaledContent = $this->processContent($file);
 
@@ -96,37 +98,15 @@ class MediaService
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))
                 ->setOriginalFilename($file->getClientOriginalName());
-        }
-
-        $this->mediaRepository->save($mediaBackground);
-
-        $this->bucketProvider->putObject($key, $scaledContent, $file->getMimeType());
-    }
-
-    public function uploadProfilePicture(int $orderId, UploadedFile $file): void
-    {
-        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
-
-        if ($event === null) {
-            throw new NotFoundException('Event not found for order: ' . $orderId);
-        }
-
-        $key = sprintf('%d/%s/%s', $orderId, ProfileEntity::ADMIN_USER_IDENTIFIER, self::FILE_PROFILE_PICTURE_NAME);
-
-        $scaledContent = $this->processContent($file);
-
-        $mediaProfilePicture = $this->mediaRepository->findOneBy(['file_path' => $key]);
-
-        if ($mediaProfilePicture === null) {
-            $mediaProfilePicture = (new Media())
-                ->setEvent($event)
+        } else {
+            $mediaBackground
                 ->setFilePath($key)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))
                 ->setOriginalFilename($file->getClientOriginalName());
         }
 
-        $this->mediaRepository->save($mediaProfilePicture);
+        $this->mediaRepository->save($mediaBackground);
 
         $this->bucketProvider->putObject($key, $scaledContent, $file->getMimeType());
     }

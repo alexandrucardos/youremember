@@ -2,39 +2,29 @@
 
 namespace App\Application\ListProfileInformation;
 
-use App\Domain\ValueObject\DateValueObject;
-use App\Domain\ValueObject\ProfileIdValueObject;
-use App\Domain\ValueObject\ProfileNameFontValueObject;
-
-class ProfileViewModel
+class ListProfileViewModel
 {
     public function __construct(
-        public readonly ProfileIdValueObject       $profileId,
-        public readonly ?string                    $profileName,
-        public readonly ProfileNameFontValueObject $profileNameFont,
-        public readonly ?DateValueObject           $bornAt,
-        public readonly ?DateValueObject           $departedAt,
-        public readonly ?string                    $obituary,
-        public readonly MediaViewModel             $media
-    )
-    {
+        public readonly ProfileViewModel $profileViewModel,
+        public readonly MediaViewModel $mediaViewModel
+    ) {
     }
 
     public function toArray(): array
     {
         return [
             'profile' => [
-                'id' => $this->profileId->value,
-                'name' => $this->profileName,
-                'name_font' => $this->profileNameFont->value,
-                'born_at' => $this->bornAt?->value,
-                'deceased_at' => $this->departedAt?->value,
-                'obituary' => $this->obituary ?? null,
+                'id' => $this->profileViewModel->id,
+                'name' => $this->profileViewModel->name,
+                'name_font' => $this->profileViewModel->nameFont,
+                'born_at' => $this->profileViewModel->bornAt,
+                'deceased_at' => $this->profileViewModel->departedAt,
+                'obituary' => $this->profileViewModel->obituary
             ],
             'media' => [
-                'backgroundPictureUrl' => $this->media->backgroundPictureUrl,
-                'profilePictureUrl' => $this->media->profilePictureUrl,
-                'pictures' => $this->media->picturesUrls
+                'backgroundPictureUrl' => $this->mediaViewModel->backgroundPictureUrl,
+                'profilePictureUrl' => $this->mediaViewModel->profilePictureUrl,
+                'pictures' => $this->mediaViewModel->picturesUrls
             ]
         ];
     }

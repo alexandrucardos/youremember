@@ -39,7 +39,7 @@ final class ProfileCreateController extends AbstractController
         $addProfileCommand = new AddProfileCommand(
             orderIdValueObject: new OrderIdValueObject($data['order_id']),
             emailValueObject: new EmailValueObject($data['client_email']),
-            profileIdValueObject: new ProfileIdValueObject($data['order_id'])
+            profileIdValueObject: new ProfileIdValueObject($data['profile_id'])
         );
 
         $addProfileHandler($addProfileCommand);

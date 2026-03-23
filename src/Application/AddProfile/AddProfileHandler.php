@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Application\AddProfile;
 
+use App\Domain\Model\Profile\Message\OrderAlreadyAssociatedException;
 use App\Domain\Model\Profile\Message\ProfileIdExistsException;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
@@ -23,6 +24,16 @@ class AddProfileHandler
 
         if ($existingProfileId !== null) {
             throw new ProfileIdExistsException("Profile id :{$existingProfileId} already exists!");
+        }
+
+        $existingProfileId = $this->profileRepository->getExistingProfileIdForOrderId($command->orderIdValueObject);
+
+        if ($existingProfileId !== null) {
+            throw new OrderAlreadyAssociatedException(sprintf(
+                'Order id :%s, associated to profileId :%s',
+                $command->orderIdValueObject->value,
+                $existingProfileId
+            ));
         }
 
         $profileEntity = new ProfileEntity($command->profileIdValueObject);

@@ -36,9 +36,6 @@ class Media
     #[ORM\Column(length: 255)]
     private string $original_filename;
 
-    #[ORM\Column(options: ['default' => 0])]
-    private bool $is_downloaded = false;
-
     #[ORM\Column(insertable: false, updatable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTimeImmutable $created_at = null;
 
@@ -167,17 +164,5 @@ class Media
     public function isDeleted(): bool
     {
         return $this->deleted_at !== null;
-    }
-
-    public function isDownloaded(): bool
-    {
-        return $this->is_downloaded;
-    }
-
-    public function setIsDownloaded(bool $is_downloaded): static
-    {
-        $this->is_downloaded = $is_downloaded;
-
-        return $this;
     }
 }

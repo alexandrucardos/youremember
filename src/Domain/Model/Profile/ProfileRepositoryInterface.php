@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Domain\Model\Profile;
 
-use App\Application\ListProfileInformation\ProfileViewModel;
+use App\Application\ListProfileInformation\ListProfileViewModel;
 use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\ProfileIdValueObject;
@@ -18,7 +18,7 @@ interface ProfileRepositoryInterface
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void;
 
-    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ProfileViewModel;
+    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ListProfileViewModel;
 
     public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
@@ -48,4 +48,6 @@ interface ProfileRepositoryInterface
     public function fetchMultipartInitData(ProfileEntity $eventEntity): array;
 
     public function getExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
+
+    public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject);
 }

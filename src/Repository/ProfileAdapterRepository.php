@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Repository;
 
+use App\Application\ListProfileInformation\ListProfileViewModel;
 use App\Application\ListProfileInformation\MediaViewModel;
 use App\Application\ListProfileInformation\ProfileViewModel;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
@@ -12,7 +13,6 @@ use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\ProfileIdValueObject;
-use App\Domain\ValueObject\ProfileNameFontValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\Entity\Profile;
 use App\Entity\User;
@@ -72,21 +72,19 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $this->profileRepository->save($profile);
     }
 
-    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ProfileViewModel
+    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ListProfileViewModel
     {
         $profileDataValueObject = $this->profileMediaFetchService->fetchForOrderId($orderIdValueObject);
 
         $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
-        return new ProfileViewModel(
-            profileId: new ProfileIdValueObject($profile ? $profile->getExternalId() : null),
-            profileName: $profile->getName(),
-            profileNameFont: new ProfileNameFontValueObject($profile->getNameFont()),
-            media: new MediaViewModel(
-                backgroundPictureUrl: $profileDataValueObject['backgroundPictureUrl'],
-                profilePictureUrl: $profileDataValueObject['profilePictureUrl'],
-                picturesUrls: $profileDataValueObject['pictures']
-            )
+        if (!$profile) {
+            throw new ProfileNotFoundException();
+        }
+
+        return new ListProfileViewModel(
+            profileViewModel: ProfileViewModel::fromEntity($profile),
+            mediaViewModel: MediaViewModel::fromArray($profileDataValueObject)
         );
     }
 
@@ -168,17 +166,19 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function updateBackgroundFile(ProfileEntity $eventEntity): void
     {
-        $this->mediaService->uploadBackground(
+        $this->mediaService->uploadProfileFile(
             orderId: $eventEntity->getOrderId()->value,
-            file: $eventEntity->getBackground()
+            file: $eventEntity->getBackground(),
+            fileName: MediaService::FILE_BACKGROUND_NAME
         );
     }
 
     public function updateProfilePictureFile(ProfileEntity $eventEntity): void
     {
-        $this->mediaService->uploadProfilePicture(
+        $this->mediaService->uploadProfileFile(
             orderId: $eventEntity->getOrderId()->value,
-            file: $eventEntity->getProfilePicture()
+            file: $eventEntity->getProfilePicture(),
+            fileName: MediaService::FILE_PROFILE_PICTURE_NAME
         );
     }
 
@@ -195,6 +195,15 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
     {
         $profile = $this->profileRepository->findOneBy([
             'external_id' => $profileIdValueObject->value
+        ]);
+
+        return $profile ? $profile->getExternalId() : null;
+    }
+
+    public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject)
+    {
+        $profile = $this->profileRepository->findOneBy([
+            'order_id' => $orderIdValueObject->value
         ]);
 
         return $profile ? $profile->getExternalId() : null;

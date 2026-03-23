@@ -13,7 +13,7 @@ class ListProfileInformation
 
     public function __invoke(
         ListProfileInformationQuery $query
-    ): ProfileViewModel
+    ): ListProfileViewModel
     {
         return $this->eventRepository->fetchProfileViewModelForOrderId($query->orderId);
     }
