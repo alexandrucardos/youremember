@@ -2,10 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
-use App\Application\AddMedia\AddMediaCommand;
-use App\Application\AddMedia\AddMediaHandler;
+use App\Application\DeleteMedia\DeleteMediaCommand;
+use App\Application\DeleteMedia\DeleteMediaHandler;
 use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\UserRole;
@@ -17,15 +17,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/media/add')]
-final class MediaAddController extends AbstractController
+#[Route('/api/v1/media/delete')]
+final class MediaDeleteController extends AbstractController
 {
-    public const NAME_MEDIA_ADD = 'api_media_add';
+    public const NAME_MEDIA_DELETE = 'api_media_delete';
 
-    #[Route('/orderId/{order_id}', name: self::NAME_MEDIA_ADD, methods: ['POST'])]
-    public function mediaAdd(
+    #[Route('/orderId/{order_id}', name: self::NAME_MEDIA_DELETE, methods: ['DELETE'])]
+    public function guestDelete(
         Request $request,
-        AddMediaHandler $addMediaHandler
+        DeleteMediaHandler $deleteMediaHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -33,14 +33,18 @@ final class MediaAddController extends AbstractController
             throw new AccessDeniedHttpException();
         }
 
-        $addMediaCommand = new AddMediaCommand(
+        $data = json_decode($request->getContent(), true);
+
+        $urls = $data['urls'] ?? [];
+
+        $deleteMediaCommand = new DeleteMediaCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
-            files: $request->files->get('files', []),
+            filePaths: $urls,
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL))
         );
 
-        $addMediaHandler($addMediaCommand);
+        $deleteMediaHandler($deleteMediaCommand);
 
-        return $this->json([], Response::HTTP_CREATED);
+        return $this->json([], Response::HTTP_OK);
     }
 }

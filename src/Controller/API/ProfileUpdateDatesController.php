@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
-use App\Application\UpdateProfileBackground\UpdateProfileBackgroundCommand;
-use App\Application\UpdateProfileBackground\UpdateProfileBackgroundHandler;
+use App\Application\UpdateProfileDates\UpdateProfileDatesCommand;
+use App\Application\UpdateProfileDates\UpdateProfileDatesHandler;
+use App\Domain\ValueObject\DateValueObject;
 use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\UserRole;
@@ -14,15 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/update/profile/background')]
-final class ProfileUpdateBackgroundController extends AbstractController
+#[Route('/api/v1/update/dates')]
+final class ProfileUpdateDatesController extends AbstractController
 {
-    public const NAME_PROFILE_BACKGROUND_UPDATE = 'api_profile_background_update';
+    public const NAME_PROFILE_DATES_UPDATE = 'api_profile_dates_update';
 
-    #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_BACKGROUND_UPDATE, methods: ['POST'])]
+    #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_DATES_UPDATE, methods: ['PATCH'])]
     public function update(
         Request $request,
-        UpdateProfileBackgroundHandler $updateProfileBackgroundHandler
+        UpdateProfileDatesHandler $updateProfileDatesHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -30,13 +31,16 @@ final class ProfileUpdateBackgroundController extends AbstractController
             throw new AccessDeniedHttpException('Admins role missing');
         }
 
-        $updateProfileBackgroundCommand = new UpdateProfileBackgroundCommand(
+        $data = json_decode($request->getContent(), true);
+
+        $updateProfileDatesCommand = new UpdateProfileDatesCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
-            backgroundFile: $request->files->get('file', [])
+            bornAtValueObject: new DateValueObject($data['born_at']),
+            departedAtValueObject: new DateValueObject($data['departed_at'])
         );
 
-        $updateProfileBackgroundHandler($updateProfileBackgroundCommand);
+        $updateProfileDatesHandler($updateProfileDatesCommand);
 
         return $this->json([]);
     }

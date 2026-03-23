@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
 use App\Application\UpdateProfileName\UpdateProfileNameCommand;
 use App\Application\UpdateProfileName\UpdateProfileNameHandler;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/update/name/font')]
+#[Route('/api/v1/update/name/font')]
 final class ProfileUpdateNameAndFontController extends AbstractController
 {
     public const NAME_PROFILE_NAME_UPDATE = 'api_profile_name_update';

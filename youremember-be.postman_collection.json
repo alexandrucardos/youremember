@@ -1,0 +1,537 @@
+{
+	"info": {
+		"_postman_id": "youremember-be-api",
+		"name": "youremember-be",
+		"description": "API endpoints for the youremember backend - memorial profile management system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Create Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"order_id\": \"ORD-12345\",\n  \"client_email\": \"client@example.com\",\n  \"profile_id\": \"profile-uuid-123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile"
+							]
+						},
+						"description": "Creates a new profile for an order. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile Information",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/information/oderId/:orderId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"information",
+								"oderId",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Retrieves profile information for a specific order ID. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Name and Font",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe Memorial\",\n  \"font\": \"Arial\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/update/name/font/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"name",
+								"font",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Updates the profile name and font for a specific order. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Dates",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"born_at\": \"1950-01-15\",\n  \"departed_at\": \"2024-12-20\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/update/dates/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"dates",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Updates the birth and departure dates for a profile. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Obituary",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"obituary\": \"In loving memory of John Doe, a devoted father and friend who will be deeply missed.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/update/obituary/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"obituary",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Updates the obituary text for a profile. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Background",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/update/profile/background/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"profile",
+								"background",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Uploads a background image for the profile. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile Picture",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/update/profile/profile-picture/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"profile",
+								"profile-picture",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Uploads a profile picture for the memorial profile. Requires admin role."
+					},
+					"response": []
+				}
+			],
+			"description": "Profile management endpoints for creating and updating memorial profiles"
+		},
+		{
+			"name": "Media",
+			"item": [
+				{
+					"name": "Add Media",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/media/add/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"add",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Uploads media files (photos/videos) for a profile. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Media",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"urls\": [\n    \"https://s3.amazonaws.com/bucket/order_id/client/file1.jpg\",\n    \"https://s3.amazonaws.com/bucket/order_id/client/file2.jpg\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/media/delete/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"delete",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Deletes media files from a profile. Requires admin role."
+					},
+					"response": []
+				}
+			],
+			"description": "Media management endpoints for uploading and deleting photos/videos"
+		},
+		{
+			"name": "Media Multipart Upload",
+			"item": [
+				{
+					"name": "Initiate Multipart Upload",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"filename\": \"large-video.mp4\",\n  \"mimeType\": \"video/mp4\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/media/add/multipart/initiate/order_id/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"add",
+								"multipart",
+								"initiate",
+								"order_id",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Initiates a multipart upload for large files. Returns upload ID and key."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Presigned URL for Part",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "hash",
+								"value": "guest-hash-123"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"order_id/hash/filename.mp4\",\n  \"uploadId\": \"upload-id-from-initiate\",\n  \"partNumber\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/media/add/multipart/part/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"add",
+								"multipart",
+								"part",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Gets a presigned URL for uploading a specific part of a multipart upload. Requires hash header."
+					},
+					"response": []
+				},
+				{
+					"name": "Complete Multipart Upload",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "hash",
+								"value": "guest-hash-123"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"order_id/hash/filename.mp4\",\n  \"uploadId\": \"upload-id-from-initiate\",\n  \"filename\": \"large-video.mp4\",\n  \"mimeType\": \"video/mp4\",\n  \"fileSize\": 52428800,\n  \"parts\": [\n    {\n      \"PartNumber\": 1,\n      \"ETag\": \"etag-from-upload-1\"\n    },\n    {\n      \"PartNumber\": 2,\n      \"ETag\": \"etag-from-upload-2\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/media/add/multipart/complete/eventUuid/:uuid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"add",
+								"multipart",
+								"complete",
+								"eventUuid",
+								":uuid"
+							],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": "profile-uuid-123"
+								}
+							]
+						},
+						"description": "Completes a multipart upload after all parts have been uploaded. Requires hash header."
+					},
+					"response": []
+				},
+				{
+					"name": "Abort Multipart Upload",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "hash",
+								"value": "guest-hash-123"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key\": \"order_id/hash/filename.mp4\",\n  \"uploadId\": \"upload-id-from-initiate\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/media/add/multipart/abort/eventUuid/:uuid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"media",
+								"add",
+								"multipart",
+								"abort",
+								"eventUuid",
+								":uuid"
+							],
+							"variable": [
+								{
+									"key": "uuid",
+									"value": "profile-uuid-123"
+								}
+							]
+						},
+						"description": "Aborts a multipart upload. Requires hash header."
+					},
+					"response": []
+				}
+			],
+			"description": "Multipart upload endpoints for handling large file uploads to S3"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}

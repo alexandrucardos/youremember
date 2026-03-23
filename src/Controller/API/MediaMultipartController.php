@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
 use App\Application\InitiateMultipartMediaUpload\InitiateMediaUploadCommand;
 use App\Application\InitiateMultipartMediaUpload\InitiateMediaUploadHandler;
@@ -21,13 +21,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/media/add/multipart')]
+#[Route('/api/v1/media/add/multipart')]
 final class MediaMultipartController extends AbstractController
 {
-    public const NAME_MEDIA_GUEST_MULTIPART_INITIATE = 'api_media_guest_multipart_initiate_v2';
-    public const NAME_MEDIA_GUEST_MULTIPART_PART = 'api_media_guest_multipart_part_v2';
-    public const NAME_MEDIA_GUEST_MULTIPART_COMPLETE = 'api_media_guest_multipart_complete_v2';
-    public const NAME_MEDIA_GUEST_MULTIPART_ABORT = 'api_media_guest_multipart_abort_v2';
+    public const NAME_MEDIA_GUEST_MULTIPART_INITIATE = 'api_media_guest_multipart_initiate_v1';
+    public const NAME_MEDIA_GUEST_MULTIPART_PART = 'api_media_guest_multipart_part_v1';
+    public const NAME_MEDIA_GUEST_MULTIPART_COMPLETE = 'api_media_guest_multipart_complete_v1';
+    public const NAME_MEDIA_GUEST_MULTIPART_ABORT = 'api_media_guest_multipart_abort_v1';
 
     #[Route('/initiate/order_id/{order_id}', name: self::NAME_MEDIA_GUEST_MULTIPART_INITIATE, methods: ['POST'])]
     public function guestMultipartInitiate(

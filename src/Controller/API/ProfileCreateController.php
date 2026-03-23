@@ -2,12 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
-use App\Application\DeleteMedia\DeleteMediaCommand;
-use App\Application\DeleteMedia\DeleteMediaHandler;
+use App\Application\AddProfile\AddProfileCommand;
+use App\Application\AddProfile\AddProfileHandler;
 use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
+use App\Domain\ValueObject\ProfileIdValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,15 +18,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/media/delete')]
-final class MediaDeleteController extends AbstractController
+#[Route('/api/v1/profile')]
+final class ProfileCreateController extends AbstractController
 {
-    public const NAME_MEDIA_DELETE = 'api_media_delete';
+    public const NAME_PROFILE_CREATE = 'api_profile_create';
 
-    #[Route('/orderId/{order_id}', name: self::NAME_MEDIA_DELETE, methods: ['DELETE'])]
-    public function guestDelete(
+    #[Route('', name: self::NAME_PROFILE_CREATE, methods: ['POST'])]
+    public function createClient(
         Request $request,
-        DeleteMediaHandler $deleteMediaHandler
+        AddProfileHandler $addProfileHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -35,16 +36,14 @@ final class MediaDeleteController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $urls = $data['urls'] ?? [];
-
-        $deleteMediaCommand = new DeleteMediaCommand(
-            orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
-            filePaths: $urls,
-            userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL))
+        $addProfileCommand = new AddProfileCommand(
+            orderIdValueObject: new OrderIdValueObject($data['order_id']),
+            emailValueObject: new EmailValueObject($data['client_email']),
+            profileIdValueObject: new ProfileIdValueObject($data['profile_id'])
         );
 
-        $deleteMediaHandler($deleteMediaCommand);
+        $addProfileHandler($addProfileCommand);
 
-        return $this->json([], Response::HTTP_OK);
+        return $this->json([], Response::HTTP_CREATED);
     }
 }

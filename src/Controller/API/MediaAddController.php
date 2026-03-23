@@ -2,13 +2,12 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
-use App\Application\AddProfile\AddProfileCommand;
-use App\Application\AddProfile\AddProfileHandler;
+use App\Application\AddMedia\AddMediaCommand;
+use App\Application\AddMedia\AddMediaHandler;
 use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
-use App\Domain\ValueObject\ProfileIdValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,15 +17,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/profile')]
-final class ProfileCreateController extends AbstractController
+#[Route('/api/v1/media/add')]
+final class MediaAddController extends AbstractController
 {
-    public const NAME_PROFILE_CREATE = 'api_profile_create';
+    public const NAME_MEDIA_ADD = 'api_media_add';
 
-    #[Route('', name: self::NAME_PROFILE_CREATE, methods: ['POST'])]
-    public function createClient(
+    #[Route('/orderId/{order_id}', name: self::NAME_MEDIA_ADD, methods: ['POST'])]
+    public function mediaAdd(
         Request $request,
-        AddProfileHandler $addProfileHandler
+        AddMediaHandler $addMediaHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -34,15 +33,13 @@ final class ProfileCreateController extends AbstractController
             throw new AccessDeniedHttpException();
         }
 
-        $data = json_decode($request->getContent(), true);
-
-        $addProfileCommand = new AddProfileCommand(
-            orderIdValueObject: new OrderIdValueObject($data['order_id']),
-            emailValueObject: new EmailValueObject($data['client_email']),
-            profileIdValueObject: new ProfileIdValueObject($data['profile_id'])
+        $addMediaCommand = new AddMediaCommand(
+            orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
+            files: $request->files->get('files', []),
+            userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL))
         );
 
-        $addProfileHandler($addProfileCommand);
+        $addMediaHandler($addMediaCommand);
 
         return $this->json([], Response::HTTP_CREATED);
     }

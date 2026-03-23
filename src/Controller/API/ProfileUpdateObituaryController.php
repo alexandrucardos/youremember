@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
-use App\Application\UpdateProfilePicture\UpdateProfilePictureCommand;
-use App\Application\UpdateProfilePicture\UpdateProfilePictureHandler;
+use App\Application\UpdateProfileObituary\UpdateProfileObituaryCommand;
+use App\Application\UpdateProfileObituary\UpdateProfileObituaryHandler;
 use App\Domain\ValueObject\EmailValueObject;
+use App\Domain\ValueObject\ObituaryValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
@@ -14,15 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/update/profile/profile-picture')]
-final class ProfileUpdateProfilePictureController extends AbstractController
+#[Route('/api/v1/update/obituary')]
+final class ProfileUpdateObituaryController extends AbstractController
 {
-    public const NAME_PROFILE_PROFILE_PICTURE_UPDATE = 'api_profile_profile_picture_update';
+    public const NAME_PROFILE_OBITUARY_UPDATE = 'api_profile_obituary_update';
 
-    #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_PROFILE_PICTURE_UPDATE, methods: ['POST'])]
+    #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_OBITUARY_UPDATE, methods: ['PATCH'])]
     public function update(
         Request $request,
-        UpdateProfilePictureHandler $updateProfilePictureHandler
+        UpdateProfileObituaryHandler $updateProfileObituaryHandler
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -30,13 +31,15 @@ final class ProfileUpdateProfilePictureController extends AbstractController
             throw new AccessDeniedHttpException('Admins role missing');
         }
 
-        $updateProfilePictureCommand = new UpdateProfilePictureCommand(
+        $data = json_decode($request->getContent(), true);
+
+        $updateProfileObituaryCommand = new UpdateProfileObituaryCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
-            profilePictureFile: $request->files->get('file', [])
+            obituaryValueObject: new ObituaryValueObject($data['obituary'])
         );
 
-        $updateProfilePictureHandler($updateProfilePictureCommand);
+        $updateProfileObituaryHandler($updateProfileObituaryCommand);
 
         return $this->json([]);
     }

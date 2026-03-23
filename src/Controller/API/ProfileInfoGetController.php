@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\API\V2;
+namespace App\Controller\API;
 
 use App\Application\ListProfileInformation\ListProfileInformation;
 use App\Application\ListProfileInformation\ListProfileInformationQuery;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/v2/profile/information')]
+#[Route('/api/v1/profile/information')]
 final class ProfileInfoGetController extends AbstractController
 {
     public const NAME_EVENT_INFORMATION_ORDER_ID = 'api_event_information_order_id';
