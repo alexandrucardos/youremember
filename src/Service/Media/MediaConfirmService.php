@@ -41,7 +41,7 @@ class MediaConfirmService
         $this->bucketProvider->completeMultipartUpload($key, $uploadId, $parts);
 
         $media = (new Media())
-            ->setEvent($event)
+            ->setProfile($event)
             ->setFilePath($key)
             ->setThumbnailPath(null)
             ->setFileType($mimeType)

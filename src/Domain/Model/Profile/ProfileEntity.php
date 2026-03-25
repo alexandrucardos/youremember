@@ -59,7 +59,7 @@ class ProfileEntity
     ): self
     {
         if (empty($paths)) {
-            throw new MissingFiles('Missing files');
+            throw new MissingFiles('Nu exista fisiere selectate');
         }
 
         $this->mediaFilePathsForDeletion = $paths;
@@ -84,15 +84,15 @@ class ProfileEntity
         array $uniqueMimeTypes
     ): self {
         if (empty($files)) {
-            throw new MissingFiles('Missing files from request');
+            throw new MissingFiles('Nu exista fisiere selectate');
         }
 
         if ($maxItems < ( $existingItems + count($files) )) {
-            throw new MaximumProfileItemsReachedException('Maximum number of files reached!');
+            throw new MaximumProfileItemsReachedException('Numar maxim de fisiere atins!');
         }
 
         if (!empty(array_diff($uniqueMimeTypes, self::ACCEPTED_MIME_TYPES))) {
-            throw new IncorrectMimeTypeException('Incorrect media type!');
+            throw new IncorrectMimeTypeException('Tip de fisier invalid!');
         }
 
         $this->mediaFiles = $files;
@@ -160,7 +160,7 @@ class ProfileEntity
         if ($bornAtValueObject->value instanceof \DateTimeImmutable) {
             $now = new \DateTimeImmutable();
             if ($bornAtValueObject->value > $now) {
-                throw new DateInPastException('Born date must be in the past');
+                throw new DateInPastException('Data nasterii treuie sa fie in trecut');
             }
         }
 
@@ -177,8 +177,8 @@ class ProfileEntity
     {
         if ($departedAtValueObject->value instanceof \DateTimeImmutable) {
             $now = new \DateTimeImmutable();
-            if ($departedAtValueObject->value > $now) {
-                throw new DateInPastException('Deceased date must be in the past');
+            if ($departedAtValueObject->value >= $now) {
+                throw new DateInPastException('Data plecarii trebuie sa fie in trecut');
             }
         }
 

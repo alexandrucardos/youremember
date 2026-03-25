@@ -57,7 +57,7 @@ class MediaService
             $thumbnailKey = $thumbnailContent !== null ? $this->buildThumbnailKey($key) : null;
 
             $media = (new Media())
-                ->setEvent($event)
+                ->setProfile($event)
                 ->setFilePath($key)
                 ->setThumbnailPath($thumbnailKey)
                 ->setFileType($file->getMimeType())
@@ -93,7 +93,7 @@ class MediaService
 
         if ($mediaBackground === null) {
             $mediaBackground = (new Media())
-                ->setEvent($event)
+                ->setProfile($event)
                 ->setFilePath($key)
                 ->setFileType($file->getMimeType())
                 ->setFileSize(strlen($scaledContent))

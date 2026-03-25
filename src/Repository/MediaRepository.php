@@ -36,8 +36,8 @@ class MediaRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('m')
             ->select('COALESCE(m.thumbnail_path, m.file_path)')
-            ->innerJoin('m.event', 'e')
-            ->where('e.order_id = :orderId')
+            ->innerJoin('m.profile', 'p')
+            ->where('p.order_id = :orderId')
             ->andWhere('m.deleted_at IS NULL')
             ->setParameter('orderId', $orderId)
             ->getQuery()
@@ -52,8 +52,8 @@ class MediaRepository extends ServiceEntityRepository
         return $this
             ->createQueryBuilder('m')
             ->select('m.file_path')
-            ->innerJoin('m.event', 'e')
-            ->where('e.order_id = :orderId')
+            ->innerJoin('m.profile', 'p')
+            ->where('p.order_id = :orderId')
             ->andWhere('m.deleted_at IS NULL')
             ->andWhere('m.is_downloaded = 0')
             ->setParameter('orderId', $orderId)

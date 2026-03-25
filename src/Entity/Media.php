@@ -19,7 +19,7 @@ class Media
 
     #[ORM\ManyToOne(inversedBy: 'media')]
     #[ORM\JoinColumn(nullable: false)]
-    private Profile $event;
+    private Profile $profile;
 
     #[ORM\Column(length: 255)]
     private string $file_path;
@@ -53,14 +53,14 @@ class Media
         return $this->id;
     }
 
-    public function getEvent(): Profile
+    public function getProfile(): Profile
     {
-        return $this->event;
+        return $this->profile;
     }
 
-    public function setEvent(Profile $event): static
+    public function setProfile(Profile $profile): static
     {
-        $this->event = $event;
+        $this->profile = $profile;
 
         return $this;
     }

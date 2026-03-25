@@ -197,7 +197,7 @@ class Profile
     {
         if (!$this->media->contains($media)) {
             $this->media->add($media);
-            $media->setEvent($this);
+            $media->setProfile($this);
         }
 
         return $this;

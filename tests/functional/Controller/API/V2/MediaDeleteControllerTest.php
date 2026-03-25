@@ -115,7 +115,7 @@ class MediaDeleteControllerTest extends WebTestCase
         $thumbnailPath1 = $orderId . '/client/thumb1.jpg';
         $media1 = new Media();
         $media1
-            ->setEvent($profile)
+            ->setProfile($profile)
             ->setFilePath($filePath1)
             ->setThumbnailPath($thumbnailPath1)
             ->setFileType('image/jpeg')
@@ -127,7 +127,7 @@ class MediaDeleteControllerTest extends WebTestCase
         $thumbnailPath2 = $orderId . '/client/thumb2.jpg';
         $media2 = new Media();
         $media2
-            ->setEvent($profile)
+            ->setProfile($profile)
             ->setFilePath($filePath2)
             ->setThumbnailPath($thumbnailPath2)
             ->setFileType('image/jpeg')
@@ -215,7 +215,7 @@ class MediaDeleteControllerTest extends WebTestCase
 
             $media = new Media();
             $media
-                ->setEvent($profile)
+                ->setProfile($profile)
                 ->setFilePath($filePath)
                 ->setThumbnailPath($thumbnailPath)
                 ->setFileType('image/jpeg')
@@ -288,7 +288,7 @@ class MediaDeleteControllerTest extends WebTestCase
         $thumbnailPath = $orderId . '/client/thumb.jpg';
         $media = new Media();
         $media
-            ->setEvent($profile)
+            ->setProfile($profile)
             ->setFilePath($filePath)
             ->setThumbnailPath($thumbnailPath)
             ->setFileType('image/jpeg')

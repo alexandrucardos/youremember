@@ -91,7 +91,7 @@ class MediaServiceTest extends TestCase
             ->method('save')
             ->with($this->callback(
                 static fn(Media $media) => (
-                    $media->getEvent() === $event
+                    $media->getProfile() === $event
                     && str_starts_with($media->getFilePath(), '123/')
                     && str_ends_with($media->getFilePath(), '.mp4')
                     && $media->getFileType() === 'video/mp4'
