@@ -19,7 +19,7 @@ class ProfileViewModel
     public static function fromEntity(Profile $profile): self
     {
         return new self(
-            id: $profile->getId(),
+            id: $profile->getExternalId(),
             name: $profile->getName(),
             nameFont: $profile->getNameFont(),
             bornAt: $profile->getBornAt()?->format('Y-m-d'),
