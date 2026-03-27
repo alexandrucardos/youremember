@@ -200,7 +200,7 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         return $profile ? $profile->getExternalId() : null;
     }
 
-    public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject)
+    public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject): ?int
     {
         $profile = $this->profileRepository->findOneBy([
             'order_id' => $orderIdValueObject->value

@@ -290,6 +290,34 @@
 						"description": "Uploads a profile picture for the memorial profile. Requires admin role."
 					},
 					"response": []
+				},
+				{
+					"name": "Get Profile ID by Order ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profileId/oderId/:orderId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profileId",
+								"oderId",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Returns the profile UUID for a given order ID. Requires admin role."
+					},
+					"response": []
 				}
 			],
 			"description": "Profile management endpoints for creating and updating memorial profiles"

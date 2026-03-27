@@ -20,7 +20,7 @@ class FrontendTokenParserServiceTest extends TestCase
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
         $email = 'admin@email.com';
-        $expiration = time() + 86_400; // +1 day
+        $expiration = time() + ( 86_400 * 30 ); // +30 days
 
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac(FrontendTokenParserService::HASH_ALGO, $data, self::API_KEY);
@@ -37,7 +37,7 @@ class FrontendTokenParserServiceTest extends TestCase
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
         $email = FrontendTokenParserService::SUPER_ADMIN_EMAIL;
-        $expiration = time() + 86_400; // +1 day
+        $expiration = time() + ( 86_400 * 30 ); // +30 days
 
         $data = $email . '|' . $expiration;
         $hmac = hash_hmac(FrontendTokenParserService::HASH_ALGO, $data, self::API_KEY);
@@ -66,7 +66,7 @@ class FrontendTokenParserServiceTest extends TestCase
         $tokenParser = new FrontendTokenParserService(self::API_KEY);
 
         $username = 'admin';
-        $expiration = time() + 86_400;
+        $expiration = time() + ( 86_400 * 30 );
         $token = $username . '|' . $expiration . '|' . 'invalid-hmac';
 
         $this->expectException(InvalidHmacException::class);

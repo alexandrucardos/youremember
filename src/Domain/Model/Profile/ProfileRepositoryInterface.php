@@ -49,7 +49,7 @@ interface ProfileRepositoryInterface
 
     public function getExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
 
-    public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject);
+    public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject): ?int;
 
-    public function getExistingOrderIdForProfileId(ProfileIdValueObject $profileIdValueObject);
+    public function getExistingOrderIdForProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
 }

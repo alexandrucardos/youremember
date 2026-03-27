@@ -30,7 +30,7 @@ class AddProfileHandler
 
         if ($existingProfileId !== null) {
             throw new OrderAlreadyAssociatedException(sprintf(
-                'Order id :%s, associated to profileId :%s',
+                'Order id :%s, associated to profileId :%d',
                 $command->orderIdValueObject->value,
                 $existingProfileId
             ));
