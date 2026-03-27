@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\Service\Event;
 
-use App\Domain\ValueObject\OrderIdValueObject;
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;
 
@@ -42,9 +41,9 @@ class ProfileMediaFetchService
         ];
     }
 
-    public function fetchForOrderId(OrderIdValueObject $orderIdValueObject): array
+    public function fetchForOrderId(int $orderId): array
     {
-        $urls = $this->fetchContentUrlsByOrderId($orderIdValueObject->value);
+        $urls = $this->fetchContentUrlsByOrderId($orderId);
 
         $backgroundPictureUrl = '';
         $profilePictureUrl = '';

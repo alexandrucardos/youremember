@@ -31,7 +31,7 @@ class RequestLoggerSubscriber implements EventSubscriberInterface
 
         $request = $event->getRequest();
 
-        $this->responseLogger->info('Response', [
+        $this->responseLogger->info('Request', [
             'method' => $request->getMethod(),
             'uri' => $request->getRequestUri(),
             'request_content' => $request->getContent()

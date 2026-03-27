@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
+use App\Controller\API\ProfileInfoGetController;
 use App\Service\FrontendTokenParserService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -35,6 +36,12 @@ final class SecurityValidationRequestSubscriber implements EventSubscriberInterf
         }
 
         $request = $event->getRequest();
+
+        $routeName = $request->attributes->get('_route');
+
+        if ($routeName === ProfileInfoGetController::NAME_PROFILE_INFORMATION_PROFILE_ID) {
+            return;
+        }
 
         $token = $request->headers->get(self::REQUEST_TOKEN);
 

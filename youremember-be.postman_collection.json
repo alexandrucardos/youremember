@@ -39,7 +39,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Profile Information",
+					"name": "Get Profile Information by Order ID",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -64,6 +64,35 @@
 							]
 						},
 						"description": "Retrieves profile information for a specific order ID. Requires admin role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile Information by Profile ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/information/profileId/:profileId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"information",
+								"profileId",
+								":profileId"
+							],
+							"variable": [
+								{
+									"key": "profileId",
+									"value": "profile-uuid-123"
+								}
+							]
+						},
+						"description": "Retrieves profile information for a specific profile UUID. Public endpoint."
 					},
 					"response": []
 				},

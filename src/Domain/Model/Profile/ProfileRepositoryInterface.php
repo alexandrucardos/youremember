@@ -18,7 +18,7 @@ interface ProfileRepositoryInterface
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void;
 
-    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ListProfileViewModel;
+    public function fetchProfileViewModelForOrderId(int $orderId): ListProfileViewModel;
 
     public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
@@ -50,4 +50,6 @@ interface ProfileRepositoryInterface
     public function getExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
 
     public function getExistingProfileIdForOrderId(OrderIdValueObject $orderIdValueObject);
+
+    public function getExistingOrderIdForProfileId(ProfileIdValueObject $profileIdValueObject);
 }

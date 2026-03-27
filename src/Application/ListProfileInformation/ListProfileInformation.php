@@ -7,7 +7,7 @@ use App\Domain\Model\Profile\ProfileRepositoryInterface;
 class ListProfileInformation
 {
     public function __construct(
-        public readonly ProfileRepositoryInterface $eventRepository
+        public readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
@@ -15,6 +15,12 @@ class ListProfileInformation
         ListProfileInformationQuery $query
     ): ListProfileViewModel
     {
-        return $this->eventRepository->fetchProfileViewModelForOrderId($query->orderId);
+        if ($query->orderIdValueObject === null) {
+            $orderId = $this->profileRepository->getExistingOrderIdForProfileId($query->profileIdValueObject);
+        } else {
+            $orderId = $query->orderIdValueObject->value;
+        }
+
+        return $this->profileRepository->fetchProfileViewModelForOrderId($orderId);
     }
 }

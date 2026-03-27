@@ -72,11 +72,11 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $this->profileRepository->save($profile);
     }
 
-    public function fetchProfileViewModelForOrderId(OrderIdValueObject $orderIdValueObject): ListProfileViewModel
+    public function fetchProfileViewModelForOrderId(int $orderId): ListProfileViewModel
     {
-        $profileDataValueObject = $this->profileMediaFetchService->fetchForOrderId($orderIdValueObject);
+        $profileDataValueObject = $this->profileMediaFetchService->fetchForOrderId($orderId);
 
-        $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
+        $profile = $this->profileRepository->findOneBy(['order_id' => $orderId]);
 
         if (!$profile) {
             throw new ProfileNotFoundException();
@@ -207,6 +207,15 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         ]);
 
         return $profile ? $profile->getExternalId() : null;
+    }
+
+    public function getExistingOrderIdForProfileId(ProfileIdValueObject $profileIdValueObject): ?int
+    {
+        $profile = $this->profileRepository->findOneBy([
+            'external_id' => $profileIdValueObject->value
+        ]);
+
+        return $profile ? $profile->getOrderId() : null;
     }
 
     private function getProfile(OrderIdValueObject $orderIdValueObject): Profile

@@ -37,7 +37,7 @@ class ListEventInformationTest extends TestCase
             ))
             ->willReturn($mockViewModel);
 
-        $query = new ListProfileInformationQuery(orderId: new OrderIdValueObject($orderId));
+        $query = new ListProfileInformationQuery(orderIdValueObject: new OrderIdValueObject($orderId));
 
         $handler = new ListProfileInformation($eventRepository);
         $result = $handler($query);
