@@ -43,7 +43,7 @@ final class EventFetchService
         ];
     }
 
-    public function fetchByUuid(ProfileIdValueObject $uuid): array
+    public function fetchOrderId(ProfileIdValueObject $uuid): array
     {
         $event = $this->eventRepository->findOneBy(['external_id' => $uuid->value]);
 

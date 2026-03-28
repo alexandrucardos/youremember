@@ -423,7 +423,7 @@
 							"raw": "{\n  \"filename\": \"large-video.mp4\",\n  \"mimeType\": \"video/mp4\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/media/add/multipart/initiate/order_id/:order_id",
+							"raw": "{{base_url}}/api/v1/media/add/multipart/initiate/orderId/:order_id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -434,7 +434,7 @@
 								"add",
 								"multipart",
 								"initiate",
-								"order_id",
+								"orderId",
 								":order_id"
 							],
 							"variable": [
@@ -444,7 +444,7 @@
 								}
 							]
 						},
-						"description": "Initiates a multipart upload for large files. Returns upload ID and key."
+						"description": "Initiates a multipart upload for large files. Requires admin role. Returns upload ID and key."
 					},
 					"response": []
 				},
@@ -456,10 +456,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "hash",
-								"value": "guest-hash-123"
 							}
 						],
 						"body": {
@@ -488,7 +484,7 @@
 								}
 							]
 						},
-						"description": "Gets a presigned URL for uploading a specific part of a multipart upload. Requires hash header."
+						"description": "Gets a presigned URL for uploading a specific part. Requires admin role."
 					},
 					"response": []
 				},
@@ -500,10 +496,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "hash",
-								"value": "guest-hash-123"
 							}
 						],
 						"body": {
@@ -511,7 +503,7 @@
 							"raw": "{\n  \"key\": \"order_id/hash/filename.mp4\",\n  \"uploadId\": \"upload-id-from-initiate\",\n  \"filename\": \"large-video.mp4\",\n  \"mimeType\": \"video/mp4\",\n  \"fileSize\": 52428800,\n  \"parts\": [\n    {\n      \"PartNumber\": 1,\n      \"ETag\": \"etag-from-upload-1\"\n    },\n    {\n      \"PartNumber\": 2,\n      \"ETag\": \"etag-from-upload-2\"\n    }\n  ]\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/media/add/multipart/complete/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v1/media/add/multipart/complete/orderId/:order_id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -522,17 +514,17 @@
 								"add",
 								"multipart",
 								"complete",
-								"eventUuid",
-								":uuid"
+								"orderId",
+								":order_id"
 							],
 							"variable": [
 								{
-									"key": "uuid",
-									"value": "profile-uuid-123"
+									"key": "order_id",
+									"value": "ORD-12345"
 								}
 							]
 						},
-						"description": "Completes a multipart upload after all parts have been uploaded. Requires hash header."
+						"description": "Completes a multipart upload after all parts have been uploaded. Requires admin role."
 					},
 					"response": []
 				},
@@ -544,10 +536,6 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "hash",
-								"value": "guest-hash-123"
 							}
 						],
 						"body": {
@@ -555,7 +543,7 @@
 							"raw": "{\n  \"key\": \"order_id/hash/filename.mp4\",\n  \"uploadId\": \"upload-id-from-initiate\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/media/add/multipart/abort/eventUuid/:uuid",
+							"raw": "{{base_url}}/api/v1/media/add/multipart/abort/orderId/:order_id",
 							"host": [
 								"{{base_url}}"
 							],
@@ -566,17 +554,17 @@
 								"add",
 								"multipart",
 								"abort",
-								"eventUuid",
-								":uuid"
+								"orderId",
+								":order_id"
 							],
 							"variable": [
 								{
-									"key": "uuid",
-									"value": "profile-uuid-123"
+									"key": "order_id",
+									"value": "ORD-12345"
 								}
 							]
 						},
-						"description": "Aborts a multipart upload. Requires hash header."
+						"description": "Aborts a multipart upload. Requires admin role."
 					},
 					"response": []
 				}

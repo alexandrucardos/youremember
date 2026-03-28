@@ -7,9 +7,8 @@ namespace App\Controller\API;
 use App\Application\InitiateMultipartMediaUpload\InitiateMediaUploadCommand;
 use App\Application\InitiateMultipartMediaUpload\InitiateMediaUploadHandler;
 use App\Domain\ValueObject\EmailValueObject;
-use App\Domain\ValueObject\HashValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
-use App\Domain\ValueObject\ProfileIdValueObject;
+use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
 use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaConfirmService;
@@ -19,21 +18,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/v1/media/add/multipart')]
 final class MediaMultipartController extends AbstractController
 {
-    public const NAME_MEDIA_GUEST_MULTIPART_INITIATE = 'api_media_guest_multipart_initiate_v1';
-    public const NAME_MEDIA_GUEST_MULTIPART_PART = 'api_media_guest_multipart_part_v1';
-    public const NAME_MEDIA_GUEST_MULTIPART_COMPLETE = 'api_media_guest_multipart_complete_v1';
-    public const NAME_MEDIA_GUEST_MULTIPART_ABORT = 'api_media_guest_multipart_abort_v1';
+    public const NAME_MEDIA_MULTIPART_INITIATE = 'api_media_multipart_initiate_v1';
+    public const NAME_MEDIA_MULTIPART_PART = 'api_media_multipart_part_v1';
+    public const NAME_MEDIA_MULTIPART_COMPLETE = 'api_media_multipart_complete_v1';
+    public const NAME_MEDIA_MULTIPART_ABORT = 'api_media_multipart_abort_v1';
 
-    #[Route('/initiate/order_id/{order_id}', name: self::NAME_MEDIA_GUEST_MULTIPART_INITIATE, methods: ['POST'])]
+    #[Route('/initiate/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_INITIATE, methods: ['POST'])]
     public function guestMultipartInitiate(
         Request $request,
         InitiateMediaUploadHandler $initiateMediaUploadHandler
     ): JsonResponse {
+        $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
+
+        if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
+            throw new AccessDeniedHttpException();
+        }
+
         $data = json_decode($request->getContent(), true);
         $filename = $data['filename'] ?? null;
         $mimeType = $data['mimeType'] ?? null;
@@ -54,15 +60,15 @@ final class MediaMultipartController extends AbstractController
         return $this->json($result);
     }
 
-    #[Route('/part/orderId/{order_id}', name: self::NAME_MEDIA_GUEST_MULTIPART_PART, methods: ['POST'])]
+    #[Route('/part/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_PART, methods: ['POST'])]
     public function guestMultipartPart(
         Request $request,
         MediaPresignService $mediaPresignService
     ): JsonResponse {
-        $hashHeader = $request->headers->get('hash');
+        $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
-        if (!$hashHeader) {
-            return $this->json(['error' => 'Missing hash header'], Response::HTTP_BAD_REQUEST);
+        if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
+            throw new AccessDeniedHttpException();
         }
 
         $data = json_decode($request->getContent(), true);
@@ -79,22 +85,22 @@ final class MediaMultipartController extends AbstractController
         return $this->json(['presignedUrl' => $presignedUrl]);
     }
 
-    #[Route('/complete/eventUuid/{uuid}', name: self::NAME_MEDIA_GUEST_MULTIPART_COMPLETE, methods: ['POST'])]
+    #[Route('/complete/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_COMPLETE, methods: ['POST'])]
     public function guestMultipartComplete(
         Request $request,
         MediaConfirmService $mediaConfirmService,
         MediaCountService $mediaCountService,
         EventFetchService $eventFetchService
     ): JsonResponse {
-        $hashHeader = $request->headers->get('hash');
-        if (!$hashHeader) {
-            return $this->json(['error' => 'Missing hash header'], Response::HTTP_BAD_REQUEST);
+        $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
+
+        if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
+            throw new AccessDeniedHttpException();
         }
 
-        $hash = new HashValueObject($hashHeader);
-        $uuid = new ProfileIdValueObject($request->attributes->get('uuid'));
+        $orderId = new OrderIdValueObject($request->attributes->get('order_id'));
 
-        $eventFetchVO = $eventFetchService->fetchByUuid($uuid);
+        //        $profileFetchVO = $eventFetchService->fetchOrderId($orderId);
 
         $data = json_decode($request->getContent(), true);
         $key = $data['key'] ?? null;
@@ -110,29 +116,29 @@ final class MediaMultipartController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $mediaCountService->incrementByOrderId($eventFetchVO['orderId'], 1);
+        $mediaCountService->incrementByOrderId($orderId->value, 1);
         $mediaConfirmService->completeMultipartUpload(
-            $eventFetchVO['orderId'],
+            $orderId->value,
             $key,
             $uploadId,
             $filename,
             $mimeType,
             (int) $fileSize,
-            $hash->value,
             $parts
         );
 
         return $this->json([], Response::HTTP_CREATED);
     }
 
-    #[Route('/abort/eventUuid/{uuid}', name: self::NAME_MEDIA_GUEST_MULTIPART_ABORT, methods: ['DELETE'])]
+    #[Route('/abort/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_ABORT, methods: ['DELETE'])]
     public function guestMultipartAbort(
         Request $request,
         MediaPresignService $mediaPresignService
     ): JsonResponse {
-        $hashHeader = $request->headers->get('hash');
-        if (!$hashHeader) {
-            return $this->json(['error' => 'Missing hash header'], Response::HTTP_BAD_REQUEST);
+        $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
+
+        if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
+            throw new AccessDeniedHttpException();
         }
 
         $data = json_decode($request->getContent(), true);

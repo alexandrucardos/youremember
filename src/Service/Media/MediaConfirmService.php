@@ -29,7 +29,6 @@ class MediaConfirmService
         string $filename,
         string $mimeType,
         int $fileSize,
-        string $folder,
         array $parts
     ): void {
         $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
