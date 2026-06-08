@@ -14,9 +14,12 @@
 ###< symfony/framework-bundle ###
 
 .idea
+.vscode
 postman_collection.json
 
 ###> phpunit/phpunit ###
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+my_project-ddd.zip
