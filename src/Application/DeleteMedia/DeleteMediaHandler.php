@@ -30,10 +30,10 @@ final class DeleteMediaHandler
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
+        $profileEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
 
-        $eventEntity->addMediaPathsForDeletion(paths: $command->filePaths);
+        $profileEntity->addMediaPathsForDeletion(paths: $command->filePaths);
 
-        $this->eventRepository->deleteMediaFiles($eventEntity);
+        $this->eventRepository->deleteMediaFiles($profileEntity);
     }
 }

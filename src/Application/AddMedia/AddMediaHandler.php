@@ -34,12 +34,12 @@ final class AddMediaHandler
 
         $uniqueMimeTypes = $this->eventRepository->getUniqueMimeTypes($command->files);
 
-        $eventEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
+        $profileEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
-        $eventEntity
+        $profileEntity
             ->setMediaFiles($command->files, $maxItems, $existingItems, $uniqueMimeTypes)
             ->setOrderId($command->orderIdValueObject);
 
-        $this->eventRepository->saveMediaFiles($eventEntity, self::MAX_IMAGE_SIZE_BYTES);
+        $this->eventRepository->saveMediaFiles($profileEntity, self::MAX_IMAGE_SIZE_BYTES);
     }
 }

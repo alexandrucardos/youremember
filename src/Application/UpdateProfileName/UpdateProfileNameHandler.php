@@ -27,12 +27,12 @@ class UpdateProfileNameHandler
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
+        $profileEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
 
-        $eventEntity
+        $profileEntity
             ->setProfileName($command->eventNameValueObject)
             ->setProfileNameFont($command->eventNameFontValueObject);
 
-        $this->eventRepository->updateProfileNameAndFont($eventEntity);
+        $this->eventRepository->updateProfileNameAndFont($profileEntity);
     }
 }

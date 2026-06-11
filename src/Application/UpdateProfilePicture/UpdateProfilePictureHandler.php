@@ -27,10 +27,10 @@ class UpdateProfilePictureHandler
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
+        $profileEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
-        $eventEntity->setOrderId($command->orderIdValueObject)->setProfilePictureFile($command->profilePictureFile);
+        $profileEntity->setOrderId($command->orderIdValueObject)->setProfilePictureFile($command->profilePictureFile);
 
-        $this->eventRepository->updateProfilePictureFile($eventEntity);
+        $this->eventRepository->updateProfilePictureFile($profileEntity);
     }
 }

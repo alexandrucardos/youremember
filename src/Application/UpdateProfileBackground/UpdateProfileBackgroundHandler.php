@@ -27,10 +27,10 @@ class UpdateProfileBackgroundHandler
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        $eventEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
+        $profileEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
-        $eventEntity->setOrderId($command->orderIdValueObject)->setBackgroundFile($command->backgroundFile);
+        $profileEntity->setOrderId($command->orderIdValueObject)->setBackgroundFile($command->backgroundFile);
 
-        $this->eventRepository->updateBackgroundFile($eventEntity);
+        $this->eventRepository->updateBackgroundFile($profileEntity);
     }
 }
