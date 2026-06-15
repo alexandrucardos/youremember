@@ -1,0 +1,7 @@
+profile:
+  name:
+    min_length: 'Numele profilului trebuie să aibă cel puțin 2 caractere.'
+    max_length: 'Numele profilului nu poate depăși 256 caractere.'
+    not_blank: 'Numele profilului nu poate fi gol.'
+  obituary:
+    max_length: 'Numarul maxim de caractere pentru necrolog este de 5000.'
