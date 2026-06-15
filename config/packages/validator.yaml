@@ -1,13 +1,16 @@
 framework:
-    validation:
-        email_validation_mode: html5
+  validation:
+    email_validation_mode: html5
+    translation_domain: 'messages'
 
-        # Enables validator auto-mapping support.
-        # For instance, basic validation constraints will be inferred from Doctrine's metadata.
-        #auto_mapping:
-        #    App\Entity\: []
+    # Enables validator auto-mapping support.
+    # For instance, basic validation constraints will be inferred from Doctrine's metadata.
+    #auto_mapping:
+    #    App\Entity\: []
+    # config/validator/validation.yaml
 
 when@test:
-    framework:
-        validation:
-            not_compromised_password: false
+  framework:
+    validation:
+      translation_domain: 'messages' # Changes domain to messages.en.yaml
+      not_compromised_password: false

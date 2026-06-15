@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/v1/update/name/font')]
 final class ProfileUpdateNameAndFontController extends AbstractController
@@ -24,7 +25,8 @@ final class ProfileUpdateNameAndFontController extends AbstractController
     #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_NAME_UPDATE, methods: ['PATCH'])]
     public function update(
         Request $request,
-        UpdateProfileNameHandler $profileNameHandler
+        UpdateProfileNameHandler $profileNameHandler,
+        TranslatorInterface $translator
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -37,7 +39,7 @@ final class ProfileUpdateNameAndFontController extends AbstractController
         $updateProfileNameCommand = new UpdateProfileNameCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
-            eventNameValueObject: new ProfileNameValueObject($data['name']),
+            eventNameValueObject: new ProfileNameValueObject($data['name'], $translator),
             eventNameFontValueObject: new ProfileNameFontValueObject($data['font'])
         );
 

@@ -24,6 +24,7 @@
     "symfony/mime": "6.4.*",
     "symfony/monolog-bundle": "^3.11",
     "symfony/runtime": "6.4.*",
+    "symfony/translation": "6.4.*",
     "symfony/twig-bundle": "6.4.*",
     "symfony/uid": "6.4.*",
     "symfony/validator": "6.4.*",

@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api/v1/update/obituary')]
 final class ProfileUpdateObituaryController extends AbstractController
@@ -23,7 +24,8 @@ final class ProfileUpdateObituaryController extends AbstractController
     #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_OBITUARY_UPDATE, methods: ['PATCH'])]
     public function update(
         Request $request,
-        UpdateProfileObituaryHandler $updateProfileObituaryHandler
+        UpdateProfileObituaryHandler $updateProfileObituaryHandler,
+        TranslatorInterface $translator
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -36,7 +38,7 @@ final class ProfileUpdateObituaryController extends AbstractController
         $updateProfileObituaryCommand = new UpdateProfileObituaryCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
-            obituaryValueObject: new ObituaryValueObject($data['obituary'])
+            obituaryValueObject: new ObituaryValueObject($data['obituary'], $translator)
         );
 
         $updateProfileObituaryHandler($updateProfileObituaryCommand);
