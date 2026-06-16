@@ -63,7 +63,7 @@ class AddMediaHandlerTest extends TestCase
         $this->eventRepository->method('getUniqueMimeTypes')->willReturn([]);
 
         $this->expectException(MissingFiles::class);
-        $this->expectExceptionMessage('Missing files from request');
+        $this->expectExceptionMessage('Nu exista fisiere selectate');
 
         ( $this->handler )($this->buildCommand([]));
     }

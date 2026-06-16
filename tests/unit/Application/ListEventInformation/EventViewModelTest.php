@@ -4,10 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Tests\unit\Application\ListEventInformation;
 
-use App\Application\ListProfileInformation\MediaViewModel;
 use App\Application\ListProfileInformation\ProfileViewModel;
-use App\Domain\ValueObject\ProfileIdValueObject;
-use App\Domain\ValueObject\ProfileNameFontValueObject;
 use PHPUnit\Framework\TestCase;
 
 class EventViewModelTest extends TestCase
@@ -15,60 +12,37 @@ class EventViewModelTest extends TestCase
     private const PROFILE_ID = 1;
     private const EVENT_NAME = 'Summer Wedding';
     private const EVENT_FONT = 'elegant';
-    private const BACKGROUND_URL = 'https://bucket.s3.region.amazonaws.com/123/client/background';
-    private const PROFILE_PICTURE_URL = 'https://bucket.s3.region.amazonaws.com/123/client/profile';
 
-    public static function toArrayDataProvider(): array
+    private function buildViewModel(): ProfileViewModel
     {
-        return [
-            'with pictures' => [
-                'picturesUrls' => ['https://example.com/pic1.jpg', 'https://example.com/pic2.jpg']
-            ],
-            'no pictures' => [
-                'picturesUrls' => []
-            ]
-        ];
+        return new ProfileViewModel(
+            id: self::PROFILE_ID,
+            name: self::EVENT_NAME,
+            nameFont: self::EVENT_FONT,
+            bornAt: null,
+            departedAt: null,
+            obituary: null
+        );
     }
 
-    /**
-     * @dataProvider toArrayDataProvider
-     */
-    public function testToArrayReturnsCorrectStructure(array $picturesUrls): void
+    public function testToArrayReturnsCorrectStructure(): void
     {
-        $viewModel = $this->buildViewModel($picturesUrls);
+        $result = $this->buildViewModel()->toArray();
 
-        $result = $viewModel->toArray();
-
-        $this->assertSame(self::PROFILE_ID, $result['profileId']);
+        $this->assertSame(self::PROFILE_ID, $result['id']);
         $this->assertSame(self::EVENT_NAME, $result['name']);
-        $this->assertSame(self::EVENT_FONT, $result['font']);
-        $this->assertSame(self::BACKGROUND_URL, $result['media']['backgroundPictureUrl']);
-        $this->assertSame($picturesUrls, $result['media']['pictures']);
+        $this->assertSame(self::EVENT_FONT, $result['name_font']);
     }
 
     public function testToArrayKeysAreCorrect(): void
     {
-        $result = $this->buildViewModel([])->toArray();
+        $result = $this->buildViewModel()->toArray();
 
-        $this->assertArrayHasKey('profileId', $result);
+        $this->assertArrayHasKey('id', $result);
         $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('font', $result);
-        $this->assertArrayHasKey('media', $result);
-        $this->assertArrayHasKey('backgroundPictureUrl', $result['media']);
-        $this->assertArrayHasKey('pictures', $result['media']);
-    }
-
-    private function buildViewModel(array $picturesUrls): ProfileViewModel
-    {
-        return new ProfileViewModel(
-            id: new ProfileIdValueObject(self::PROFILE_ID),
-            name: self::EVENT_NAME,
-            nameFont: new ProfileNameFontValueObject(self::EVENT_FONT),
-            media: new MediaViewModel(
-                backgroundPictureUrl: self::BACKGROUND_URL,
-                profilePictureUrl: self::PROFILE_PICTURE_URL,
-                picturesUrls: $picturesUrls
-            )
-        );
+        $this->assertArrayHasKey('name_font', $result);
+        $this->assertArrayHasKey('born_at', $result);
+        $this->assertArrayHasKey('deceased_at', $result);
+        $this->assertArrayHasKey('obituary', $result);
     }
 }

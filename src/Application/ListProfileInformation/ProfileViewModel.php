@@ -31,12 +31,12 @@ class ProfileViewModel
     public function toArray(): array
     {
         return [
-            'id' => $this->id->value,
+            'id' => $this->id,
             'name' => $this->name,
             'name_font' => $this->nameFont,
-            'born_at' => $this->bornAt?->value,
-            'deceased_at' => $this->departedAt?->value,
-            'obituary' => $this->obituary ?? null
+            'born_at' => $this->bornAt,
+            'deceased_at' => $this->departedAt,
+            'obituary' => $this->obituary
         ];
     }
 }

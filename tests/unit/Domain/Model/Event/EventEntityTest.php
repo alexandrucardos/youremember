@@ -19,6 +19,7 @@ use App\Domain\ValueObject\ProfileNameFontValueObject;
 use App\Domain\ValueObject\ProfileNameValueObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventEntityTest extends TestCase
 {
@@ -73,7 +74,7 @@ class EventEntityTest extends TestCase
     public function testSetMediaFilesThrowsMissingFilesWhenFilesIsEmpty(): void
     {
         $this->expectException(MissingFiles::class);
-        $this->expectExceptionMessage('Missing files from request');
+        $this->expectExceptionMessage('Nu exista fisiere selectate');
 
         $this->buildEntity()->setMediaFiles(files: [], maxItems: 100, existingItems: 0, uniqueMimeTypes: []);
     }
@@ -165,7 +166,7 @@ class EventEntityTest extends TestCase
     public function testSetAndGetEventName(): void
     {
         $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
-        $eventName = new ProfileNameValueObject('Summer Wedding');
+        $eventName = new ProfileNameValueObject('Summer Wedding', $this->createStub(TranslatorInterface::class));
 
         $result = $entity->setProfileName($eventName);
 
@@ -205,7 +206,7 @@ class EventEntityTest extends TestCase
     public function testSetBornAtThrowsExceptionWhenDateInFuture(): void
     {
         $this->expectException(DateInPastException::class);
-        $this->expectExceptionMessage('Born date must be in the past');
+        $this->expectExceptionMessage('Data nasterii treuie sa fie in trecut');
 
         $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
@@ -227,7 +228,7 @@ class EventEntityTest extends TestCase
     public function testSetDepartedAtThrowsExceptionWhenDateInFuture(): void
     {
         $this->expectException(DateInPastException::class);
-        $this->expectExceptionMessage('Deceased date must be in the past');
+        $this->expectExceptionMessage('Data plecarii trebuie sa fie in trecut');
 
         $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
@@ -238,7 +239,7 @@ class EventEntityTest extends TestCase
     public function testSetAndGetObituary(): void
     {
         $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
-        $obituary = new ObituaryValueObject('In loving memory...');
+        $obituary = new ObituaryValueObject('In loving memory...', $this->createStub(TranslatorInterface::class));
 
         $result = $entity->setObituary($obituary);
 

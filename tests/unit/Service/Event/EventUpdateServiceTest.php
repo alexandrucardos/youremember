@@ -7,6 +7,7 @@ namespace App\Tests\unit\Service\Event;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\ProfileNameFontValueObject;
 use App\Domain\ValueObject\ProfileNameValueObject;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Entity\Profile;
 use App\Exception\Event\NotFoundException;
 use App\Repository\ProfileRepository;
@@ -62,7 +63,7 @@ class EventUpdateServiceTest extends TestCase
 
         $result = $this->eventUpdateService->updateName(
             new OrderIdValueObject($orderId),
-            new ProfileNameValueObject($newName),
+            new ProfileNameValueObject($newName, $this->createStub(TranslatorInterface::class)),
             new ProfileNameFontValueObject($font)
         );
 
@@ -87,7 +88,7 @@ class EventUpdateServiceTest extends TestCase
 
         $this->eventUpdateService->updateName(
             new OrderIdValueObject($orderId),
-            new ProfileNameValueObject('New Name'),
+            new ProfileNameValueObject('New Name', $this->createStub(TranslatorInterface::class)),
             new ProfileNameFontValueObject('Oswald')
         );
     }

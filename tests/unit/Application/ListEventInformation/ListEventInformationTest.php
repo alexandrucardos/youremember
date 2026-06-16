@@ -6,7 +6,7 @@ namespace App\Tests\unit\Application\ListEventInformation;
 
 use App\Application\ListProfileInformation\ListProfileInformation;
 use App\Application\ListProfileInformation\ListProfileInformationQuery;
-use App\Application\ListProfileInformation\ProfileViewModel;
+use App\Application\ListProfileInformation\ListProfileViewModel;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\TestCase;
@@ -26,15 +26,13 @@ class ListEventInformationTest extends TestCase
      */
     public function testInvokeWithOrderIdFetchesEventViewModelDirectly(int $orderId): void
     {
-        $mockViewModel = $this->createMock(ProfileViewModel::class);
+        $mockViewModel = $this->createMock(ListProfileViewModel::class);
 
         $eventRepository = $this->createMock(ProfileRepositoryInterface::class);
         $eventRepository
             ->expects($this->once())
             ->method('fetchProfileViewModelForOrderId')
-            ->with($this->callback(
-                static fn(OrderIdValueObject $orderIdValueObject): bool => $orderIdValueObject->value === $orderId
-            ))
+            ->with($orderId)
             ->willReturn($mockViewModel);
 
         $query = new ListProfileInformationQuery(orderIdValueObject: new OrderIdValueObject($orderId));

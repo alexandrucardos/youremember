@@ -14,6 +14,7 @@ use App\Domain\ValueObject\ObituaryValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UpdateProfileObituaryHandlerTest extends TestCase
 {
@@ -74,7 +75,7 @@ class UpdateProfileObituaryHandlerTest extends TestCase
         return new UpdateProfileObituaryCommand(
             orderIdValueObject: new OrderIdValueObject(self::ORDER_ID),
             userEmail: new EmailValueObject(self::USER_EMAIL),
-            obituaryValueObject: new ObituaryValueObject(self::OBITUARY)
+            obituaryValueObject: new ObituaryValueObject(self::OBITUARY, $this->createStub(TranslatorInterface::class))
         );
     }
 }

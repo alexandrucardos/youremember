@@ -14,6 +14,7 @@ use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\ProfileNameFontValueObject;
 use App\Domain\ValueObject\ProfileNameValueObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UpdateEventNameHandlerTest extends TestCase
 {
@@ -60,7 +61,7 @@ class UpdateEventNameHandlerTest extends TestCase
         $command = new UpdateProfileNameCommand(
             new OrderIdValueObject(self::ORDER_ID),
             new EmailValueObject(self::USER_EMAIL),
-            new ProfileNameValueObject($eventName),
+            new ProfileNameValueObject($eventName, $this->createStub(TranslatorInterface::class)),
             new ProfileNameFontValueObject($eventFont)
         );
 
@@ -80,7 +81,7 @@ class UpdateEventNameHandlerTest extends TestCase
         $command = new UpdateProfileNameCommand(
             new OrderIdValueObject(self::ORDER_ID),
             new EmailValueObject(self::USER_EMAIL),
-            new ProfileNameValueObject('My Wedding'),
+            new ProfileNameValueObject('My Wedding', $this->createStub(TranslatorInterface::class)),
             new ProfileNameFontValueObject('elegant')
         );
 
@@ -100,7 +101,7 @@ class UpdateEventNameHandlerTest extends TestCase
         $command = new UpdateProfileNameCommand(
             new OrderIdValueObject(self::ORDER_ID),
             new EmailValueObject(self::USER_EMAIL),
-            new ProfileNameValueObject('My Wedding'),
+            new ProfileNameValueObject('My Wedding', $this->createStub(TranslatorInterface::class)),
             new ProfileNameFontValueObject('elegant')
         );
 
