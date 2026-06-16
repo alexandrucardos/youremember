@@ -15,13 +15,13 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 final class DeleteMediaHandler
 {
     public function __construct(
-        private readonly ProfileRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(DeleteMediaCommand $command): void
     {
-        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
+        $profileId = $this->profileRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
@@ -34,6 +34,6 @@ final class DeleteMediaHandler
 
         $profileEntity->addMediaPathsForDeletion(paths: $command->filePaths);
 
-        $this->eventRepository->deleteMediaFiles($profileEntity);
+        $this->profileRepository->deleteMediaFiles($profileEntity);
     }
 }
