@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Service\Media;
 
 use App\Entity\Profile;
-use App\Exception\Event\NotFoundException;
 use App\Exception\Media\MaximumMediaItemsReachedException;
+use App\Exception\Profile\NotFoundException;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 

@@ -8,7 +8,7 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 use App\Domain\ValueObject\ProfileNameFontValueObject;
 use App\Domain\ValueObject\ProfileNameValueObject;
 use App\Entity\Profile;
-use App\Exception\Event\NotFoundException;
+use App\Exception\Profile\NotFoundException;
 use App\Repository\ProfileRepository;
 
 final class ProfileUpdateService

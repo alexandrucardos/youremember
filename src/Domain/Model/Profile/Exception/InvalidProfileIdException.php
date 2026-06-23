@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Profile\Exception;
 
-use App\Exception\Event\BaseEventException;
+use App\Exception\Profile\BaseProfileException;
 
-class InvalidProfileIdException extends BaseEventException
+class InvalidProfileIdException extends BaseProfileException
 {
 }
