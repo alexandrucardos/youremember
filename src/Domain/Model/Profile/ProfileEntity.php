@@ -162,7 +162,7 @@ class ProfileEntity
         if ($bornAtValueObject->value instanceof \DateTimeImmutable) {
             $now = new \DateTimeImmutable();
             if ($bornAtValueObject->value > $now) {
-                throw new DateInPastException('Data nasterii treuie sa fie in trecut');
+                throw new DateInPastException('Data nasterii trebuie sa fie in trecut');
             }
         }
 
