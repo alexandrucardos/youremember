@@ -1,8 +1,8 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace App\Service\Event;
+namespace App\Service\Profile;
 
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;
@@ -10,9 +10,10 @@ use App\Service\Media\MediaService;
 class ProfileMediaFetchService
 {
     public function __construct(
-        private readonly MediaService $mediatorS3Service,
+        private readonly MediaService    $mediatorS3Service,
         private readonly MediaRepository $mediaRepository
-    ) {
+    )
+    {
     }
 
     public function fetch(array $eventFetchData): array

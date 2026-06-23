@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\Model\Profile;
 
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface ProfileRepositoryInterface
 {
-    public function updateProfileNameAndFont(ProfileEntity $eventEntity): void;
+    public function updateProfileNameAndFont(ProfileEntity $profileEntity): void;
 
     public function updateProfileDates(ProfileEntity $profileEntity): void;
 
@@ -22,7 +22,7 @@ interface ProfileRepositoryInterface
 
     public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
-        EmailValueObject $emailValueObject
+        EmailValueObject   $emailValueObject
     ): ?string;
 
     public function getExistingMediaInfo(OrderIdValueObject $orderId): array;
@@ -31,7 +31,7 @@ interface ProfileRepositoryInterface
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int $maxFileSizeBytes
+        int           $maxFileSizeBytes
     ): void;
 
     /**
@@ -39,13 +39,13 @@ interface ProfileRepositoryInterface
      */
     public function getUniqueMimeTypes(array $uploadedFiles): array;
 
-    public function deleteMediaFiles(ProfileEntity $eventEntity): void;
+    public function deleteMediaFiles(ProfileEntity $profileEntity): void;
 
-    public function updateBackgroundFile(ProfileEntity $eventEntity): void;
+    public function updateBackgroundFile(ProfileEntity $profileEntity): void;
 
-    public function updateProfilePictureFile(ProfileEntity $eventEntity): void;
+    public function updateProfilePictureFile(ProfileEntity $profileEntity): void;
 
-    public function fetchMultipartInitData(ProfileEntity $eventEntity): array;
+    public function fetchMultipartInitData(ProfileEntity $profileEntity): array;
 
     public function getExistingProfileId(ProfileIdValueObject $profileIdValueObject): ?int;
 

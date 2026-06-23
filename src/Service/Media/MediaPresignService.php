@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Service\Media;
 
@@ -12,26 +12,9 @@ class MediaPresignService
 {
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly ProfileRepository $eventRepository
-    ) {
-    }
-
-    /**
-     * @return array{presignedUrl: string, key: string}
-     */
-    public function generateForOrder(int $orderId, string $filename, string $mimeType, string $folder): array
+        private readonly ProfileRepository       $eventRepository
+    )
     {
-        $event = $this->eventRepository->findOneBy(['order_id' => $orderId]);
-
-        if ($event === null) {
-            throw new NotFoundException('Event not found for order: ' . $orderId);
-        }
-
-        $key = sprintf('%d/%s/%s', $orderId, $folder, $filename);
-
-        $presignedUrl = $this->bucketProvider->getPresignedUrl($key, $mimeType, new \DateTimeImmutable('+15 minutes'));
-
-        return ['presignedUrl' => $presignedUrl, 'key' => $key];
     }
 
     /**

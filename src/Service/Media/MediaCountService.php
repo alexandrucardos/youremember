@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Service\Media;
 
@@ -14,7 +14,8 @@ final class MediaCountService
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager
-    ) {
+    )
+    {
     }
 
     public function incrementByOrderId(int $orderId, int $count): void
@@ -22,20 +23,20 @@ final class MediaCountService
         $this->entityManager->beginTransaction();
 
         try {
-            $event = $this->entityManager->getRepository(Profile::class)->findOneBy(['order_id' => $orderId]);
+            $profile = $this->entityManager->getRepository(Profile::class)->findOneBy(['order_id' => $orderId]);
 
-            if (!$event instanceof Profile) {
-                throw new NotFoundException('Event not found');
+            if (!$profile instanceof Profile) {
+                throw new NotFoundException('Profile not found');
             }
 
-            $this->entityManager->lock($event, LockMode::PESSIMISTIC_WRITE);
-            $this->entityManager->refresh($event);
+            $this->entityManager->lock($profile, LockMode::PESSIMISTIC_WRITE);
+            $this->entityManager->refresh($profile);
 
-            if (( $event->getMediaCount() + $count ) >= $event->getMaxMediaCount()) {
+            if (($profile->getMediaCount() + $count) >= $profile->getMaxMediaCount()) {
                 throw new MaximumMediaItemsReachedException('Maximum media items reached');
             }
 
-            $event->setMediaCount($event->getMediaCount() + $count);
+            $profile->setMediaCount($profile->getMediaCount() + $count);
 
             $this->entityManager->flush();
             $this->entityManager->commit();
@@ -52,16 +53,16 @@ final class MediaCountService
         $this->entityManager->beginTransaction();
 
         try {
-            $event = $this->entityManager->getRepository(Profile::class)->findOneBy(['order_id' => $orderId]);
+            $profile = $this->entityManager->getRepository(Profile::class)->findOneBy(['order_id' => $orderId]);
 
-            if (!$event instanceof Profile) {
-                throw new NotFoundException('Event not found');
+            if (!$profile instanceof Profile) {
+                throw new NotFoundException('Profile not found');
             }
 
-            $this->entityManager->lock($event, LockMode::PESSIMISTIC_WRITE);
+            $this->entityManager->lock($profile, LockMode::PESSIMISTIC_WRITE);
 
-            $newCount = max(0, $event->getMediaCount() - 1);
-            $event->setMediaCount($newCount);
+            $newCount = max(0, $profile->getMediaCount() - 1);
+            $profile->setMediaCount($newCount);
 
             $this->entityManager->flush();
             $this->entityManager->commit();
@@ -86,6 +87,6 @@ final class MediaCountService
             throw new \InvalidArgumentException('Invalid URL format');
         }
 
-        return (int) $parts[0];
+        return (int)$parts[0];
     }
 }

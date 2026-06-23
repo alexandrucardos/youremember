@@ -5,9 +5,7 @@ namespace App\EventSubscriber;
 use App\Domain\Model\Profile\Message\ProfileBaseMsgException;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
-use App\Exception\Auth\InvalidStructureException;
-use App\Exception\Event\EventInvalidException;
-use App\Exception\Event\NotFoundException as EventNotFoundException;
+use App\Exception\Event\NotFoundException as ProfileNotFoundException;
 use App\Exception\Media\NotFoundException as MediaNotFoundException;
 use App\Exception\Media\UnauthorizedException as MediaUnauthorizedException;
 use App\Exception\User\NotFoundException as UserNotFoundException;
@@ -23,7 +21,8 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
 {
     public function __construct(
         private readonly LoggerInterface $errorLogger
-    ) {
+    )
+    {
     }
 
     public static function getSubscribedEvents(): array
@@ -42,17 +41,15 @@ final class ExceptionToHttpResponseSubscriber implements EventSubscriberInterfac
                 ['error' => $exception->getMessage()],
                 Response::HTTP_UNAUTHORIZED
             ),
-            $exception instanceof EventNotFoundException,
-            $exception instanceof UserNotFoundException,
-            $exception instanceof MediaNotFoundException
-                => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND),
+            $exception instanceof ProfileNotFoundException,
+                $exception instanceof UserNotFoundException,
+                $exception instanceof MediaNotFoundException
+            => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND),
             $exception instanceof MediaUnauthorizedException => new JsonResponse(['error' =>
                 $exception->getMessage()], Response::HTTP_FORBIDDEN),
-            $exception instanceof EventInvalidException => new JsonResponse(['error' =>
-                $exception->getMessage()], Response::HTTP_GONE),
             $exception instanceof \InvalidArgumentException,
-            $exception instanceof ProfileBaseMsgException
-                => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST),
+                $exception instanceof ProfileBaseMsgException
+            => new JsonResponse(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST),
             default => $this->logUnexpected($exception)
         };
 

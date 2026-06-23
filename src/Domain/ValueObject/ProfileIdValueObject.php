@@ -1,10 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\ValueObject;
 
-use App\Exception\Event\InvalidProfileIdException;
+use App\Domain\Model\Profile\Exception\InvalidProfileIdException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 

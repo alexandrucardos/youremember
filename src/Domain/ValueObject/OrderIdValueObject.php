@@ -1,10 +1,10 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Domain\ValueObject;
 
-use App\Exception\Event\InvalidOrderIdException;
+use App\Domain\Model\Profile\Exception\InvalidOrderIdException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
