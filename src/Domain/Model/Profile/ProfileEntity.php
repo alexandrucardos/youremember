@@ -28,7 +28,7 @@ class ProfileEntity
     ];
 
     const ADMIN_USER_IDENTIFIER = 'admin';
-    const DEFAULT_EVENT_NAME_FONT = 'classic';
+    const DEFAULT_PROFILE_NAME_FONT = 'classic';
 
     /**
      * @var array<UploadedFile>

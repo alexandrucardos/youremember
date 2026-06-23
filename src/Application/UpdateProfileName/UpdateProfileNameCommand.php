@@ -14,8 +14,8 @@ class UpdateProfileNameCommand
     public function __construct(
         public readonly OrderIdValueObject $orderIdValueObject,
         public readonly EmailValueObject $userEmail,
-        public readonly ProfileNameValueObject $eventNameValueObject,
-        public readonly ProfileNameFontValueObject $eventNameFontValueObject
+        public readonly ProfileNameValueObject $profileNameValueObject,
+        public readonly ProfileNameFontValueObject $profileNameFontValueObject
     ) {
     }
 }

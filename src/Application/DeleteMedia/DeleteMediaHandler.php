@@ -4,10 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Application\DeleteMedia;
 
-use App\Domain\Model\Profile\EventServiceInterface;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
-use App\Domain\Model\Profile\MediaRepositoryInterface;
-use App\Domain\Model\Profile\MediaServiceInterface;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\ValueObject\ProfileIdValueObject;
