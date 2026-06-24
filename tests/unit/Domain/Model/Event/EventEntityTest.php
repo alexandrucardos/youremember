@@ -206,7 +206,7 @@ class EventEntityTest extends TestCase
     public function testSetBornAtThrowsExceptionWhenDateInFuture(): void
     {
         $this->expectException(DateInPastException::class);
-        $this->expectExceptionMessage('Data nasterii treuie sa fie in trecut');
+        $this->expectExceptionMessage('Data nasterii trebuie sa fie in trecut');
 
         $entity = new ProfileEntity(new ProfileIdValueObject(self::PROFILE_ID));
         $futureDate = new DateValueObject(new \DateTimeImmutable('+1 year'));
