@@ -39,8 +39,8 @@ final class ProfileUpdateNameAndFontController extends AbstractController
         $updateProfileNameCommand = new UpdateProfileNameCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
-            eventNameValueObject: new ProfileNameValueObject($data['name'], $translator),
-            eventNameFontValueObject: new ProfileNameFontValueObject($data['font'])
+            profileNameValueObject: new ProfileNameValueObject($data['name'], $translator),
+            profileNameFontValueObject: new ProfileNameFontValueObject($data['font'])
         );
 
         $profileNameHandler($updateProfileNameCommand);

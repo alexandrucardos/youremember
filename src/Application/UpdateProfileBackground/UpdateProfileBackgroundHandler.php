@@ -12,13 +12,13 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 class UpdateProfileBackgroundHandler
 {
     public function __construct(
-        private readonly ProfileRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(UpdateProfileBackgroundCommand $command): void
     {
-        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
+        $profileId = $this->profileRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
@@ -31,6 +31,6 @@ class UpdateProfileBackgroundHandler
 
         $profileEntity->setOrderId($command->orderIdValueObject)->setBackgroundFile($command->backgroundFile);
 
-        $this->eventRepository->updateBackgroundFile($profileEntity);
+        $this->profileRepository->updateBackgroundFile($profileEntity);
     }
 }

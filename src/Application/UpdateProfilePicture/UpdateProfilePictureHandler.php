@@ -12,13 +12,13 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 class UpdateProfilePictureHandler
 {
     public function __construct(
-        private readonly ProfileRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(UpdateProfilePictureCommand $command): void
     {
-        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
+        $profileId = $this->profileRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
@@ -31,6 +31,6 @@ class UpdateProfilePictureHandler
 
         $profileEntity->setOrderId($command->orderIdValueObject)->setProfilePictureFile($command->profilePictureFile);
 
-        $this->eventRepository->updateProfilePictureFile($profileEntity);
+        $this->profileRepository->updateProfilePictureFile($profileEntity);
     }
 }

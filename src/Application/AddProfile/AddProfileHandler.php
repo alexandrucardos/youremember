@@ -43,7 +43,7 @@ class AddProfileHandler
         $profileEntity
             ->setUser($userEntity)
             ->setOrderId($command->orderIdValueObject)
-            ->setProfileNameFont(new ProfileNameFontValueObject(ProfileEntity::DEFAULT_EVENT_NAME_FONT));
+            ->setProfileNameFont(new ProfileNameFontValueObject(ProfileEntity::DEFAULT_PROFILE_NAME_FONT));
 
         $this->profileRepository->saveProfile($profileEntity);
     }

@@ -12,13 +12,13 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 class UpdateProfileNameHandler
 {
     public function __construct(
-        private readonly ProfileRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(UpdateProfileNameCommand $command): void
     {
-        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
+        $profileId = $this->profileRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
@@ -30,9 +30,9 @@ class UpdateProfileNameHandler
         $profileEntity = new ProfileEntity(profileIdValueObject: new ProfileIdValueObject($profileId));
 
         $profileEntity
-            ->setProfileName($command->eventNameValueObject)
-            ->setProfileNameFont($command->eventNameFontValueObject);
+            ->setProfileName($command->profileNameValueObject)
+            ->setProfileNameFont($command->profileNameFontValueObject);
 
-        $this->eventRepository->updateProfileNameAndFont($profileEntity);
+        $this->profileRepository->updateProfileNameAndFont($profileEntity);
     }
 }

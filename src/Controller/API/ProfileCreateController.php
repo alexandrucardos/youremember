@@ -30,7 +30,7 @@ final class ProfileCreateController extends AbstractController
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
-        if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
+        if ($userRole !== UserRole::ROLE_SUPER_ADMIN) {
             throw new AccessDeniedHttpException();
         }
 

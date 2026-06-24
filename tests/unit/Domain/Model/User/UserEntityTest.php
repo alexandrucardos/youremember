@@ -18,9 +18,4 @@ class UserEntityTest extends TestCase
 
         $this->assertSame($email, $entity->emailValueObject);
     }
-
-    public function testAdminUserIdentifierIsClient(): void
-    {
-        $this->assertSame('client', UserEntity::ADMIN_USER_IDENTIFIER);
-    }
 }

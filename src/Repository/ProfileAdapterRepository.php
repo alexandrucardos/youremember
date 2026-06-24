@@ -16,12 +16,12 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\Entity\Profile;
 use App\Entity\User;
-use App\Service\Event\ProfileMediaFetchService;
-use App\Service\Event\ProfileUpdateService;
 use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaDeleteService;
 use App\Service\Media\MediaPresignService;
 use App\Service\Media\MediaService;
+use App\Service\Profile\ProfileMediaFetchService;
+use App\Service\Profile\ProfileUpdateService;
 
 class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
@@ -31,18 +31,18 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         private readonly MediaService $mediaService,
         private readonly MediaCountService $mediaCountService,
         private readonly MediaDeleteService $mediaDeleteService,
-        private readonly ProfileUpdateService $eventUpdateService,
+        private readonly ProfileUpdateService $profileUpdateService,
         private readonly ProfileMediaFetchService $profileMediaFetchService,
         private readonly MediaPresignService $mediaPresignService
     ) {
     }
 
-    public function updateProfileNameAndFont(ProfileEntity $eventEntity): void
+    public function updateProfileNameAndFont(ProfileEntity $profileEntity): void
     {
-        $this->eventUpdateService->updateNameForEventUuid(
-            eventUuid: $eventEntity->profileIdValueObject,
-            name: $eventEntity->getProfileName(),
-            nameFont: $eventEntity->getProfileNameFont()
+        $this->profileUpdateService->updateNameForEventUuid(
+            eventUuid: $profileEntity->profileIdValueObject,
+            name: $profileEntity->getProfileName(),
+            nameFont: $profileEntity->getProfileNameFont()
         );
     }
 
@@ -145,9 +145,9 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         $this->profileRepository->save($profile);
     }
 
-    public function deleteMediaFiles(ProfileEntity $eventEntity): void
+    public function deleteMediaFiles(ProfileEntity $profileEntity): void
     {
-        $urls = $eventEntity->getMediaFilePathsForDeletion();
+        $urls = $profileEntity->getMediaFilePathsForDeletion();
 
         foreach ($urls as $url) {
             $this->mediaCountService->decrementByUrl($url);
@@ -164,30 +164,30 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         return $profile ? (string) $profile->getExternalId() : null;
     }
 
-    public function updateBackgroundFile(ProfileEntity $eventEntity): void
+    public function updateBackgroundFile(ProfileEntity $profileEntity): void
     {
         $this->mediaService->uploadProfileFile(
-            orderId: $eventEntity->getOrderId()->value,
-            file: $eventEntity->getBackground(),
+            orderId: $profileEntity->getOrderId()->value,
+            file: $profileEntity->getBackground(),
             fileName: MediaService::FILE_BACKGROUND_NAME
         );
     }
 
-    public function updateProfilePictureFile(ProfileEntity $eventEntity): void
+    public function updateProfilePictureFile(ProfileEntity $profileEntity): void
     {
         $this->mediaService->uploadProfileFile(
-            orderId: $eventEntity->getOrderId()->value,
-            file: $eventEntity->getProfilePicture(),
+            orderId: $profileEntity->getOrderId()->value,
+            file: $profileEntity->getProfilePicture(),
             fileName: MediaService::FILE_PROFILE_PICTURE_NAME
         );
     }
 
-    public function fetchMultipartInitData(ProfileEntity $eventEntity): array
+    public function fetchMultipartInitData(ProfileEntity $profileEntity): array
     {
         return $this->mediaPresignService->initiateMultipartUpload(
-            orderId: $eventEntity->getOrderId()->value,
-            filename: $eventEntity->getMultipartFilename(),
-            mimeType: $eventEntity->getMultipartMimeType()
+            orderId: $profileEntity->getOrderId()->value,
+            filename: $profileEntity->getMultipartFilename(),
+            mimeType: $profileEntity->getMultipartMimeType()
         );
     }
 

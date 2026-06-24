@@ -4,10 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Application\InitiateMultipartMediaUpload;
 
-use App\Domain\Model\Profile\EventServiceInterface;
 use App\Domain\Model\Profile\Exception\ProfileNotFoundException;
-use App\Domain\Model\Profile\MediaRepositoryInterface;
-use App\Domain\Model\Profile\MediaServiceInterface;
 use App\Domain\Model\Profile\ProfileEntity;
 use App\Domain\Model\Profile\ProfileRepositoryInterface;
 use App\Domain\ValueObject\ProfileIdValueObject;
@@ -15,13 +12,13 @@ use App\Domain\ValueObject\ProfileIdValueObject;
 final class InitiateMediaUploadHandler
 {
     public function __construct(
-        private readonly ProfileRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(InitiateMediaUploadCommand $command): array
     {
-        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
+        $profileId = $this->profileRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
@@ -37,6 +34,6 @@ final class InitiateMediaUploadHandler
             ->setMultipartMimeType($command->mimeType)
             ->setOrderId($command->orderIdValueObject);
 
-        return $this->eventRepository->fetchMultipartInitData($profileEntity);
+        return $this->profileRepository->fetchMultipartInitData($profileEntity);
     }
 }

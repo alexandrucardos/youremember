@@ -2,20 +2,20 @@
 
 declare(strict_types = 1);
 
-namespace App\Tests\functional\Controller\API\V2;
+namespace App\Tests\functional\Controller\API\V1;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Service\FrontendTokenParserService;
+use App\Tests\functional\FunctionalTestBase;
 
-class ProfileUpdateNameAndFontControllerTest extends WebTestCase
+class ProfileUpdateNameAndFontControllerTest extends FunctionalTestBase
 {
-    private KernelBrowser $client;
+    private const USER_EMAIL = 'test@email.com';
 
     public function testUpdateProfileNameAndFontReturns401WithoutToken(): void
     {
         $this->client->request(
             'PATCH',
-            '/api/v2/update/name/font/orderId/123',
+            '/api/v1/update/name/font/orderId/123',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -32,7 +32,7 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
     {
         $this->client->request(
             'PATCH',
-            '/api/v2/update/name/font/orderId/123',
+            '/api/v1/update/name/font/orderId/123',
             [],
             [],
             [
@@ -52,7 +52,7 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
     {
         $this->client->request(
             'PATCH',
-            '/api/v2/update/name/font/orderId/123',
+            '/api/v1/update/name/font/orderId/123',
             [],
             [],
             [
@@ -76,16 +76,17 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v2/profile',
+            '/api/v1/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+                'HTTP_TOKEN' => $this->generateValidToken(FrontendTokenParserService::SUPER_ADMIN_EMAIL)
             ],
             json_encode([
                 'client_email' => $clientEmail,
-                'order_id' => $orderId
+                'order_id' => $orderId,
+                'profile_id' => 1
             ])
         );
 
@@ -94,12 +95,12 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
         // Now update the name and font
         $this->client->request(
             'PATCH',
-            '/api/v2/update/name/font/orderId/' . $orderId,
+            '/api/v1/update/name/font/orderId/' . $orderId,
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+                'HTTP_TOKEN' => $this->generateValidToken(self::USER_EMAIL)
             ],
             json_encode([
                 'name' => 'Updated Profile Name',
@@ -117,30 +118,5 @@ class ProfileUpdateNameAndFontControllerTest extends WebTestCase
         self::assertNotNull($profile);
         self::assertEquals('Updated Profile Name', $profile->getName());
         self::assertEquals('Arial', $profile->getNameFont());
-    }
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-    }
-
-    private function generateExpiredToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() - 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
-    }
-
-    private function generateValidToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() + 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
     }
 }

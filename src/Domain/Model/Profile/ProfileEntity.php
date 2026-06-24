@@ -28,7 +28,7 @@ class ProfileEntity
     ];
 
     const ADMIN_USER_IDENTIFIER = 'admin';
-    const DEFAULT_EVENT_NAME_FONT = 'classic';
+    const DEFAULT_PROFILE_NAME_FONT = 'classic';
 
     /**
      * @var array<UploadedFile>
@@ -144,9 +144,9 @@ class ProfileEntity
         return $this->profileNameFont;
     }
 
-    public function setProfileNameFont(ProfileNameFontValueObject $eventNameFontValueObject): self
+    public function setProfileNameFont(ProfileNameFontValueObject $profileNameFontValueObject): self
     {
-        $this->profileNameFont = $eventNameFontValueObject;
+        $this->profileNameFont = $profileNameFontValueObject;
         return $this;
     }
 
@@ -160,7 +160,7 @@ class ProfileEntity
         if ($bornAtValueObject->value instanceof \DateTimeImmutable) {
             $now = new \DateTimeImmutable();
             if ($bornAtValueObject->value > $now) {
-                throw new DateInPastException('Data nasterii treuie sa fie in trecut');
+                throw new DateInPastException('Data nasterii trebuie sa fie in trecut');
             }
         }
 

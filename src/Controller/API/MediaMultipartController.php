@@ -10,7 +10,6 @@ use App\Domain\ValueObject\EmailValueObject;
 use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\EventSubscriber\SecurityValidationRequestSubscriber;
-use App\Service\Event\EventFetchService;
 use App\Service\Media\MediaConfirmService;
 use App\Service\Media\MediaCountService;
 use App\Service\Media\MediaPresignService;
@@ -89,8 +88,7 @@ final class MediaMultipartController extends AbstractController
     public function guestMultipartComplete(
         Request $request,
         MediaConfirmService $mediaConfirmService,
-        MediaCountService $mediaCountService,
-        EventFetchService $eventFetchService
+        MediaCountService $mediaCountService
     ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
@@ -99,8 +97,6 @@ final class MediaMultipartController extends AbstractController
         }
 
         $orderId = new OrderIdValueObject($request->attributes->get('order_id'));
-
-        //        $profileFetchVO = $eventFetchService->fetchOrderId($orderId);
 
         $data = json_decode($request->getContent(), true);
         $key = $data['key'] ?? null;

@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Service\Event;
+namespace App\Service\Profile;
 
 use App\Repository\MediaRepository;
 use App\Service\Media\MediaService;

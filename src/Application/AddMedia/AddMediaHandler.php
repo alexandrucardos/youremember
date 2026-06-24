@@ -15,13 +15,13 @@ final class AddMediaHandler
     public const MAX_TOTAL_DEMO_SIZE_BYTES = 10_485_760;
 
     public function __construct(
-        private readonly ProfileRepositoryInterface $eventRepository
+        private readonly ProfileRepositoryInterface $profileRepository
     ) {
     }
 
     public function __invoke(AddMediaCommand $command): void
     {
-        $profileId = $this->eventRepository->getExistingProfileIdForOrderIdAndEmail(
+        $profileId = $this->profileRepository->getExistingProfileIdForOrderIdAndEmail(
             $command->orderIdValueObject,
             $command->userEmail
         );
@@ -30,9 +30,9 @@ final class AddMediaHandler
             throw new ProfileNotFoundException('Profile not found');
         }
 
-        [$maxItems, $existingItems] = $this->eventRepository->getExistingMediaInfo($command->orderIdValueObject);
+        [$maxItems, $existingItems] = $this->profileRepository->getExistingMediaInfo($command->orderIdValueObject);
 
-        $uniqueMimeTypes = $this->eventRepository->getUniqueMimeTypes($command->files);
+        $uniqueMimeTypes = $this->profileRepository->getUniqueMimeTypes($command->files);
 
         $profileEntity = new ProfileEntity(new ProfileIdValueObject($profileId));
 
@@ -40,6 +40,6 @@ final class AddMediaHandler
             ->setMediaFiles($command->files, $maxItems, $existingItems, $uniqueMimeTypes)
             ->setOrderId($command->orderIdValueObject);
 
-        $this->eventRepository->saveMediaFiles($profileEntity, self::MAX_IMAGE_SIZE_BYTES);
+        $this->profileRepository->saveMediaFiles($profileEntity, self::MAX_IMAGE_SIZE_BYTES);
     }
 }

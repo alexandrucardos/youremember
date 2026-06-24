@@ -8,8 +8,6 @@ use App\Domain\ValueObject\EmailValueObject;
 
 class UserEntity
 {
-    public const ADMIN_USER_IDENTIFIER = 'client';
-
     public function __construct(
         public readonly EmailValueObject $emailValueObject
     ) {
