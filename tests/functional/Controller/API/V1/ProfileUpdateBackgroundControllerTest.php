@@ -2,20 +2,19 @@
 
 declare(strict_types = 1);
 
-namespace App\Tests\functional\Controller\API\V2;
+namespace App\Tests\functional\Controller\API\V1;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Service\FrontendTokenParserService;
+use App\Tests\functional\FunctionalTestBase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class ProfileUpdateBackgroundControllerTest extends WebTestCase
+class ProfileUpdateBackgroundControllerTest extends FunctionalTestBase
 {
-    private KernelBrowser $client;
-
     public function testUpdateProfileBackgroundReturns401WithoutToken(): void
     {
         $this->client->request(
             'POST',
-            '/api/v2/update/profile/background/orderId/123',
+            '/api/v1/update/profile/background/orderId/123',
             [],
             [],
             ['CONTENT_TYPE' => 'multipart/form-data']
@@ -28,7 +27,7 @@ class ProfileUpdateBackgroundControllerTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/api/v2/update/profile/background/orderId/123',
+            '/api/v1/update/profile/background/orderId/123',
             [],
             [],
             [
@@ -44,7 +43,7 @@ class ProfileUpdateBackgroundControllerTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/api/v2/update/profile/background/orderId/123',
+            '/api/v1/update/profile/background/orderId/123',
             [],
             [],
             [
@@ -58,43 +57,43 @@ class ProfileUpdateBackgroundControllerTest extends WebTestCase
 
     public function testUpdateProfileBackgroundWithValidTokenPassesAuthentication(): void
     {
+        $orderId = rand(100000, 999999);
+        $clientEmail = 'name-test-' . time() . '@example.com';
+
         $this->client->request(
             'POST',
-            '/api/v2/update/profile/background/orderId/123',
+            '/api/v1/profile',
             [],
             [],
             [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken(FrontendTokenParserService::SUPER_ADMIN_EMAIL)
+            ],
+            json_encode([
+                'client_email' => $clientEmail,
+                'order_id' => $orderId,
+                'profile_id' => 1
+            ])
+        );
+
+        self::assertResponseStatusCodeSame(201);
+
+        $this->client->request(
+            'POST',
+            "/api/v1/update/profile/background/orderId/$orderId",
+            [],
+            [
+                'file' => new UploadedFile(
+                    path: __DIR__ . '/../../../assets/background.jpg',
+                    originalName: 'background.jpg'
+                )
+            ],
+            [
                 'CONTENT_TYPE' => 'multipart/form-data',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+                'HTTP_TOKEN' => $this->generateValidToken('client@email.ro')
             ]
         );
 
-        // With super admin token, passes authentication (not 401/403)
-        self::assertResponseStatusCodeSame(500);
-    }
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-    }
-
-    private function generateExpiredToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() - 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
-    }
-
-    private function generateValidToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() + 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
+        self::assertResponseStatusCodeSame(200);
     }
 }

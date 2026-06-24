@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Domain\Model\Profile;
 
@@ -22,7 +22,7 @@ interface ProfileRepositoryInterface
 
     public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
-        EmailValueObject   $emailValueObject
+        EmailValueObject $emailValueObject
     ): ?string;
 
     public function getExistingMediaInfo(OrderIdValueObject $orderId): array;
@@ -31,7 +31,7 @@ interface ProfileRepositoryInterface
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int           $maxFileSizeBytes
+        int $maxFileSizeBytes
     ): void;
 
     /**

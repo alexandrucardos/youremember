@@ -2,25 +2,23 @@
 
 declare(strict_types = 1);
 
-namespace App\Tests\functional\Controller\API\V2;
+namespace App\Tests\functional\Controller\API\V1;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Service\FrontendTokenParserService;
+use App\Tests\functional\FunctionalTestBase;
 
-class ProfileInfoGetControllerTest extends WebTestCase
+class ProfileInfoGetControllerTest extends FunctionalTestBase
 {
-    private KernelBrowser $client;
-
     public function testGetProfileByOrderIdReturns401WithoutToken(): void
     {
-        $this->client->request('GET', '/api/v2/profile/information/oderId/123');
+        $this->client->request('GET', '/api/v1/profile/information/oderId/123');
 
         self::assertResponseStatusCodeSame(401);
     }
 
     public function testGetProfileByOrderIdReturns400WithInvalidToken(): void
     {
-        $this->client->request('GET', '/api/v2/profile/information/oderId/123', [], [], ['HTTP_TOKEN' => 'x']);
+        $this->client->request('GET', '/api/v1/profile/information/oderId/123', [], [], ['HTTP_TOKEN' => 'x']);
 
         // Invalid token format returns 400
         self::assertResponseStatusCodeSame(400);
@@ -30,7 +28,7 @@ class ProfileInfoGetControllerTest extends WebTestCase
     {
         $this->client->request(
             'GET',
-            '/api/v2/profile/information/oderId/123',
+            '/api/v1/profile/information/oderId/123',
             [],
             [],
             ['HTTP_TOKEN' => $this->generateExpiredToken('test@example.com')]
@@ -47,25 +45,25 @@ class ProfileInfoGetControllerTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v2/profile',
+            '/api/v1/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+                'HTTP_TOKEN' => $this->generateValidToken(FrontendTokenParserService::SUPER_ADMIN_EMAIL)
             ],
             json_encode([
                 'client_email' => $clientEmail,
-                'order_id' => $orderId
+                'order_id' => $orderId,
+                'profile_id' => 1
             ])
         );
 
         self::assertResponseStatusCodeSame(201);
 
-        // Now retrieve the profile
         $this->client->request(
             'GET',
-            '/api/v2/profile/information/oderId/' . $orderId,
+            '/api/v1/profile/information/oderId/' . $orderId,
             [],
             [],
             ['HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')]
@@ -74,34 +72,15 @@ class ProfileInfoGetControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(200);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        self::assertArrayHasKey('profileId', $response);
-        self::assertArrayHasKey('name', $response);
-        self::assertArrayHasKey('font', $response);
-        self::assertEquals('classic', $response['font']);
-    }
+        $profileInfo = $response['profile'];
 
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-    }
-
-    private function generateExpiredToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() - 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
-    }
-
-    private function generateValidToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() + 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
+        self::assertArrayHasKey('id', $profileInfo);
+        self::assertArrayHasKey('name', $profileInfo);
+        self::assertArrayHasKey('name_font', $profileInfo);
+        self::assertArrayHasKey('born_at', $profileInfo);
+        self::assertArrayHasKey('deceased_at', $profileInfo);
+        self::assertArrayHasKey('obituary', $profileInfo);
+        self::assertEquals('classic', $profileInfo['name_font']);
+        self::assertEquals(1, $profileInfo['id']);
     }
 }

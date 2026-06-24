@@ -8,12 +8,11 @@ use App\Domain\ValueObject\HashValueObject;
 use App\Domain\ValueObject\UserRole;
 use App\Exception\Auth\ExpiredException;
 use App\Exception\Auth\InvalidHmacException;
-use App\Exception\Auth\InvalidStructureException;
 
 class FrontendTokenParserService
 {
     public const HASH_ALGO = 'sha256';
-    public const SUPER_ADMIN_EMAIL = 'admin@eventsphotoshare.ro';
+    public const SUPER_ADMIN_EMAIL = 'admin@youremember.org';
 
     public function __construct(
         private readonly string $frontendApiKey

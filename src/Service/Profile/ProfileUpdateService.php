@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Profile;
 
@@ -15,16 +15,14 @@ final class ProfileUpdateService
 {
     public function __construct(
         private readonly ProfileRepository $profileRepository
-    )
-    {
+    ) {
     }
 
     public function updateNameForEventUuid(
-        ProfileIdValueObject       $eventUuid,
-        ProfileNameValueObject     $name,
+        ProfileIdValueObject $eventUuid,
+        ProfileNameValueObject $name,
         ProfileNameFontValueObject $nameFont
-    ): Profile
-    {
+    ): Profile {
         $event = $this->profileRepository->findOneBy(['external_id' => $eventUuid->value]);
 
         if (!$event) {

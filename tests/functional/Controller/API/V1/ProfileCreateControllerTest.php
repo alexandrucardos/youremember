@@ -2,41 +2,16 @@
 
 declare(strict_types = 1);
 
-namespace App\Tests\functional\Controller\API\V2;
+namespace App\Tests\functional\Controller\API\V1;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Service\FrontendTokenParserService;
+use App\Tests\functional\FunctionalTestBase;
 
-class ProfileCreateControllerTest extends WebTestCase
+class ProfileCreateControllerTest extends FunctionalTestBase
 {
-    private KernelBrowser $client;
-
-    public function testCreateProfile(): void
-    {
-        $orderId = rand(10000, 99999);
-
-        $this->client->request(
-            'POST',
-            '/api/v2/profile',
-            [],
-            [],
-            [
-                'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
-            ],
-            json_encode([
-                'client_email' => 'test@example.com',
-                'order_id' => $orderId
-            ])
-        );
-
-        // With super admin token, passes authentication and creates profile successfully
-        self::assertResponseStatusCodeSame(201);
-    }
-
     public function testCreateProfileReturns401WithoutToken(): void
     {
-        $this->client->request('POST', '/api/v2/profile', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
+        $this->client->request('POST', '/api/v1/profile', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
             'client_email' => 'test@example.com',
             'order_id' => 123
         ]));
@@ -48,7 +23,7 @@ class ProfileCreateControllerTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/api/v2/profile',
+            '/api/v1/profile',
             [],
             [],
             [
@@ -69,12 +44,12 @@ class ProfileCreateControllerTest extends WebTestCase
     {
         $this->client->request(
             'POST',
-            '/api/v2/profile',
+            '/api/v1/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateExpiredToken('test@example.com')
+                'HTTP_TOKEN' => $this->generateExpiredToken(FrontendTokenParserService::SUPER_ADMIN_EMAIL)
             ],
             json_encode([
                 'client_email' => 'test@example.com',
@@ -85,23 +60,24 @@ class ProfileCreateControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testCreateProfileSuccessfullyWritesToDatabase(): void
+    public function testCreateProfile(): void
     {
         $orderId = rand(1000, 9999);
         $clientEmail = 'functional-test-' . time() . '@example.com';
 
         $this->client->request(
             'POST',
-            '/api/v2/profile',
+            '/api/v1/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_TOKEN' => $this->generateValidToken('admin@eventsphotoshare.ro')
+                'HTTP_TOKEN' => $this->generateValidToken(FrontendTokenParserService::SUPER_ADMIN_EMAIL)
             ],
             json_encode([
                 'client_email' => $clientEmail,
-                'order_id' => $orderId
+                'order_id' => $orderId,
+                'profile_id' => 1
             ])
         );
 
@@ -118,30 +94,5 @@ class ProfileCreateControllerTest extends WebTestCase
         self::assertEquals('classic', $profile->getNameFont());
         self::assertNotNull($profile->getUser());
         self::assertEquals($clientEmail, $profile->getUser()->getEmail());
-    }
-
-    protected function setUp(): void
-    {
-        $this->client = static::createClient();
-    }
-
-    private function generateExpiredToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() - 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
-    }
-
-    private function generateValidToken(string $email): string
-    {
-        $apiKey = 'test-api-key';
-        $expiration = time() + 86_400;
-        $data = $email . '|' . $expiration;
-        $hmac = hash_hmac('sha256', $data, $apiKey);
-
-        return $data . '|' . $hmac;
     }
 }

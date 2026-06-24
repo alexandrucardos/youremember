@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Media;
 
@@ -14,8 +14,7 @@ final class MediaCountService
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager
-    )
-    {
+    ) {
     }
 
     public function incrementByOrderId(int $orderId, int $count): void
@@ -32,7 +31,7 @@ final class MediaCountService
             $this->entityManager->lock($profile, LockMode::PESSIMISTIC_WRITE);
             $this->entityManager->refresh($profile);
 
-            if (($profile->getMediaCount() + $count) >= $profile->getMaxMediaCount()) {
+            if (( $profile->getMediaCount() + $count ) >= $profile->getMaxMediaCount()) {
                 throw new MaximumMediaItemsReachedException('Maximum media items reached');
             }
 
@@ -87,6 +86,6 @@ final class MediaCountService
             throw new \InvalidArgumentException('Invalid URL format');
         }
 
-        return (int)$parts[0];
+        return (int) $parts[0];
     }
 }

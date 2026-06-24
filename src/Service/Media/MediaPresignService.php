@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Service\Media;
 
@@ -12,9 +12,8 @@ class MediaPresignService
 {
     public function __construct(
         private readonly BucketProviderInterface $bucketProvider,
-        private readonly ProfileRepository       $eventRepository
-    )
-    {
+        private readonly ProfileRepository $eventRepository
+    ) {
     }
 
     /**

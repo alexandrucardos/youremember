@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller\API;
 
@@ -30,10 +30,9 @@ final class MediaMultipartController extends AbstractController
 
     #[Route('/initiate/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_INITIATE, methods: ['POST'])]
     public function guestMultipartInitiate(
-        Request                    $request,
+        Request $request,
         InitiateMediaUploadHandler $initiateMediaUploadHandler
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
@@ -62,10 +61,9 @@ final class MediaMultipartController extends AbstractController
 
     #[Route('/part/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_PART, methods: ['POST'])]
     public function guestMultipartPart(
-        Request             $request,
+        Request $request,
         MediaPresignService $mediaPresignService
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
@@ -81,18 +79,17 @@ final class MediaMultipartController extends AbstractController
             return $this->json(['error' => 'key, uploadId and partNumber are required'], Response::HTTP_BAD_REQUEST);
         }
 
-        $presignedUrl = $mediaPresignService->getPresignedPartUrl($key, $uploadId, (int)$partNumber);
+        $presignedUrl = $mediaPresignService->getPresignedPartUrl($key, $uploadId, (int) $partNumber);
 
         return $this->json(['presignedUrl' => $presignedUrl]);
     }
 
     #[Route('/complete/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_COMPLETE, methods: ['POST'])]
     public function guestMultipartComplete(
-        Request             $request,
+        Request $request,
         MediaConfirmService $mediaConfirmService,
-        MediaCountService   $mediaCountService,
-    ): JsonResponse
-    {
+        MediaCountService $mediaCountService
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
@@ -122,7 +119,7 @@ final class MediaMultipartController extends AbstractController
             $uploadId,
             $filename,
             $mimeType,
-            (int)$fileSize,
+            (int) $fileSize,
             $parts
         );
 
@@ -131,10 +128,9 @@ final class MediaMultipartController extends AbstractController
 
     #[Route('/abort/orderId/{order_id}', name: self::NAME_MEDIA_MULTIPART_ABORT, methods: ['DELETE'])]
     public function guestMultipartAbort(
-        Request             $request,
+        Request $request,
         MediaPresignService $mediaPresignService
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {

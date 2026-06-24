@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Repository;
 
@@ -26,16 +26,15 @@ use App\Service\Profile\ProfileUpdateService;
 class ProfileAdapterRepository implements ProfileRepositoryInterface
 {
     public function __construct(
-        private readonly ProfileRepository        $profileRepository,
-        private readonly UserRepository           $userRepository,
-        private readonly MediaService             $mediaService,
-        private readonly MediaCountService        $mediaCountService,
-        private readonly MediaDeleteService       $mediaDeleteService,
-        private readonly ProfileUpdateService     $profileUpdateService,
+        private readonly ProfileRepository $profileRepository,
+        private readonly UserRepository $userRepository,
+        private readonly MediaService $mediaService,
+        private readonly MediaCountService $mediaCountService,
+        private readonly MediaDeleteService $mediaDeleteService,
+        private readonly ProfileUpdateService $profileUpdateService,
         private readonly ProfileMediaFetchService $profileMediaFetchService,
-        private readonly MediaPresignService      $mediaPresignService
-    )
-    {
+        private readonly MediaPresignService $mediaPresignService
+    ) {
     }
 
     public function updateProfileNameAndFont(ProfileEntity $profileEntity): void
@@ -133,9 +132,8 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function saveMediaFiles(
         ProfileEntity $eventEntity,
-        int           $maxFileSizeBytes
-    ): void
-    {
+        int $maxFileSizeBytes
+    ): void {
         $profile = $this->getProfile($eventEntity->getOrderId());
 
         $this->mediaService->uploadMultiple(orderId: $profile->getOrderId(), files: $eventEntity->getMediaFiles());
@@ -159,12 +157,11 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
 
     public function getExistingProfileIdForOrderIdAndEmail(
         OrderIdValueObject $orderIdValueObject,
-        EmailValueObject   $emailValueObject
-    ): ?string
-    {
+        EmailValueObject $emailValueObject
+    ): ?string {
         $profile = $this->profileRepository->findOneBy(['order_id' => $orderIdValueObject->value]);
 
-        return $profile ? (string)$profile->getExternalId() : null;
+        return $profile ? (string) $profile->getExternalId() : null;
     }
 
     public function updateBackgroundFile(ProfileEntity $profileEntity): void

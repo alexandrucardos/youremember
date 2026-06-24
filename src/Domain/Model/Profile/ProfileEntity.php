@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Domain\Model\Profile;
 
@@ -51,8 +51,7 @@ class ProfileEntity
 
     public function __construct(
         public readonly ProfileIdValueObject $profileIdValueObject
-    )
-    {
+    ) {
     }
 
     public function addMediaPathsForDeletion(
@@ -80,16 +79,15 @@ class ProfileEntity
 
     public function setMediaFiles(
         array $files,
-        int   $maxItems,
-        int   $existingItems,
+        int $maxItems,
+        int $existingItems,
         array $uniqueMimeTypes
-    ): self
-    {
+    ): self {
         if (empty($files)) {
             throw new MissingFiles('Nu exista fisiere selectate');
         }
 
-        if ($maxItems < ($existingItems + count($files))) {
+        if ($maxItems < ( $existingItems + count($files) )) {
             throw new MaximumProfileItemsReachedException('Numar maxim de fisiere atins!');
         }
 
