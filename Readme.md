@@ -1,12 +1,5 @@
 # API for a profile of a deceased person
 
-> [!IMPORTANT]
-> prior to running docker compose please load the infrastructure from
-> here https://github.com/alexandrucardos/shared-infra
-
-> [!TIP]
-> installation is done via ```docker/docker-compose.yaml```
-
 ## Description
 
 The purpose of this is to learn some **Domain Driven** good practices.
