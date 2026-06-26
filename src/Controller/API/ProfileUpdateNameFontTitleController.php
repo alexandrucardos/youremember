@@ -21,14 +21,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route('/api/v1/update/name/font/title')]
 final class ProfileUpdateNameFontTitleController extends AbstractController
 {
-    public const NAME_PROFILE_NAME_UPDATE = 'api_profile_name_update';
+    public const NAME_PROFILE_NAME_UPDATE = 'api_profile_name_title_update';
 
     #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_NAME_UPDATE, methods: ['PATCH'])]
     public function update(
-        Request $request,
+        Request                          $request,
         UpdateProfileNameAndTitleHandler $profileNameHandler,
-        TranslatorInterface $translator
-    ): JsonResponse {
+        TranslatorInterface              $translator
+    ): JsonResponse
+    {
         $userRole = $request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_USER_ROLE);
 
         if (!in_array($userRole, UserRole::getAdminRoles(), true)) {
