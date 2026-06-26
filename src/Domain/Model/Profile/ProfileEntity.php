@@ -15,6 +15,7 @@ use App\Domain\ValueObject\OrderIdValueObject;
 use App\Domain\ValueObject\ProfileIdValueObject;
 use App\Domain\ValueObject\ProfileNameFontValueObject;
 use App\Domain\ValueObject\ProfileNameValueObject;
+use App\Domain\ValueObject\ProfileTitleValueObject;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProfileEntity
@@ -27,7 +28,6 @@ class ProfileEntity
         'video/webm'
     ];
 
-    const ADMIN_USER_IDENTIFIER = 'admin';
     const DEFAULT_PROFILE_NAME_FONT = 'classic';
 
     /**
@@ -48,6 +48,8 @@ class ProfileEntity
 
     private UploadedFile $backgroundFile;
     private UploadedFile $profilePictureFile;
+
+    private readonly ProfileTitleValueObject $title;
 
     public function __construct(
         public readonly ProfileIdValueObject $profileIdValueObject
@@ -238,6 +240,18 @@ class ProfileEntity
     public function setMultipartMimeType(string $multipartMimeType): self
     {
         $this->multipartMimeType = $multipartMimeType;
+        return $this;
+    }
+
+    public function getTitle(): ProfileTitleValueObject
+    {
+        return $this->title;
+    }
+
+    public function setTitle(ProfileTitleValueObject $title): self
+    {
+        $this->title = $title;
+
         return $this;
     }
 }

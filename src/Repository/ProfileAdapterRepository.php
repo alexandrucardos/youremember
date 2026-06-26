@@ -46,6 +46,16 @@ class ProfileAdapterRepository implements ProfileRepositoryInterface
         );
     }
 
+    public function updateProfileNameTitleAndFont(ProfileEntity $profileEntity): void
+    {
+        $this->profileUpdateService->updateNameFontAndTitleForEventUuid(
+            eventUuid: $profileEntity->profileIdValueObject,
+            name: $profileEntity->getProfileName(),
+            nameFont: $profileEntity->getProfileNameFont(),
+            title: $profileEntity->getTitle()
+        );
+    }
+
     public function updateProfileDates(ProfileEntity $profileEntity): void
     {
         $profile = $this->profileRepository->findOneBy(['external_id' => $profileEntity->profileIdValueObject->value]);

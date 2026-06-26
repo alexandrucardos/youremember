@@ -14,6 +14,8 @@ interface ProfileRepositoryInterface
 {
     public function updateProfileNameAndFont(ProfileEntity $profileEntity): void;
 
+    public function updateProfileNameTitleAndFont(ProfileEntity $profileEntity): void;
+
     public function updateProfileDates(ProfileEntity $profileEntity): void;
 
     public function updateProfileObituary(ProfileEntity $profileEntity): void;

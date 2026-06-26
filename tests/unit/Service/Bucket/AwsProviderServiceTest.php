@@ -14,17 +14,6 @@ class AwsProviderServiceTest extends TestCase
 {
     private string $tempDir;
 
-    protected function setUp(): void
-    {
-        $this->tempDir = sys_get_temp_dir() . '/aws_test_' . uniqid('', true);
-        mkdir($this->tempDir, 0777, true);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->removeDirectory($this->tempDir);
-    }
-
     public static function downloadFilesDataProvider(): array
     {
         return [
@@ -127,6 +116,17 @@ class AwsProviderServiceTest extends TestCase
 
         $awsProviderService = new AwsProviderService($s3Client, 'test-bucket', $this->tempDir);
         $awsProviderService->downloadFilesForPaths(['146/client/image.jpg']);
+    }
+
+    protected function setUp(): void
+    {
+        $this->tempDir = sys_get_temp_dir() . '/aws_test_' . uniqid('', true);
+        mkdir($this->tempDir, 0777, true);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->removeDirectory($this->tempDir);
     }
 
     private function removeDirectory(string $dir): void

@@ -32,6 +32,9 @@ class Profile
     #[ORM\Column(length: 50, nullable: true)]
     private string $name_font;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private string $title;
+
     #[ORM\Column(enumType: Status::class, options: ['default' => Status::VALID])]
     private Status $status;
 
@@ -257,5 +260,15 @@ class Profile
         $this->obituary = $obituary;
 
         return $this;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
     }
 }
