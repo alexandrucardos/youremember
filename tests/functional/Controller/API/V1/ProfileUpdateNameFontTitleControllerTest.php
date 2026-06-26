@@ -71,7 +71,7 @@ class ProfileUpdateNameFontTitleControllerTest extends FunctionalTestBase
         self::assertResponseStatusCodeSame(401);
     }
 
-    public function testUpdateProfileNameAndFontWithValidTokenPassesAuthentication(): void
+    public function testUpdateProfileNameFontAndTitleWithValidTokenPassesAuthentication(): void
     {
         // First create a profile to update
         $orderId = rand(100000, 999999);
@@ -109,6 +109,58 @@ class ProfileUpdateNameFontTitleControllerTest extends FunctionalTestBase
                 'name' => 'Updated Profile Name',
                 'font' => 'Arial',
                 'title' => 'title'
+            ])
+        );
+
+        self::assertResponseStatusCodeSame(200);
+
+        // Verify the update worked by checking database
+        $container = static::getContainer();
+        $profileRepository = $container->get('App\Repository\ProfileRepository');
+        $profile = $profileRepository->findOneBy(['order_id' => $orderId]);
+
+        self::assertNotNull($profile);
+        self::assertEquals('Updated Profile Name', $profile->getName());
+        self::assertEquals('Arial', $profile->getNameFont());
+    }
+
+    public function testUpdateProfileNameAndFontWithValidTokenPassesAuthentication(): void
+    {
+        // First create a profile to update
+        $orderId = rand(100000, 999999);
+        $clientEmail = 'name-test-' . time() . '@example.com';
+
+        $this->client->request(
+            'POST',
+            '/api/v1/profile',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken(FrontendTokenParserService::SUPER_ADMIN_EMAIL)
+            ],
+            json_encode([
+                'client_email' => $clientEmail,
+                'order_id' => $orderId,
+                'profile_id' => 1
+            ])
+        );
+
+        self::assertResponseStatusCodeSame(201);
+
+        // Now update the name and font
+        $this->client->request(
+            'PATCH',
+            '/api/v1/update/name/font/title/orderId/' . $orderId,
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_TOKEN' => $this->generateValidToken(self::USER_EMAIL)
+            ],
+            json_encode([
+                'name' => 'Updated Profile Name',
+                'font' => 'Arial',
             ])
         );
 

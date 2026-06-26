@@ -24,14 +24,14 @@ abstract class FunctionalTestBase extends WebTestCase
         $this->setUpDatabase();
     }
 
-    protected function tearDown(): void
-    {
-        $this->tearDownDatabase();
-
-        $this->entityManager->close();
-
-        parent::tearDown();
-    }
+//    protected function tearDown(): void
+//    {
+//        $this->tearDownDatabase();
+//
+//        $this->entityManager->close();
+//
+//        parent::tearDown();
+//    }
 
     protected function generateValidToken(string $email): string
     {

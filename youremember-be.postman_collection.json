@@ -136,6 +136,46 @@
 					"response": []
 				},
 				{
+					"name": "Update Profile Name, Font and Title",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe Memorial\",\n  \"font\": \"Arial\",\n  \"title\": \"In Loving Memory\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/update/name/font/title/orderId/:order_id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"update",
+								"name",
+								"font",
+								"title",
+								"orderId",
+								":order_id"
+							],
+							"variable": [
+								{
+									"key": "order_id",
+									"value": "ORD-12345"
+								}
+							]
+						},
+						"description": "Updates the profile name, font and title for a specific order. Requires admin role."
+					},
+					"response": []
+				},
+				{
 					"name": "Update Profile Dates",
 					"request": {
 						"method": "PATCH",
