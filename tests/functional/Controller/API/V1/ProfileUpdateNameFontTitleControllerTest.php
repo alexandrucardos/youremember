@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Tests\functional\Controller\API\V1;
 
@@ -160,7 +160,7 @@ class ProfileUpdateNameFontTitleControllerTest extends FunctionalTestBase
             ],
             json_encode([
                 'name' => 'Updated Profile Name',
-                'font' => 'Arial',
+                'font' => 'Arial'
             ])
         );
 

@@ -56,3 +56,5 @@ when@test:
         $bucketName: '%env(AWS_S3_BUCKET)%'
         $projectDir: '%kernel.project_dir%'
         $logger: '@logger'
+    Symfony\Contracts\Translation\TranslatorInterface:
+      class: App\Service\Tools\TranslatorMock

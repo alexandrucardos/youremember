@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Tests\functional;
 
@@ -24,14 +24,14 @@ abstract class FunctionalTestBase extends WebTestCase
         $this->setUpDatabase();
     }
 
-//    protected function tearDown(): void
-//    {
-//        $this->tearDownDatabase();
-//
-//        $this->entityManager->close();
-//
-//        parent::tearDown();
-//    }
+    //    protected function tearDown(): void
+    //    {
+    //        $this->tearDownDatabase();
+    //
+    //        $this->entityManager->close();
+    //
+    //        parent::tearDown();
+    //    }
 
     protected function generateValidToken(string $email): string
     {
