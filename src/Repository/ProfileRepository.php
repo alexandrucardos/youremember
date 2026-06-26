@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Application\ListEventInformation\ProfileViewModel;
 use App\Entity\Profile;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,9 +18,9 @@ class ProfileRepository extends ServiceEntityRepository
         parent::__construct($registry, Profile::class);
     }
 
-    public function save(Profile $event): void
+    public function save(Profile $profile): void
     {
-        $this->getEntityManager()->persist($event);
+        $this->getEntityManager()->persist($profile);
 
         $this->getEntityManager()->flush();
     }

@@ -26,7 +26,7 @@ final class ProfileUpdateNameFontTitleController extends AbstractController
     #[Route('/orderId/{order_id}', name: self::NAME_PROFILE_NAME_UPDATE, methods: ['PATCH'])]
     public function update(
         Request                          $request,
-        UpdateProfileNameAndTitleHandler $profileNameHandler,
+        UpdateProfileNameAndTitleHandler $profileNameAndTitleHandler,
         TranslatorInterface              $translator
     ): JsonResponse
     {
@@ -38,15 +38,15 @@ final class ProfileUpdateNameFontTitleController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        $updateProfileNameCommand = new UpdateProfileNameAndTitleCommand(
+        $updateProfileNameAndTitleCommand = new UpdateProfileNameAndTitleCommand(
             orderIdValueObject: new OrderIdValueObject($request->attributes->get('order_id')),
             userEmail: new EmailValueObject($request->attributes->get(SecurityValidationRequestSubscriber::REQUEST_ATTRIBUTE_EMAIL)),
             profileNameValueObject: new ProfileNameValueObject($data['name'], $translator),
             profileNameFontValueObject: new ProfileNameFontValueObject($data['font']),
-            titleValueObject: new ProfileTitleValueObject($data['title'], $translator)
+            titleValueObject: new ProfileTitleValueObject($data['title'] ?? null, $translator)
         );
 
-        $profileNameHandler($updateProfileNameCommand);
+        $profileNameAndTitleHandler($updateProfileNameAndTitleCommand);
 
         return $this->json([]);
     }
