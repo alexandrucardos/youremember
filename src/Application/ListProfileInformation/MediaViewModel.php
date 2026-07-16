@@ -22,4 +22,13 @@ class MediaViewModel
             picturesUrls: $media['pictures']
         );
     }
+
+    public function toArray(): array
+    {
+        return [
+            'backgroundPictureUrl' => $this->backgroundPictureUrl,
+            'profilePictureUrl' => $this->profilePictureUrl,
+            'pictures' => $this->picturesUrls
+        ];
+    }
 }

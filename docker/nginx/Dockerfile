@@ -5,7 +5,7 @@ RUN apk add --upgrade curl expat
 
 RUN apk update
 
-WORKDIR /var/www/heyblu/public/
+WORKDIR /var/www/rmb/public/
 
 ARG ENVIRONMENT
 

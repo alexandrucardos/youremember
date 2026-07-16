@@ -10,6 +10,7 @@ class ProfileViewModel
         public readonly int $id,
         public readonly ?string $name,
         public readonly string $nameFont,
+        public readonly string $title,
         public readonly ?string $bornAt,
         public readonly ?string $departedAt,
         public readonly ?string $obituary
@@ -22,6 +23,7 @@ class ProfileViewModel
             id: $profile->getExternalId(),
             name: $profile->getName(),
             nameFont: $profile->getNameFont(),
+            title: $profile->getTitle(),
             bornAt: $profile->getBornAt()?->format('Y-m-d'),
             departedAt: $profile->getDepartedAt()?->format('Y-m-d'),
             obituary: $profile->getObituary()
@@ -34,6 +36,7 @@ class ProfileViewModel
             'id' => $this->id,
             'name' => $this->name,
             'name_font' => $this->nameFont,
+            'title' => $this->title,
             'born_at' => $this->bornAt,
             'deceased_at' => $this->departedAt,
             'obituary' => $this->obituary
